@@ -11,14 +11,14 @@ namespace Indexer;
         /* Will be used to spilt text into words. So a word is a maximal sequence of
          * chars that does not contain any char from separators */
 
-        private Dictionary<string, int> words = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> words = new Dictionary<string, int>();
         /* Will contain all words from files during indexing - the key is the 
          * value of the word and the value is its id in the database */
 
         private int documentCounter = 0;
         /* Will count the number of documents indexed during indexing */
 
-        IDatabase mdatabase;
+        private readonly IDatabase mdatabase;
 
         public Crawler(IDatabase db){ mdatabase = db; }
 
@@ -26,11 +26,11 @@ namespace Indexer;
         private ISet<string> ExtractWordsInFile(FileInfo f)
         {
             ISet<string> res = new HashSet<string>();
-            var content = File.ReadAllLines(f.FullName);
-            foreach (var line in content)
+            foreach (var line in File.ReadLines(f.FullName))
             {
                 foreach (var aWord in line.Split(separators, StringSplitOptions.RemoveEmptyEntries))
                 {
+                    // Keep original casing so exact case-sensitive lookups remain possible.
                     res.Add(aWord);
                 }
             }
@@ -88,4 +88,3 @@ namespace Indexer;
 
         
     }
-

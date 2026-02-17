@@ -9,6 +9,9 @@ namespace Indexer;
     {
         public void Run()
         {
+            Console.WriteLine("Indexer stores words with original casing.");
+            Console.WriteLine("Re-run indexing after this update to enable true case-sensitive search.\n");
+
             IDatabase db = GetDatabase();
             Crawler crawler = new Crawler(db);
 
@@ -21,14 +24,33 @@ namespace Indexer;
             TimeSpan used = DateTime.Now - start;
             Console.WriteLine("DONE! used " + used.TotalMilliseconds);
 
-            var all = db.GetAllWords();
+            var wordFrequencies = db.GetWordFrequencies();
 
             Console.WriteLine($"Indexed {db.DocumentCounts} documents");
-            Console.WriteLine($"Number of different words: {all.Count}");
-            int count = 10;
-            Console.WriteLine($"The first {count} is:");
-            foreach (var p in all.Take(count)) {
-                Console.WriteLine("<" + p.Key + ", " + p.Value + ">");
+            Console.WriteLine($"Number of different words: {wordFrequencies.Count}");
+            
+            // Calculate total word occurrences
+            long totalOccurrences = 0;
+            foreach (var item in wordFrequencies)
+            {
+                totalOccurrences += item.count;
+            }
+            Console.WriteLine($"Total word occurrences indexed: {totalOccurrences}");
+            
+            Console.Write("How many words do you want to see? ");
+            string input = Console.ReadLine();
+            if (int.TryParse(input, out int count))
+            {
+                count = Math.Min(count, wordFrequencies.Count);
+                Console.WriteLine($"\nShowing top {count} words by frequency:");
+                foreach (var item in wordFrequencies.Take(count))
+                {
+                    Console.WriteLine($"<{item.word}, {item.id}> - {item.count}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. No words displayed.");
             }
         }
 

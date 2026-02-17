@@ -1,25 +1,34 @@
-﻿Version 1: 21-01-2026
+﻿Version 2: 17-02-2026
 
-This codebase is s PoC seachengine that consist of two programs and a class library.
+This codebase is a PoC search engine with 4 projects:
 
-The two programs are the indexer (also called a crawler) and a search program. Both
-are simple console programs.
+1) indexer (console app)
+2) SearchApi (ASP.NET Core API with all search logic)
+3) ConsoleSearch (console client that talks to SearchApi)
+4) SearchWebApp (Blazor web app that talks to SearchApi)
 
-The indexer will crawl a folder (in depth) and create a reverse index
-in a database. It will only index text files with .txt as extension. See the Config.cs for the folder
-to be indexed.
+Shared is a class library with common models and path configuration used across projects.
 
-The search program (see the ConsoleSearch project) offers a query-based search
-in the reverse index.
+Architecture after scaling:
 
-The class library Shared contains classes that are used by the indexer
-and the ConsoleSearch. It contains:
+- indexer writes reverse index data to SQLite or Postgres.
+- SearchApi reads from SQLite or Postgres and exposes `/api/search`.
+- ConsoleSearch and SearchWebApp are clients only (no local search logic).
+- Indexing now preserves original word casing. Case-sensitive search relies on this.
 
-- Paths containing a static path to the database (used by both the indexer (write-only), and
-the search program (read-only).
-- BEDocument (BE for Business Entity) - a class representing a document.
+Run order:
 
-Support for using either Sqlite or Postgres as database engine.
+1. Run indexer if you need to (re)build index data.
+   Important: if you indexed data before 17-02-2026, run indexer again so word casing is preserved.
+2. Run API:
+   `dotnet run --project SearchApi`
+3. Run console client:
+   `dotnet run --project ConsoleSearch`
+4. Run web app:
+   `dotnet run --project SearchWebApp`
 
+API defaults:
 
-
+- Base URL: `http://localhost:5017`
+- Search endpoint: `POST /api/search`
+- Health endpoint: `GET /api/health`

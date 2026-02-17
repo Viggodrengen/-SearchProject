@@ -162,6 +162,32 @@ namespace Indexer;
             return res;
         }
 
+        public List<(string word, int id, int count)> GetWordFrequencies()
+        {
+            var result = new List<(string word, int id, int count)>();
+
+            var selectCmd = _connection.CreateCommand();
+            selectCmd.CommandText = @"
+                SELECT w.name, w.id, COUNT(o.wordId) as count
+                FROM word w
+                LEFT JOIN Occ o ON w.id = o.wordId
+                GROUP BY w.id, w.name
+                ORDER BY count DESC";
+
+            using (var reader = selectCmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var word = reader.GetString(0);
+                    var id = reader.GetInt32(1);
+                    var count = reader.GetInt32(2);
+                    result.Add((word, id, count));
+                }
+            }
+
+            return result;
+        }
+
         public int DocumentCounts
         {
             get
