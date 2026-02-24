@@ -2,6 +2,9 @@ using SearchApi.Search;
 using Shared.Model;
 
 var builder = WebApplication.CreateBuilder(args);
+var instanceId = builder.Configuration["SearchApi:InstanceId"]
+    ?? Environment.GetEnvironmentVariable("SEARCH_INSTANCE_ID")
+    ?? $"search-api-{Environment.ProcessId}";
 
 builder.Services.AddOpenApi();
 builder.Services.AddSingleton<SearchService>();
@@ -13,11 +16,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.MapGet("/api/health", () => Results.Ok(new { status = "ok" }))
+app.MapGet("/api/health", () => Results.Ok(new { status = "ok", instanceId }))
     .WithName("Health");
 
-app.MapPost("/api/search", (SearchRequest request, SearchService searchService) =>
+app.MapPost("/api/search", (SearchRequest request, SearchService searchService, HttpContext httpContext) =>
 {
+    httpContext.Response.Headers["X-SearchApi-Instance"] = instanceId;
+
     if (string.IsNullOrWhiteSpace(request.Query))
     {
         return Results.BadRequest("Query must not be empty.");

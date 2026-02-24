@@ -8,5 +8,5 @@ public class Config
 
     public string Database { get; set; } = "sqlite";
 
-    public string ApiBaseUrl { get; set; } = "http://localhost:5017";
+    public string ApiBaseUrl { get; set; } = "http://localhost:5075";
 }

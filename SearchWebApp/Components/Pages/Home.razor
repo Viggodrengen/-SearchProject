@@ -45,6 +45,10 @@
     <div class="mt-4">
         <p><strong>Dokumenter:</strong> @SearchResult.NoOfHits</p>
         <p><strong>Tid:</strong> @SearchResult.TimeUsed.TotalMilliseconds ms</p>
+        @if (!string.IsNullOrWhiteSpace(Backend))
+        {
+            <p><strong>Serveret af:</strong> @Backend (@Strategy) [@SearchApiInstance]</p>
+        }
         @if (SearchResult.Ignored.Count > 0)
         {
             <p><strong>Ignoreret:</strong> @string.Join(", ", SearchResult.Ignored)</p>
@@ -85,11 +89,17 @@
     private bool IsSearching { get; set; }
     private string? ErrorMessage { get; set; }
     private Shared.Model.SearchResult? SearchResult { get; set; }
+    private string? Backend { get; set; }
+    private string? Strategy { get; set; }
+    private string? SearchApiInstance { get; set; }
 
     private async Task PerformSearchAsync()
     {
         ErrorMessage = null;
         SearchResult = null;
+        Backend = null;
+        Strategy = null;
+        SearchApiInstance = null;
 
         if (string.IsNullOrWhiteSpace(Query))
         {
@@ -109,7 +119,11 @@
                 MaxAmount = MaxAmount
             };
 
-            SearchResult = await ApiClient.SearchAsync(request);
+            var apiResponse = await ApiClient.SearchAsync(request);
+            SearchResult = apiResponse.Result;
+            Backend = apiResponse.Backend;
+            Strategy = apiResponse.Strategy;
+            SearchApiInstance = apiResponse.SearchApiInstance;
         }
         catch (Exception ex)
         {

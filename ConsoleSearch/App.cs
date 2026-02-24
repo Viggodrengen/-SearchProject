@@ -73,11 +73,17 @@ public class App
 
         try
         {
-            var result = await _searchClient.SearchAsync(request);
+            var apiResponse = await _searchClient.SearchAsync(request);
+            var result = apiResponse.Result;
             if (result is null)
             {
                 Console.WriteLine("No response received from API.\n");
                 return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(apiResponse.Backend))
+            {
+                Console.WriteLine($"Served by: {apiResponse.Backend} | strategy: {apiResponse.Strategy} | instance: {apiResponse.SearchApiInstance}");
             }
 
             if (result.Ignored.Count > 0)

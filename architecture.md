@@ -9,14 +9,15 @@ This document describes:
 
 ## 1. Current Solution Architecture
 
-The solution contains 5 projects:
+The solution contains 6 projects:
 
 | Project | Type | Responsibility | Depends on |
 |---|---|---|---|
 | `indexer` | Console app | Crawls `.txt` files, builds reverse index in DB | `Shared`, `SQLite`, `Postgres` |
 | `SearchApi` | ASP.NET Core API | Search logic and DB reads | `Shared`, `SQLite`, `Postgres` |
-| `ConsoleSearch` | Console app | User interaction over HTTP to API | `Shared` |
-| `SearchWebApp` | Blazor app | Web UI over HTTP to API | `Shared` |
+| `SearchLoadBalancer` | ASP.NET Core API | Stateless traffic distribution across SearchApi instances | `Shared` |
+| `ConsoleSearch` | Console app | User interaction over HTTP to load balancer | `Shared` |
+| `SearchWebApp` | Blazor app | Web UI over HTTP to load balancer | `Shared` |
 | `Shared` | Class library | Shared DTOs/models and DB paths | none |
 
 ### 1.1 Project Dependency Graph
@@ -25,11 +26,13 @@ The solution contains 5 projects:
 flowchart LR
     Indexer["indexer (console)"] --> Shared["Shared (class library)"]
     SearchApi["SearchApi (web API)"] --> Shared
+    SearchLoadBalancer["SearchLoadBalancer (web API)"] --> Shared
     ConsoleSearch["ConsoleSearch (console client)"] --> Shared
     SearchWebApp["SearchWebApp (Blazor client)"] --> Shared
 
-    ConsoleSearch -->|"HTTP /api/search"| SearchApi
-    SearchWebApp -->|"HTTP /api/search"| SearchApi
+    ConsoleSearch -->|"HTTP /api/search"| SearchLoadBalancer
+    SearchWebApp -->|"HTTP /api/search"| SearchLoadBalancer
+    SearchLoadBalancer -->|"HTTP /api/search"| SearchApi
 
     Indexer -->|"write index"| DB[("SQLite or Postgres")]
     SearchApi -->|"read index"| DB
@@ -57,26 +60,30 @@ flowchart TD
 
 ### 2.2 Query Flow
 
-1. Client sends `SearchRequest` to `POST /api/search`.
-2. API resolves word ids:
-3. Case-sensitive mode: exact word match.
-4. Case-insensitive mode: all case variants by `lower(word)`.
-5. API ranks documents by number of query terms matched.
-6. API returns top N with missing terms and timings.
+1. Client sends `SearchRequest` to load balancer `POST /api/search`.
+2. Load balancer picks backend with scheduler strategy.
+3. Selected SearchApi resolves word ids:
+4. Case-sensitive mode: exact word match.
+5. Case-insensitive mode: all case variants by `lower(word)`.
+6. SearchApi ranks documents by number of query terms matched.
+7. Result is returned via load balancer with routing headers.
 
 ```mermaid
 sequenceDiagram
     participant U as "User"
     participant C as "Client (Console/Web)"
-    participant A as "SearchApi"
+    participant L as "SearchLoadBalancer"
+    participant A as "SearchApi instance"
     participant D as "SQLite/Postgres"
 
     U->>C: "Enter query + options"
-    C->>A: "POST /api/search"
+    C->>L: "POST /api/search"
+    L->>A: "Forward request"
     A->>D: "Load matching word ids"
     A->>D: "Load docId-wordId matches (Occ)"
     A->>D: "Load doc details for top results"
-    A-->>C: "SearchResult"
+    A-->>L: "SearchResult"
+    L-->>C: "SearchResult + routing headers"
     C-->>U: "Render ranked results"
 ```
 
@@ -86,7 +93,7 @@ AKF scaling summary:
 
 | Axis | Meaning | Current State | Risk | Recommended Direction |
 |---|---|---|---|---|
-| X-axis | Clone same service behind LB | API is stateless enough to replicate | DB becomes bottleneck | Add load balancer + connection pooling + cache |
+| X-axis | Clone same service behind LB | Implemented (`SearchLoadBalancer` + multiple `SearchApi` instances) | DB becomes bottleneck | Add DB tuning + cache + backend health checks |
 | Y-axis | Split by business capability | Partial split exists (`indexer` vs query API) | `SearchApi` can grow into monolith | Split query, indexing control, and admin APIs |
 | Z-axis | Partition data (sharding) | Not implemented | Single DB limits size/throughput | Shard by tenant/domain/time and route queries |
 
@@ -233,4 +240,3 @@ flowchart TB
 3. Introduce query caching and DB optimizations.
 4. Split API responsibilities (Y-axis).
 5. Add shard router and roll out Z-axis partitioning gradually.
-
