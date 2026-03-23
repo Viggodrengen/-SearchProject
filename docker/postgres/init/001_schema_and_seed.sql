@@ -20,9 +20,7 @@ CREATE TABLE IF NOT EXISTS occ (
 CREATE INDEX IF NOT EXISTS word_index ON occ (wordId);
 CREATE INDEX IF NOT EXISTS doc_index ON occ (docId);
 
-TRUNCATE TABLE occ;
-TRUNCATE TABLE word;
-TRUNCATE TABLE document;
+TRUNCATE TABLE occ, word, document RESTART IDENTITY CASCADE;
 
 INSERT INTO document (id, url, idxTime, creationTime) VALUES
   (1, '/docs/mail-1.txt', NOW(), NOW()),
