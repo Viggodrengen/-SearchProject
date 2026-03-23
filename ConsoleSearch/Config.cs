@@ -6,7 +6,7 @@ public class Config
 
     public int MaxAmount { get; set; } = 10;
 
-    public string Database { get; set; } = "sqlite";
+    public string Database { get; set; } = "postgres";
 
     public string ApiBaseUrl { get; set; } = "http://localhost:5075";
 }

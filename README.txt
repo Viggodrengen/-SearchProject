@@ -1,135 +1,179 @@
-SearchProject - X-skalering med Load Balancer
+SearchProject - Modul 9 (Containerization + Loki + Grafana)
 
-Dato: 2026-02-17
+Dato: 2026-03-23
 
 OVERSIGT
 ========
-Projektet bestaar nu af:
+Projektet er opdelt i disse services/projekter:
 
 1) indexer
-   - Indekserer .txt filer i database.
+   - Indekserer .txt-filer i database.
 
 2) SearchApi
-   - Selve soegelogikken (stateless API).
-   - Kan koeres i flere instanser samtidigt.
+   - Stateless soegelogik (kan koere i flere instanser).
+   - Eksponerer /api/search og /api/health.
+   - Logger via NLog til console + Loki.
 
 3) SearchLoadBalancer
-   - Nyt API foran SearchApi-instanser.
-   - Fordeler requests via strategi (default: round-robin).
-   - Exponerer statistik paa fordeling.
+   - API foran SearchApi-instanser.
+   - Fordeler requests (round-robin/random).
+   - Eksponerer /api/search, /api/health og /api/lb/stats.
+   - Logger via NLog til console + Loki.
 
 4) ConsoleSearch
-   - Klient der kalder load balanceren.
+   - Console-klient, kalder load balancer.
 
-5) SearchWebApp
-   - Web-klient (Blazor) der kalder load balanceren.
+5) SearchWebApp (Blazor)
+   - Web-klient, kalder load balancer.
 
 6) Shared
-   - Fælles DTO'er/modeller.
+   - Faelles DTO'er/modeller.
+
+7) Observability stack (Docker)
+   - Postgres
+   - Loki
+   - Grafana (med auto-provisioned Loki datasource + dashboard)
 
 
-HVAD ER LAVET I OPGAVE 1
+DETTE ER LAVET I MODUL-9
 ========================
-1. Nyt projekt: SearchLoadBalancer
-   - POST /api/search (forwarder til backend SearchApi-instanser)
-   - GET /api/health
-   - GET /api/lb/stats
+1. Containerization
+   - Dockerfile til SearchApi, SearchLoadBalancer og SearchWebApp.
+   - docker-compose.yml med:
+     - postgres
+     - loki
+     - grafana
+     - searchapi1 + searchapi2
+     - searchloadbalancer
+     - searchwebapp
 
-2. Scheduler-strategi i load balancer
-   - Round-robin (default)
-   - Random (kan vaelges i appsettings)
+2. Loki-kompatibel logging (NLog)
+   - SearchApi: nlog.config + NLog.Web.AspNetCore + NLog.Targets.Loki.
+   - SearchLoadBalancer: nlog.config + samme pakker.
+   - Logs sendes baade til console og Loki.
 
-3. Synlighed / bevis paa routing
-   - LB svarer med headers:
-     - X-LB-Strategy
-     - X-LB-Backend
-     - X-SearchApi-Instance
-   - LB holder tællere pr backend paa /api/lb/stats
+3. Grafana provisioning
+   - Loki datasource oprettes automatisk ved opstart.
+   - Dashboard "Search Logs Overview" provisioneres automatisk.
 
-4. SearchApi udvidet med instance id
-   - Health endpoint returnerer instanceId
-   - Soege-endpoint saetter X-SearchApi-Instance
-
-5. Klienter peger nu paa load balancer
-   - ConsoleSearch default URL: http://localhost:5075
-   - SearchWebApp default URL: http://localhost:5075
-   - Begge viser hvilken backend der servede requesten
-
-
-HURTIG START (TRIN FOR TRIN)
-============================
-A. (Kun hvis noedvendigt) byg/forny indeks:
-   dotnet run --project /Users/victorrodam/Downloads/SearchProject-1/indexer/indexer.csproj
-
-B. Start to SearchApi instanser i hver sin terminal:
-
-Terminal 1:
-ASPNETCORE_URLS=http://localhost:5017 SEARCH_INSTANCE_ID=search-api-1 dotnet run --no-launch-profile --project /Users/victorrodam/Downloads/SearchProject-1/SearchApi/SearchApi.csproj
-
-Terminal 2:
-ASPNETCORE_URLS=http://localhost:5018 SEARCH_INSTANCE_ID=search-api-2 dotnet run --no-launch-profile --project /Users/victorrodam/Downloads/SearchProject-1/SearchApi/SearchApi.csproj
-
-C. Start load balancer:
-
-Terminal 3:
-dotnet run --project /Users/victorrodam/Downloads/SearchProject-1/SearchLoadBalancer/SearchLoadBalancer.csproj
-
-D. Start en klient:
-
-Console klient (Terminal 4):
-dotnet run --project /Users/victorrodam/Downloads/SearchProject-1/ConsoleSearch/ConsoleSearch.csproj
-
-eller Web klient:
-dotnet run --project /Users/victorrodam/Downloads/SearchProject-1/SearchWebApp/SearchWebApp.csproj
+4. Container-venlig konfiguration
+   - Shared/Paths.cs bruger env-vars:
+     - SEARCH_SQLITE_PATH
+     - SEARCH_POSTGRES_CONNECTION
+   - ConsoleSearch og WebApp default database sat til postgres.
 
 
-SAADAN TESTER DU, AT LOAD BALANCING VIRKER
-==========================================
-1) Tjek health endpoints:
-   curl -s http://localhost:5017/api/health
-   curl -s http://localhost:5018/api/health
-   curl -s http://localhost:5075/api/health
+FORUDSAETNINGER
+===============
+- Docker Desktop (eller Docker Engine + Compose) skal vaere startet.
+- .NET SDK 10 installeret til lokal udvikling udenfor containere.
 
-2) Send flere requests til load balancer og se headers:
-   for i in 1 2 3 4 5 6; do
+
+HURTIG START (DOCKER)
+=====================
+1) Byg og start alt:
+   docker compose up -d --build
+
+2) Tjek at services er oppe:
+   docker compose ps
+
+3) URL'er:
+   - SearchLoadBalancer health:
+     http://localhost:5075/api/health
+   - SearchWebApp:
+     http://localhost:5249
+   - Grafana:
+     http://localhost:3000
+
+4) Grafana login:
+   - Bruger: admin
+   - Password: admin
+
+5) Stop stack:
+   docker compose down
+
+6) Stop + slet volumes (fresh DB):
+   docker compose down -v
+
+
+SAADAN TESTER DU LOAD BALANCING
+===============================
+1) Send 4 requests og se routing-headers:
+
+   for i in 1 2 3 4; do
      echo "REQ-$i"
      curl -s -D - -o /tmp/lb_$i.json \
        -X POST http://localhost:5075/api/search \
        -H "Content-Type: application/json" \
-       -d '{"query":"SoCal","maxAmount":1,"caseSensitive":false,"database":"sqlite"}' \
-       | rg -i "X-LB-Backend|X-LB-Strategy|X-SearchApi-Instance"
+       -d '{"query":"search","maxAmount":1,"caseSensitive":false,"database":"postgres"}' \
+       | rg -i "HTTP/|X-LB-Backend|X-LB-Strategy|X-SearchApi-Instance"
    done
 
    Forventning:
-   - Med round-robin skifter backend mellem search-api-1 og search-api-2.
+   - backend skifter mellem search-api-1 og search-api-2 (round-robin).
 
-3) Se samlet fordeling:
+2) Se statistik:
    curl -s http://localhost:5075/api/lb/stats
 
-   Forventning:
-   - attempts/successes er fordelt cirka ligeligt ved round-robin.
 
-4) Verificer i klient:
-   - ConsoleSearch printer:
-     Served by: <backend> | strategy: <strategy> | instance: <instance-id>
-   - Web viser samme info under resultatet.
+SAADAN TESTER DU LOKI/GRAFANA
+=============================
+1) Generer trafik (fx command i forrige afsnit).
 
+2) Aaben Grafana: http://localhost:3000
 
-KONFIGURATION
-=============
-Load balancer konfiguration findes i:
-/Users/victorrodam/Downloads/SearchProject-1/SearchLoadBalancer/appsettings.json
+3) Ga til dashboard:
+   - SearchProject / Search Logs Overview
 
-Felter:
-- LoadBalancer:Strategy
-  - "round-robin" eller "random"
-- LoadBalancer:BackendTimeoutSeconds
-- LoadBalancer:Backends (liste af backend navn + baseUrl)
+4) Eller ga til Explore og koer query:
+   {app=~"search-api|search-load-balancer"}
+
+5) Forventning:
+   - du kan se logs fra baade SearchApi og SearchLoadBalancer.
+   - labels inkluderer app, instance, level.
 
 
-KENDTE BEGRAENSNINGER (NUVAERENDE VERSION)
-==========================================
-1) LB er in-memory/stateless ift. stats (stats nulstilles ved restart).
-2) Ingen aktiv health-probing endnu (kun failover per request).
-3) Alle SearchApi-instanser laeser samme database (godt til demo af X-skalering, men DB kan blive flaskehals).
+NYTTIGE COMMANDS
+================
+- Se logs fra alle services:
+  docker compose logs -f
 
+- Se kun load balancer logs:
+  docker compose logs -f searchloadbalancer
+
+- Se kun SearchApi instans 1:
+  docker compose logs -f searchapi1
+
+- Genbyg kun en service:
+  docker compose up -d --build searchloadbalancer
+
+
+LOKAL KORSEL UDEN DOCKER (VALGFRIT)
+===================================
+1) Start SearchApi instans 1:
+   ASPNETCORE_URLS=http://localhost:5017 SEARCH_INSTANCE_ID=search-api-1 dotnet run --no-launch-profile --project SearchApi/SearchApi.csproj
+
+2) Start SearchApi instans 2:
+   ASPNETCORE_URLS=http://localhost:5018 SEARCH_INSTANCE_ID=search-api-2 dotnet run --no-launch-profile --project SearchApi/SearchApi.csproj
+
+3) Start SearchLoadBalancer:
+   dotnet run --project SearchLoadBalancer/SearchLoadBalancer.csproj
+
+4) Start klient:
+   - Console: dotnet run --project ConsoleSearch/ConsoleSearch.csproj
+   - Web: dotnet run --project SearchWebApp/SearchWebApp.csproj
+
+
+FEJLSOEGNING
+============
+1) "Cannot connect to the Docker daemon"
+   - Start Docker Desktop og proev igen.
+
+2) Ingen logs i Grafana
+   - Verificer at Loki kører: docker compose ps
+   - Verificer at SearchApi/LB kører: docker compose ps
+   - Kig i service logs for fejl: docker compose logs -f searchapi1 searchloadbalancer
+
+3) Ingen data i Postgres soegning
+   - Seed koeres kun ved init af ny volume.
+   - Koer evt. fresh start: docker compose down -v && docker compose up -d --build

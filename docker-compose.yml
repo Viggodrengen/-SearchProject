@@ -1,0 +1,125 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: search-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: searchdb
+      POSTGRES_USER: search
+      POSTGRES_PASSWORD: search
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U search -d searchdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  loki:
+    image: grafana/loki:3.5.0
+    container_name: search-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    container_name: search-grafana
+    restart: unless-stopped
+    depends_on:
+      - loki
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+
+  searchapi1:
+    build:
+      context: .
+      dockerfile: SearchApi/Dockerfile
+    container_name: search-api-1
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      loki:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      SEARCH_INSTANCE_ID: search-api-1
+      SEARCH_POSTGRES_CONNECTION: Host=postgres;Port=5432;Username=search;Password=search;Database=searchdb
+      LOKI_URL: http://loki:3100
+      LOKI_APP: search-api
+    ports:
+      - "5017:8080"
+
+  searchapi2:
+    build:
+      context: .
+      dockerfile: SearchApi/Dockerfile
+    container_name: search-api-2
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      loki:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      SEARCH_INSTANCE_ID: search-api-2
+      SEARCH_POSTGRES_CONNECTION: Host=postgres;Port=5432;Username=search;Password=search;Database=searchdb
+      LOKI_URL: http://loki:3100
+      LOKI_APP: search-api
+    ports:
+      - "5018:8080"
+
+  searchloadbalancer:
+    build:
+      context: .
+      dockerfile: SearchLoadBalancer/Dockerfile
+    container_name: search-load-balancer
+    restart: unless-stopped
+    depends_on:
+      - searchapi1
+      - searchapi2
+      - loki
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      LB_INSTANCE_ID: search-load-balancer-1
+      LOKI_URL: http://loki:3100
+      LOKI_APP: search-load-balancer
+      LoadBalancer__Strategy: round-robin
+      LoadBalancer__BackendTimeoutSeconds: 10
+      LoadBalancer__Backends__0__Name: search-api-1
+      LoadBalancer__Backends__0__BaseUrl: http://searchapi1:8080
+      LoadBalancer__Backends__1__Name: search-api-2
+      LoadBalancer__Backends__1__BaseUrl: http://searchapi2:8080
+    ports:
+      - "5075:8080"
+
+  searchwebapp:
+    build:
+      context: .
+      dockerfile: SearchWebApp/Dockerfile
+    container_name: search-web-app
+    restart: unless-stopped
+    depends_on:
+      - searchloadbalancer
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      SearchApi__BaseUrl: http://searchloadbalancer:8080
+      UseHttpsRedirection: "false"
+    ports:
+      - "5249:8080"
+
+volumes:
+  postgres-data:
+  grafana-data:

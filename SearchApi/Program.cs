@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using NLog.Web;
 using SearchApi.Search;
 using Shared.Model;
 
@@ -6,6 +8,8 @@ var instanceId = builder.Configuration["SearchApi:InstanceId"]
     ?? Environment.GetEnvironmentVariable("SEARCH_INSTANCE_ID")
     ?? $"search-api-{Environment.ProcessId}";
 
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 builder.Services.AddOpenApi();
 builder.Services.AddSingleton<SearchService>();
 
@@ -15,6 +19,20 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.Use(async (context, next) =>
+{
+    var sw = Stopwatch.StartNew();
+    await next();
+    sw.Stop();
+
+    app.Logger.LogInformation(
+        "HTTP {Method} {Path} => {StatusCode} in {ElapsedMs} ms",
+        context.Request.Method,
+        context.Request.Path,
+        context.Response.StatusCode,
+        sw.ElapsedMilliseconds);
+});
 
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok", instanceId }))
     .WithName("Health");

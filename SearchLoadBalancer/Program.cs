@@ -1,10 +1,13 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Options;
+using NLog.Web;
 using SearchLoadBalancer.LoadBalancing;
 using Shared.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 builder.Services.AddOpenApi();
 builder.Services.Configure<LoadBalancerOptions>(builder.Configuration.GetSection(LoadBalancerOptions.SectionName));
 builder.Services.AddSingleton<IBackendScheduler, RoundRobinBackendScheduler>();
@@ -68,6 +71,7 @@ app.MapPost("/api/search", async (
     {
         var backend = backends[(startIndex + attempt) % backends.Count];
         statsStore.RecordAttempt(backend);
+        app.Logger.LogInformation("Routing request to backend {BackendName} ({BackendBaseUrl})", backend.Name, backend.BaseUrl);
 
         try
         {
