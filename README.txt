@@ -177,3 +177,15 @@ FEJLSOEGNING
 3) Ingen data i Postgres soegning
    - Seed koeres kun ved init af ny volume.
    - Koer evt. fresh start: docker compose down -v && docker compose up -d --build
+
+
+DOKUMENTATION
+=============
+- Samlet dokumentation ligger nu under `docs/`.
+- Eksamen/plan:
+  - `TODO.md`
+  - `docs/exam/projektdefinition_eksamen_searchproject_v0_2.md`
+- Diagrammer:
+  - `docs/diagrams/c4_container_searchproject.puml`
+  - `docs/diagrams/uml_class_cache_resilience.puml`
+  - `docs/diagrams/uml_deployment_searchproject.puml`

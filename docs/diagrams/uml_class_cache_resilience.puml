@@ -1,0 +1,81 @@
+@startuml UML_Class_Cache_And_Resilience
+skinparam classAttributeIconSize 0
+
+class SearchRequest {
+  +Query : string
+  +Database : string
+  +CaseSensitive : bool
+  +MaxAmount : int
+}
+
+class SearchResult {
+  +NoOfHits : int
+  +TimeUsed : TimeSpan
+  +DocumentHits : List<DocumentHit>
+}
+
+interface ISearchService {
+  +Search(request : SearchRequest) : SearchResult
+}
+
+class SearchService {
+  +Search(request : SearchRequest) : SearchResult
+}
+
+class CachedSearchService {
+  +Search(request : SearchRequest) : SearchResult
+}
+
+class CacheKeyBuilder {
+  +Build(request : SearchRequest) : string
+}
+
+interface ICacheProvider {
+  +TryGet(key : string) : SearchResult?
+  +Set(key : string, result : SearchResult, ttlSeconds : int)
+  +Remove(key : string)
+}
+
+class RedisCacheProvider
+
+interface ISearchRepository {
+  +SearchInDatabase(request : SearchRequest) : SearchResult
+}
+
+class PostgresSearchRepository
+class SqliteSearchRepository
+
+class PerformanceTestRunner {
+  +RunBaseline()
+  +RunCacheEnabled()
+  +RunScaleOut()
+}
+
+class FailoverTestRunner {
+  +RunApiInstanceFailure()
+  +RunRecoveryVerification()
+}
+
+class TestReport {
+  +P50Ms : double
+  +P95Ms : double
+  +P99Ms : double
+  +ThroughputRps : double
+  +ErrorRate : double
+}
+
+SearchService ..|> ISearchService
+CachedSearchService ..|> ISearchService
+CachedSearchService --> ISearchService : wraps
+CachedSearchService --> ICacheProvider
+CachedSearchService --> CacheKeyBuilder
+
+SearchService --> ISearchRepository
+PostgresSearchRepository ..|> ISearchRepository
+SqliteSearchRepository ..|> ISearchRepository
+RedisCacheProvider ..|> ICacheProvider
+
+PerformanceTestRunner --> TestReport
+FailoverTestRunner --> TestReport
+
+@enduml

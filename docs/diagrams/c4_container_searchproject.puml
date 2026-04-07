@@ -1,0 +1,45 @@
+@startuml C4_Container_SearchProject
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_LEFT_RIGHT()
+
+Person(user, "Bruger", "Søger via Web/Console")
+Person(ops, "Driftsansvarlig", "Overvåger performance og drift")
+Person(tester, "Test/Dev", "Kører performance- og failover-tests")
+
+System_Boundary(search, "SearchProject") {
+  Container(web, "SearchWebApp", "Blazor (.NET)", "Web UI til søgning")
+  Container(console, "ConsoleSearch", ".NET Console", "CLI klient")
+  Container(lb, "SearchLoadBalancer", "ASP.NET Core", "Fordeler requests til SearchApi-instanser")
+  Container(api, "SearchApi (xN)", "ASP.NET Core", "Søgelogik med cache-aside")
+  Container(indexer, "Indexer", ".NET Console/Worker", "Indekserer dokumenter")
+
+  ContainerDb(redis, "Redis", "In-memory key/value", "Cache af søgeresultater")
+  ContainerDb(pg, "Postgres", "SQL", "Søgeindex og metadata")
+
+  Container(loki, "Loki", "Log storage", "Central logindsamling")
+  Container(grafana, "Grafana", "Dashboard", "Visualisering af logs og testmålinger")
+
+  Container(testsuite, "Performance/Failover Test Suite", "k6 + scripts", "Belastning, latency- og failover-scenarier")
+}
+
+Rel(user, web, "Søger", "HTTPS")
+Rel(user, console, "Søger", "CLI/HTTP")
+Rel(console, lb, "POST /api/search", "HTTP")
+Rel(web, lb, "POST /api/search", "HTTP")
+Rel(lb, api, "Forwarder request", "HTTP")
+Rel(api, redis, "Get/Set cache", "RESP")
+Rel(api, pg, "Læser data", "SQL")
+Rel(indexer, pg, "Skriver index", "SQL")
+
+Rel(api, loki, "Sender logs", "HTTP")
+Rel(lb, loki, "Sender logs", "HTTP")
+Rel(indexer, loki, "Sender logs", "HTTP")
+Rel(grafana, loki, "Query logs")
+Rel(ops, grafana, "Monitorering")
+
+Rel(tester, testsuite, "Starter testkørsler")
+Rel(testsuite, lb, "Syntetisk trafik", "HTTP")
+Rel(testsuite, grafana, "Aflæser målinger")
+
+@enduml

@@ -1,0 +1,47 @@
+@startuml UML_Deployment_SearchProject
+skinparam shadowing false
+skinparam componentStyle rectangle
+
+node "Developer machine" {
+  node "Test Runner" as test {
+    artifact "k6 / scripts" as k6
+  }
+
+  node "Minikube Cluster" {
+    node "Namespace: searchproject" {
+      node "Pod: search-webapp" as web
+      node "Pod: search-load-balancer" as lb
+      node "Deployment: search-api (replicas=2..N)" as api
+
+      node "StatefulSet: redis" as redis
+      node "StatefulSet: postgres-primary" as pgPrimary
+      node "StatefulSet: postgres-replica (plan/PoC)" as pgReplica
+
+      node "Pod: loki" as loki
+      node "Pod: grafana" as grafana
+    }
+  }
+}
+
+web --> lb : HTTP /api/search
+lb --> api : HTTP
+api --> redis : cache GET/SET
+api --> pgPrimary : SQL read
+api --> pgReplica : SQL read (fremtidig/påvist)
+
+k6 --> lb : load + latency + failover tests
+api --> loki : logs
+lb --> loki : logs
+web --> loki : logs
+
+grafana --> loki : query logs
+k6 --> grafana : test resultater
+
+note right of pgPrimary
+  Z-akse anvisning:
+  1) Introducer shard key (fx tenant/domæne)
+  2) Tilføj shard-router i API-lag
+  3) Brug read replicas til tunge læseforespørgsler
+end note
+
+@enduml
