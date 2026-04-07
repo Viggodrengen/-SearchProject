@@ -1,4 +1,4 @@
-# Projektdefinition – Eksamensprojekt (udkast v0.2)
+# Projektdefinition – Eksamensprojekt
 
 **Fag:** Arkitekturprincipper i praksis (6. semester)  
 **Periode:** April–maj 2026  
@@ -6,45 +6,39 @@
 **Projekt:** Videreudvikling af eksisterende SearchProject
 
 ## Titel
-**SearchProject v2: Redis-caching, performance/failover tests og z-akse databaseplan**
+**SearchProject v2: caching, performance/failover og database-skalering**
 
-## Problem og formål
-Vi bygger videre på den nuværende løsning, hvor flere arkitekturprincipper allerede er anvendt:
-- modulær/mikroservice-inspireret opdeling (`SearchApi`, `SearchLoadBalancer`, `SearchWebApp`, `Indexer`)
-- **x-akse skalering** via flere `SearchApi`-instanser bag load balancer
-- observability via **Loki + Grafana**
+## Formål og udgangspunkt
+Projektet tager udgangspunkt i den eksisterende løsning og viderefører de arkitekturvalg, der allerede er implementeret. Løsningen er opdelt i flere services, skalerer horisontalt på API-laget og anvender monitorering i drift.  
 
-Projektets formål er at kvalitetssikre arkitekturen yderligere med fokus på **drift, performance og robusthed**.
+Formålet er at styrke kvaliteten af den nuværende arkitektur med fokus på drift, robusthed og dokumenteret performance.
 
-## Features vi implementerer (walking skeleton)
-1. **Tydelig caching-komponent (Redis)**  
-   `SearchApi` udvides med cache-aside strategi for `/api/search` (cache key på query + options, TTL, cache-hit/miss logging).
+## Fokus i projektperioden
+### 1) Caching som tydelig arkitekturkomponent
+Søgeløsningen udvides med en separat caching-komponent (Redis), så ofte gentagne forespørgsler kan håndteres mere effektivt og aflaste databasen.
 
-2. **Kvalificerede tests (performance/latency)**  
-   Vi laver reproducerbare tests (fx k6/JMeter) med baseline vs. cache-enabled og dokumenterer p50/p95/p99, throughput og fejlrate.
+### 2) Performance-, latency- og failover-scenarier
+Der gennemføres strukturerede tests, hvor baseline sammenholdes med den udvidede løsning. Der arbejdes både med svartider, stabilitet under belastning og håndtering af fejl i en eller flere service-instanser.
 
-3. **Failover-tests**  
-   Vi tester driftsscenarier hvor en `SearchApi`-instans fejler under belastning, og verificerer at load balancer fortsat leverer svar.
+### 3) Z-akse anvisning for database
+Der udarbejdes en konkret og begrundet anvisning for dataskalering på z-aksen, inklusive en realistisk migrationsretning.
 
-4. **Konkret z-akse anvisning for database**  
-   Vi beskriver og begrunder en skaleringsstrategi for data (partitionering/sharding + read-replica strategi) samt migrationsplan.
+### 4) Drift og miljø
+Udvikling og demo gennemføres i containerbaseret miljø. Derudover beskrives deployment-retning for Kubernetes/Minikube som del af den arkitekturfaglige dokumentation.
 
-## Arkitektur og drift (inkl. Kubernetes-tanke)
-- Primær demo-miljø: Docker Compose (hurtig og stabil demo).
-- Vi medtager **Kubernetes/Minikube deployment-design** i UML deployment-diagrammet og evt. et lille PoC-manifest for kernekomponenter.
-- Observability udvides med cache-metrics og testmålinger i Grafana.
+## Arkitekturprincipper som del af leverancen
+Allerede implementerede principper indgår aktivt i eksamensgrundlaget:
+- modulær serviceopdeling
+- x-akse skalering
+- monitorering/observability
 
-## Opfyldelse af generelle krav
-- **.NET/C#**: implementering i .NET 10/C#.
-- **Driftsmiljø + skalering**: containerbaseret miljø, x-akse i drift, z-akse konkret anvisning.
-- **Overvågning**: Loki/Grafana anvendes aktivt i demo og analyse.
-- **Fejltolerance/ydeevne**: performance- og failover-tests indgår som central leverance.
-- **Caching**: Redis indgår som eksplicit arkitekturkomponent.
+Disse bruges både i den praktiske demo og i den mundtlige gennemgang af arkitekturvalg og konsekvenser.
 
 ## Leverancer til eksamen
-- Kørende demo (search + cache + failover-scenarie + monitorering).
-- Arkitekturpræsentation med:
-  - **C4 Container:** `docs/diagrams/c4_container_searchproject.puml`
-  - **UML Class:** `docs/diagrams/uml_class_cache_resilience.puml`
-  - **UML Deployment (Minikube-orienteret):** `docs/diagrams/uml_deployment_searchproject.puml`
-- Kort testrapport med performance/latency-resultater og anbefalinger.
+- Kørende demonstration af den samlede løsning i drift
+- Dokumentation af de eksisterende og videreudviklede arkitekturprincipper
+- Arkitekturdiagrammer til præsentation og dialog:
+  - C4 containerdiagram
+  - UML class diagram
+  - UML deployment diagram
+- Kort testrapport med resultater fra performance-, latency- og failover-scenarier
