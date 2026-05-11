@@ -1,0 +1,38 @@
+@startuml
+title SearchProject v2 - Simple Deployment Diagram
+skinparam linetype ortho
+
+node "User Browser" as browser
+
+node "SearchWebApp\n(Blazor Server)" as webapp {
+  artifact "SearchWebApp.dll"
+}
+
+node "SearchLoadBalancer\n(API)" as lb {
+  artifact "SearchLoadBalancer.dll"
+}
+
+node "SearchApi Instance A" as apiA {
+  artifact "SearchApi.dll"
+}
+
+node "SearchApi Instance B" as apiB {
+  artifact "SearchApi.dll"
+}
+
+node "Redis Cache" as redis {
+  artifact "Redis"
+}
+
+database "PostgreSQL" as db
+
+browser --> webapp : HTTPS
+webapp --> lb : HTTP /api/search
+lb --> apiA : HTTP /api/search
+lb --> apiB : HTTP /api/search
+apiA --> redis : cache get/set
+apiB --> redis : cache get/set
+apiA --> db : SQL
+apiB --> db : SQL
+
+@enduml

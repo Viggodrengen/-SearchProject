@@ -1,7 +1,5 @@
 # UML Diagrammer
 
-Samlet UML-materiale:
-- `.puml` (PlantUML kilde)
-- `.xml` (draw.io XML)
-- `.png` / `.svg` (eksporter)
-- `.md` (forklaringsnoter)
+Denne mappe indeholder nu kun deployment-diagrammet:
+
+- `uml-deployment-simple-v2.puml` / `uml-deployment-simple-v2.png`
