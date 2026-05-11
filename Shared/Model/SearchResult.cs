@@ -14,4 +14,5 @@ public class SearchResult
     public List<string> Ignored { get; set; } = new();
 
     public TimeSpan TimeUsed { get; set; }
+    
 }
