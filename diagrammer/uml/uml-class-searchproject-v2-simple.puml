@@ -1,0 +1,148 @@
+@startuml
+!pragma layout smetana
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+package "SearchApi.Search (to-be v2)" {
+  class SearchService {
+    + Search(request: SearchRequest): SearchResult
+  }
+
+  class "CachedSearchService <<planned>>" as CachedSearchService {
+    + Search(request: SearchRequest): SearchResult
+  }
+
+  class SearchLogic {
+    + Search(query: string[], maxAmount: int): SearchResult
+  }
+
+  class SearchConfig {
+    + CaseSensitive: bool
+  }
+
+  interface IDatabase {
+    + GetWordIds(word, caseSensitive): List
+    + GetDocDetails(docId): BEDocument
+    + GetDocumentWordMatches(wordIds): Dictionary
+  }
+
+  class DatabaseSqlite
+  class DatabasePostgres
+
+  class DatabaseFactory {
+    + Create(database: string): IDatabase
+  }
+
+  interface "IQueryCache <<planned>>" as IQueryCache {
+    + TryGet(key): SearchResult
+    + Set(key, value, ttl)
+  }
+
+  class "RedisQueryCache <<planned>>" as RedisQueryCache
+
+  class "CacheKeyBuilder <<planned>>" as CacheKeyBuilder {
+    + Build(request, shard): string
+  }
+
+  interface "IZAxisRouter <<planned>>" as IZAxisRouter {
+    + ResolveShard(request): string
+  }
+
+  class "TenantShardRouter <<planned>>" as TenantShardRouter
+
+  interface "IMetricsRecorder <<planned>>" as IMetricsRecorder {
+    + RecordCacheHit()
+    + RecordCacheMiss()
+    + RecordLatency(ms)
+  }
+}
+
+package "SearchLoadBalancer.LoadBalancing" {
+  interface IBackendScheduler {
+    + Name: string
+    + GetStartIndex(count): int
+  }
+
+  class RoundRobinBackendScheduler
+  class RandomBackendScheduler
+
+  class BackendSchedulerFactory {
+    + Create(strategy): IBackendScheduler
+  }
+
+  class LoadBalancerOptions {
+    + Strategy: string
+    + BackendTimeoutSeconds: int
+    + Backends: List
+  }
+
+  class BackendEndpoint {
+    + Name: string
+    + BaseUrl: string
+  }
+
+  class LoadBalancerStatsStore {
+    + RecordAttempt()
+    + RecordSuccess()
+    + RecordFailure()
+    + Snapshot(): LoadBalancerStatsSnapshot
+  }
+}
+
+package "Shared.Model" {
+  class SearchRequest {
+    + Query: string
+    + MaxAmount: int
+    + CaseSensitive: bool
+    + Database: string
+    + TenantKey: string
+  }
+
+  class SearchResult {
+    + Query: string[]
+    + NoOfHits: int
+    + DocumentHits: List
+    + Ignored: List
+    + TimeUsed: TimeSpan
+    + CacheHit: bool
+  }
+
+  class DocumentHit {
+    + Document: BEDocument
+    + NoOfHits: int
+    + Missing: List
+  }
+
+  class BEDocument {
+    + Id: int
+    + Url: string
+    + IdxTime: DateTime
+    + CreationTime: DateTime
+  }
+}
+
+SearchService --> CachedSearchService : delegates
+CachedSearchService --> SearchLogic : uses
+CachedSearchService --> IQueryCache : uses
+CachedSearchService --> CacheKeyBuilder : build key
+CachedSearchService --> IZAxisRouter : resolve shard
+CachedSearchService --> IMetricsRecorder : record
+SearchLogic --> IDatabase : uses
+SearchLogic --> SearchConfig : uses
+DatabaseFactory --> IDatabase : create
+DatabaseSqlite ..|> IDatabase
+DatabasePostgres ..|> IDatabase
+RedisQueryCache ..|> IQueryCache
+TenantShardRouter ..|> IZAxisRouter
+
+BackendSchedulerFactory --> IBackendScheduler : strategy
+RoundRobinBackendScheduler ..|> IBackendScheduler
+RandomBackendScheduler ..|> IBackendScheduler
+LoadBalancerOptions *-- "1..*" BackendEndpoint
+LoadBalancerStatsStore --> BackendEndpoint : tracks
+
+CachedSearchService --> SearchRequest : input
+CachedSearchService --> SearchResult : output
+SearchResult *-- "0..*" DocumentHit
+DocumentHit --> BEDocument
+@enduml

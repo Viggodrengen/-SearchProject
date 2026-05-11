@@ -1,0 +1,81 @@
+@startuml
+!pragma layout smetana
+skinparam linetype ortho
+
+object "req1:SearchRequest" as req1 #DCFCE7 {
+  Query = "energy market"
+  MaxAmount = 20
+  CaseSensitive = false
+  Database = "postgres"
+  TenantKey = "group-a" <<planned>>
+}
+
+object "web1:SearchWebApp" as web1 #D8EAFE
+object "lb1:SearchLoadBalancer" as lb1 #D8EAFE
+object "scheduler1:RoundRobinBackendScheduler" as scheduler1 #D8EAFE {
+  name = "round-robin"
+  startIndex = 0
+}
+
+object "backend1:BackendEndpoint" as backend1 #D8EAFE {
+  name = "search-api-1"
+  baseUrl = "http://searchapi1:8080"
+}
+
+object "api1:SearchApiInstance" as api1 #D8EAFE {
+  instanceId = "search-api-1"
+}
+
+object "cachedSvc:CachedSearchService <<planned>>" as cachedSvc #FFF3C4
+object "keyBuilder1:CacheKeyBuilder <<planned>>" as keyBuilder1 #FFF3C4 {
+  key = "group-a|postgres-a|energy market|20|false"
+}
+
+object "cache1:RedisQueryCache <<planned>>" as cache1 #FFF3C4 {
+  cacheHit = false
+  ttl = 300s
+}
+
+object "router1:TenantShardRouter <<planned>>" as router1 #FFF3C4 {
+  resolve(req1) = "postgres-a"
+}
+
+object "logic1:SearchLogic" as logic1 #D8EAFE
+object "db1:DatabasePostgres" as db1 #A7F3D0 {
+  shard = "postgres-a"
+}
+
+object "result1:SearchResult" as result1 #DCFCE7 {
+  NoOfHits = 42
+  CacheHit = false <<planned>>
+  TimeUsed = 72 ms
+}
+
+object "resp1:SearchApiResponse" as resp1 #DCFCE7 {
+  Backend = "search-api-1"
+  Strategy = "round-robin"
+  X-SearchApi-Instance = "search-api-1"
+}
+
+object "metrics1:MetricsSnapshot <<planned>>" as metrics1 #FFF3C4 {
+  cacheMiss = 1
+  p95 = 110 ms
+}
+
+req1 --> web1 : 1) submit request
+web1 --> lb1 : 2) POST /api/search
+lb1 --> scheduler1 : 3) pick backend
+scheduler1 --> backend1 : 4) target
+backend1 --> api1 : 5) route
+api1 --> cachedSvc : 6) delegate
+cachedSvc --> keyBuilder1 : 7) build key
+cachedSvc --> cache1 : 8) cache lookup
+cachedSvc --> router1 : 9) shard resolve
+cachedSvc --> logic1 : 10) execute
+logic1 --> db1 : 11) query shard
+logic1 --> result1 : 12) produce result
+result1 --> cache1 : 13) write cache
+result1 --> resp1 : 14) headers + body
+resp1 --> web1 : 15) return
+cachedSvc --> metrics1 : record miss + latency
+@enduml

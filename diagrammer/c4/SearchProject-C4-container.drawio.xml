@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-07T00:00:00.000Z" agent="Codex" version="26.0.0" type="device">
+  <diagram id="searchproject-c4-container" name="C4 Container">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="760" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="searchproject" value="SearchProject v2 [Software System]" style="swimlane;html=1;whiteSpace=wrap;startSize=32;horizontal=1;container=1;collapsible=0;recursiveResize=0;rounded=1;fillColor=#FFFFFF;strokeColor=#2F3746;fontColor=#313A4C;fontStyle=1;align=left;spacingLeft=10;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="245" y="70" width="890" height="600" as="geometry"/>
+        </mxCell>
+        <mxCell id="user" value="&lt;b&gt;Bruger&lt;/b&gt;&lt;br&gt;[Person]&lt;br&gt;&lt;br&gt;Søger i tekstfiler&lt;br&gt;og ser demo/drift" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;align=center;metaEdit=1;points=[[0.5,0,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0]];fillColor=#08427B;fontColor=#FFFFFF;strokeColor=#073763;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="120" width="150" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="web" value="&lt;b&gt;SearchWebApp&lt;/b&gt;&lt;br&gt;[Container: Blazor]&lt;br&gt;&lt;br&gt;Browserbaseret UI&lt;br&gt;sender søgninger" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2F72AF;fontColor=#FFFFFF;fontSize=11;arcSize=8;spacing=6;" vertex="1" parent="searchproject">
+          <mxGeometry x="65" y="65" width="180" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="console" value="&lt;b&gt;ConsoleSearch&lt;/b&gt;&lt;br&gt;[Container: .NET CLI]&lt;br&gt;&lt;br&gt;Console-klient&lt;br&gt;sender søgninger" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2F72AF;fontColor=#FFFFFF;fontSize=11;arcSize=8;spacing=6;" vertex="1" parent="searchproject">
+          <mxGeometry x="65" y="275" width="180" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="lb" value="&lt;b&gt;SearchLoadBalancer&lt;/b&gt;&lt;br&gt;[Container: ASP.NET Core]&lt;br&gt;&lt;br&gt;Round-robin/failover&lt;br&gt;router requests" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2F72AF;fontColor=#FFFFFF;fontSize=11;arcSize=8;spacing=6;" vertex="1" parent="searchproject">
+          <mxGeometry x="315" y="170" width="190" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="api" value="&lt;b&gt;SearchApi&lt;/b&gt;&lt;br&gt;[Container: ASP.NET Core]&lt;br&gt;&lt;br&gt;2 stateless replikaer&lt;br&gt;søgelogik" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2F72AF;fontColor=#FFFFFF;fontSize=11;arcSize=8;spacing=6;" vertex="1" parent="searchproject">
+          <mxGeometry x="580" y="170" width="190" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="cache" value="&lt;b&gt;Redis cache&lt;/b&gt;&lt;br&gt;[Container: Redis]&lt;br&gt;&lt;br&gt;Planlagt v2&lt;br&gt;hot query cache" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=#F6C85F;strokeColor=#9B6500;fontColor=#1F2937;fontSize=11;arcSize=8;spacing=6;" vertex="1" parent="searchproject">
+          <mxGeometry x="580" y="335" width="190" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="db" value="&lt;b&gt;Postgres searchdb&lt;/b&gt;&lt;br&gt;[Container: PostgreSQL]&lt;br&gt;&lt;br&gt;word, document&lt;br&gt;Occ reverse index" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#2D8C7B;strokeColor=#1D5E53;fontColor=#FFFFFF;fontSize=11;spacing=6;" vertex="1" parent="searchproject">
+          <mxGeometry x="315" y="435" width="190" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="indexer" value="&lt;b&gt;indexer&lt;/b&gt;&lt;br&gt;[Container: .NET job]&lt;br&gt;&lt;br&gt;Crawler .txt filer&lt;br&gt;skriver reverse index" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2F72AF;fontColor=#FFFFFF;fontSize=11;arcSize=8;spacing=6;" vertex="1" parent="searchproject">
+          <mxGeometry x="65" y="450" width="180" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="observability" value="&lt;b&gt;Loki + Grafana&lt;/b&gt;&lt;br&gt;[Container: Observability]&lt;br&gt;&lt;br&gt;Lagrer logs&lt;br&gt;viser dashboards" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#657184;strokeColor=#4B5563;fontColor=#FFFFFF;fontSize=11;arcSize=8;spacing=6;" vertex="1" parent="searchproject">
+          <mxGeometry x="580" y="465" width="190" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_1" value="Uses&lt;br&gt;[Browser/HTTP]" style="endArrow=block;endFill=1;html=1;rounded=0;dashed=1;dashPattern=7 6;strokeWidth=2;strokeColor=#6B7280;fontSize=10;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="user" target="web">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_2" value="Uses&lt;br&gt;[CLI]" style="endArrow=block;endFill=1;html=1;rounded=0;dashed=1;dashPattern=7 6;strokeWidth=2;strokeColor=#6B7280;fontSize=10;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="user" target="console">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="250" y="226"/>
+              <mxPoint x="250" y="398"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_3" value="Sends search&lt;br&gt;[POST /api/search]" style="endArrow=block;endFill=1;html=1;rounded=0;dashed=1;dashPattern=7 6;strokeWidth=2;strokeColor=#6B7280;fontSize=10;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="web" target="lb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="188"/>
+              <mxPoint x="525" y="276"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_4" value="Sends search&lt;br&gt;[POST /api/search]" style="endArrow=block;endFill=1;html=1;rounded=0;dashed=1;dashPattern=7 6;strokeWidth=2;strokeColor=#6B7280;fontSize=10;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="console" target="lb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="398"/>
+              <mxPoint x="525" y="320"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_5" value="Routes request&lt;br&gt;[round-robin/failover]" style="endArrow=block;endFill=1;html=1;rounded=0;dashed=1;dashPattern=7 6;strokeWidth=2;strokeColor=#6B7280;fontSize=10;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="lb" target="api">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_6" value="Reads/writes&lt;br&gt;[cached results]" style="endArrow=block;endFill=1;html=1;rounded=0;dashed=1;dashPattern=2 6;strokeWidth=2;strokeColor=#6B7280;fontSize=10;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="api" target="cache">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_7" value="Reads&lt;br&gt;[reverse index]" style="endArrow=block;endFill=1;html=1;rounded=0;dashed=1;dashPattern=7 6;strokeWidth=2;strokeColor=#6B7280;fontSize=10;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="api" target="db">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="785" y="322"/>
+              <mxPoint x="785" y="560"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_8" value="Writes&lt;br&gt;[reverse index]" style="endArrow=block;endFill=1;html=1;rounded=0;dashed=1;dashPattern=7 6;strokeWidth=2;strokeColor=#6B7280;fontSize=10;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="indexer" target="db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_9" value="Logs&lt;br&gt;[NLog]" style="endArrow=block;endFill=1;html=1;rounded=0;dashed=1;dashPattern=7 6;strokeWidth=2;strokeColor=#6B7280;fontSize=10;labelBackgroundColor=#FFFFFF;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="api" target="observability">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1050" y="298"/>
+              <mxPoint x="1050" y="582"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

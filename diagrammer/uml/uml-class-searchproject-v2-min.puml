@@ -1,0 +1,30 @@
+@startuml
+!pragma layout smetana
+skinparam linetype ortho
+
+package "SearchApi (v2 target)" {
+  class SearchService
+  class SearchLogic
+  interface IDatabase
+  class DatabasePostgres
+  class DatabaseSqlite
+  class "CachedSearchService <<planned>>" as CachedSearchService
+  interface "IQueryCache <<planned>>" as IQueryCache
+}
+
+package "Shared.Model" {
+  class SearchRequest
+  class SearchResult
+  class DocumentHit
+}
+
+SearchService --> CachedSearchService : uses
+CachedSearchService --> SearchLogic : executes
+CachedSearchService --> IQueryCache : cache
+SearchLogic --> IDatabase : queries
+DatabasePostgres ..|> IDatabase
+DatabaseSqlite ..|> IDatabase
+SearchService --> SearchRequest
+SearchService --> SearchResult
+SearchResult *-- "0..*" DocumentHit
+@enduml

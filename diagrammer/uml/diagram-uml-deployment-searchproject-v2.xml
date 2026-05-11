@@ -1,0 +1,133 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="uml-deploy-compose-v2" name="UML Deployment - Compose v2 (To-Be)">
+    <mxGraphModel dx="1089" dy="641" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2300" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E2E8F0;strokeColor=#334155;fontStyle=1;" value="SearchProject v2 deployment target (Docker Compose)" vertex="1">
+          <mxGeometry height="40" width="760" x="20" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#B45309;" value="Yellow nodes = planned v2 additions" vertex="1">
+          <mxGeometry height="40" width="320" x="800" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="client" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;" value="Client node\nBrowser / Console client" vertex="1">
+          <mxGeometry height="90" width="220" x="20" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="host" parent="1" style="swimlane;html=1;whiteSpace=wrap;startSize=34;rounded=1;dashed=1;dashPattern=6 4;fillColor=#F8FAFC;strokeColor=#475569;fontStyle=1;" value="Deployment node\nDocker host (compose network: search-net)" vertex="1">
+          <mxGeometry height="980" width="1940" x="280" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="web" parent="host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;" value="Container\nsearchwebapp\nimage: SearchWebApp\nport: 5249-&gt;8080" vertex="1">
+          <mxGeometry height="110" width="240" x="40" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="lb" parent="host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;" value="Container\nsearchloadbalancer\nimage: SearchLoadBalancer\nport: 5075-&gt;8080" vertex="1">
+          <mxGeometry height="110" width="260" x="340" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="api1" parent="host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;" value="Container\nsearchapi1\nimage: SearchApi\nport: 5017-&gt;8080" vertex="1">
+          <mxGeometry height="110" width="220" x="660" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="api2" parent="host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;" value="Container\nsearchapi2\nimage: SearchApi\nport: 5018-&gt;8080" vertex="1">
+          <mxGeometry height="110" width="220" x="920" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="redis" parent="host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#B45309;dashed=1;dashPattern=6 3;" value="Container\nredis-cache &lt;&lt;planned&gt;&gt;\nimage: redis:7\nport: 6379" vertex="1">
+          <mxGeometry height="110" width="240" x="1180" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="postgresA" parent="host" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#A7F3D0;strokeColor=#047857;" value="Container\npostgres-a\nimage: postgres:16\nport: 5432\nrole: primary shard A" vertex="1">
+          <mxGeometry height="120" width="260" x="660" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="postgresB" parent="host" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FEF3C7;strokeColor=#B45309;dashed=1;dashPattern=6 3;" value="Container\npostgres-b &lt;&lt;planned&gt;&gt;\nimage: postgres:16\nport: 5433 internal\nrole: shard B" vertex="1">
+          <mxGeometry height="120" width="260" x="960" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="loki" parent="host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#6D28D9;" value="Container\nloki\nport: 3100" vertex="1">
+          <mxGeometry height="90" width="220" x="40" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="grafana" parent="host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#6D28D9;" value="Container\ngrafana\nport: 3000\nreads: Loki + Prometheus" vertex="1">
+          <mxGeometry height="90" width="240" x="300" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="prom" parent="host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#B45309;dashed=1;dashPattern=6 3;" value="Container\nprometheus &lt;&lt;planned&gt;&gt;\nport: 9090\nscrape: /metrics" vertex="1">
+          <mxGeometry height="90" width="240" x="580" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="otel" parent="host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#B45309;dashed=1;dashPattern=6 3;" value="Container\notel-collector &lt;&lt;planned&gt;&gt;\noptional bridge for metrics/traces" vertex="1">
+          <mxGeometry height="90" width="300" x="860" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="pvA" parent="host" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#DCFCE7;strokeColor=#166534;" value="Volume\npostgres-data-a" vertex="1">
+          <mxGeometry height="70" width="200" x="660" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="pvB" parent="host" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FEF3C7;strokeColor=#B45309;dashed=1;dashPattern=6 3;" value="Volume\npostgres-data-b &lt;&lt;planned&gt;&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="960" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="pvGrafana" parent="host" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#DDD6FE;strokeColor=#6D28D9;" value="Volume\ngrafana-data" vertex="1">
+          <mxGeometry height="70" width="200" x="300" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="client" style="endArrow=block;endFill=1;html=1;strokeColor=#475569;" target="web" value="HTTPS 5249">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="web" style="endArrow=block;endFill=1;html=1;strokeColor=#475569;" target="lb" value="HTTP /api/search">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="lb" style="endArrow=block;endFill=1;html=1;strokeColor=#475569;" target="api1" value="HTTP 8080">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="lb" style="endArrow=block;endFill=1;html=1;strokeColor=#475569;" target="api2" value="HTTP 8080">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="api1" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="redis" value="TCP 6379 (cache)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="api2" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="redis" value="TCP 6379 (cache)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="api1" style="endArrow=block;endFill=1;html=1;strokeColor=#047857;" target="postgresA" value="SQL 5432">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="api2" style="endArrow=block;endFill=1;html=1;strokeColor=#047857;" target="postgresA" value="SQL 5432">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="api1" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="postgresB" value="SQL shard B (planned)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="api2" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="postgresB" value="SQL shard B (planned)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="api1" style="endArrow=block;endFill=1;html=1;strokeColor=#6D28D9;" target="loki" value="logs 3100">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="api2" style="endArrow=block;endFill=1;html=1;strokeColor=#6D28D9;" target="loki" value="logs 3100">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="lb" style="endArrow=block;endFill=1;html=1;strokeColor=#6D28D9;" target="loki" value="logs 3100">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="grafana" style="endArrow=block;endFill=1;html=1;strokeColor=#6D28D9;" target="loki" value="query logs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="grafana" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="prom" value="query metrics (planned)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="prom" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="api1" value="scrape /metrics (planned)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="1" source="prom" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="api2" value="scrape /metrics (planned)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" edge="1" parent="1" source="prom" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="lb" value="scrape /metrics (planned)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" edge="1" parent="1" source="postgresA" style="endArrow=block;endFill=1;html=1;strokeColor=#166534;" target="pvA" value="mount">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" edge="1" parent="1" source="postgresB" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="pvB" value="mount">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" edge="1" parent="1" source="grafana" style="endArrow=block;endFill=1;html=1;strokeColor=#6D28D9;" target="pvGrafana" value="mount">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" edge="1" parent="1" source="api1" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="otel" value="optional export">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" edge="1" parent="1" source="api2" style="endArrow=block;endFill=1;html=1;strokeColor=#B45309;dashed=1;" target="otel" value="optional export">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

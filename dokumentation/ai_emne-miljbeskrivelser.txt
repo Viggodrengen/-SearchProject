@@ -1,0 +1,309 @@
+Deploymentmiljøer
+Arkitekt Principper i Operations
+CI/CD Miljøoversigt
+
+Miljø / Formål                                                Typiske aktiviteter                                          Ansvar
+
+BUILD                                                         • Hent kode fra versionsstyring (Git)
+At kompilere og bygge applikationen fra kildekoden, så der    • Installer afhængigheder (nugets)                          Udviklere
+skabes et deploybart artefakt (f.eks. container-image eller   • Kør build-scripts (fx dotnet, npm, Docker build)          DevOps
+binær fil).                                                   • Publicér artefakter til repository (ACR, DockerHub)
+
+                                                              • Kør unit-, integration- og end-to-end-tests
+                                                                                                                         Udviklere
+TEST                                                          • Mål code coverage og statisk analyse
+                                                                                                                             QA
+At sikre kvaliteten af buildet gennem automatiserede tests.   • Brug testdata og mock-services
+                                                                                                                         CI-pipeline
+                                                              • Rapporter resultater til CI-system
+
+                                                              • Deployment i miljø identisk med produktion
+STAGING                                                                                                                      QA
+                                                              • Kør brugeraccepttest (UAT) og manuelle tests
+At efterligne produktionen og validere hele systemet, inden                                                           Produktansvarlige
+                                                              • Udfør performance- og sikkerhedstests
+release.                                                                                                                  DevOps
+                                                              • Godkend release til produktion
+
+                                                              • Deploy godkendt build
+PRODUCTION                                                                                                                 Drift
+                                                              • Overvågning, logging og alarmering
+At levere den stabile, godkendte version af systemet til                                                                  DevOps
+                                                              • Backup og rollback-planer
+slutbrugerne.                                                                                                              SRE
+                                                              • Incident- og change management
+Deployment
+Diagrammer
+Deployment diagrammer
+
+     Diagrammer hjælper os med at forstå, kommunikere og dokumentere,
+     hvordan et IT-system er bygget og fungerer.
+
+
+
+                   • Skaber fælles forståelse mellem udviklere, drift og forretning
+                   • Understøtter on-boarding, fejlsøgning og sikkerhedsgennemgang
+                   • Viser sammenhæng mellem komponenter, data og teknologi
+                   • Er levende dokumentation – ikke kun tegninger
+UML Deployment
+
+ Et UML Deployment Diagram viser, hvordan softwarekomponenter (artefakter)
+ udrulles på hardware- eller cloud-noder.
+                                                       Docker Compose : "Søgemaskine"
+
+
+                                     Public Internet                                                                        CI/CD
+
+
+
+                                                                                                                               deploy
+                                             HTTPS 443
+                                                                                                                               (docker compose up)
+
+
+
+                                                 Docker Host (prod)
+
+
+                                           Docker network: search-net
+                                                                                                                                                           • Viser fysiske noder (servere, containere, cloud services)
+                        «container»
+                      Reverse Proxy
+                      (Nginx)
+
+
+
+
+                        «image»
+                      nginx:alpine
+                                                                                                                                                           • Viser komponenter/deployment units og forbindelser mellem dem
+                             HTTP 80         HTTP 80 HTTP/HTTPS       TCP 5432                                                       image pull
+
+
+
+      «container»
+  Frontend
+  ASP.NET Core (C#)
+                                             «container»
+                                         Backend API
+                                         ASP.NET Core (C#)
+                                                                                                   «container»
+                                                                                                 Database
+                                                                                                 (PostgreSQL)
+                                                                                                                                                           • Bruges til at dokumentere infrastruktur og runtime-miljøer
+
+                                                                                                                                                           • Hjælper DevOps og arkitekter med at forstå driftssammenhænge
+      «image»                                «image»                             TLS cert/keys    «image»                             Container Registry
+   frontend:1.0.0                         backend:1.0.0                                          postgres:15
+
+
+
+
+                                                             «env»
+                                                 env/secrets                                             «volume»
+                                                 (DB_PASSWORD,                                       volume: db-data
+                                                 ASPNETCORE_ENV=Production)
+
+
+
+
+                                                                                                      Notation
+                                                                                                      «container» : Runtime-enhed (Compose service)
+                                                                                                      «image» : Container image (artifact)
+                                                                                                      «env» : Compose env/secrets
+                                                                                                      «volume» : Persistent volume
+C4 – Context Diagram
+  C4 - Context: "Søgemaskinen"
+
+
+
+                                         Et C4 Context Diagram viser systemet i sin kontekst –
+          Slutbruger
+                                         hvem bruger det, og hvilke andre systemer det interagerer
+  Anvender søgemaskinen
+           browser
+                                via
+                                         med.
+                 Søger & modtager
+                     resultater
+                       [HTTPS]
+
+                                         • Fokus: Systemets relation til omgivelserne
+       Søgemaskinen
+
+    Leverer søgeresultater      til
+            brugeren                     • Elementer: Personer (aktører), software systemer og relationer
+                 Login / OAuth2 / OIDC
+                         [HTTPS]
+                                         • Viser det ’store billede’ uden tekniske detaljer
+        OIDC Provider
+
+    Eksternt identitetssystem            • Anvendes til at afgrænse systemets rolle i organisationen
+              (login)
+
+
+              Legend
+              ▯ person
+              ▯ system
+              ▯ external system
+C4 – Container Diagram
+C4 - Container: "Søgemaskinen" (Docker Compose, minimal)
+
+
+
+
+                            Slutbruger
+
+                    Anvender søgemaskinen          via
+                                                                       Viser systemets runtime-enheder – hvordan systemet er
+                             browser
+                                                                       opdelt i containere eller installationsbare enheder.
+                                      HTTPS 443
+
+            Søgemaskinen (Docker Compose)
+                                  [system]
+
+
+                         Reverse        Proxy
+                                  [Nginx]
+
+                    TLS-termination og routing
+                       til Frontend/Backend
+
+
+                           HTTP 80 (intern)
+                                                                       • Fokus: Installationsbare komponenter:
+               Frontend
+
+                                                                              f.eks.  API, frontend, database, message broker
+            [ASP.NET Core (C#)]
+                                                    HTTP 80 (intern)
+          Serverer UI og kalder
+              Backend API
+
+
+                      HTTPS 443 / HTTP 80
+                            (intern)                                   • Viser teknologistak og forbindelser mellem containere
+                                                                       • Hjælper med at forstå drift, netværk og ansvar
+                           Backend API
+                          [ASP.NET Core (C#)]
+
+                   Søgeendpoints/forretningslogik
+
+
+                                       TCP 5432
+                                                                       • Typisk næste niveau efter Context
+                                                                              – vis systemets arkitektur detaljer
+                             Database
+                              [PostgreSQL]
+
+                        Vedvarende lagring af
+                              metadata
+
+
+
+                                            Legend
+                                            ▯ person
+                                            ▯ container
+                                            ▯ system boundary
+C4 – Component Diagram
+           C4 - Component: Backend API i "Søgemaskinen" (minimal)
+
+
+
+
+                                                                                                          viser de interne softwarekomponenter inden for én
+                                                                           Frontend
+                                                                           [ASP.NET Core]
+
+                                                                  Serverer UI og kalder
+
+
+
+                                                                                                          container eller applikation.
+                                                                      Backend API
+
+
+                                                                                  HTTP/HTTPS
+                                                                                     [JSON]
+
+                               Backend API (ASP.NET Core)
+                                               [container]
+
+
+                                                                  SearchController
+                                                                 [ASP.NET Core Controller]
+
+                                                                   HTTP-endpoints for
+                                                                   søgeforespørgsler
+
+
+                                                                Kalder
+                                                               [in-proc]
+
+
+
+                                 SearchService
+                                     [C# service]
+                                                                                       Mapper response
+                                                                                                           • Fokus: Moduler, services, controllers, repositories mv.
+                         Forretningslogik: validering,                                     [in-proc]
+                            ordbogs-/paging-logik,
+
+
+                                                                                                           • Forklarer hvordan koden er struktureret internt
+                                  orkestrering
+
+
+                          Bruger     Henter/lagrer     data    Mapper resultater
+                         [in-proc]         [in-proc]                [in-proc]
+
+
+
+   QueryParser
+      [C# helper]
+                                        DbRepository
+                                         [C# data-adgang]
+                                                                                DTO/Mappers
+                                                                                   [C# mapper]
+                                                                                                           • Bruges til at forstå afhængigheder og ansvar i applikationen
+Parser og normaliserer                CRUD/læse-adgang til
+
+
+                                                                                                           • Nyttigt for udviklere og arkitekter ved ændringer i koden
+                                                                           Mapper domæneobjekter      ⇄
+ søgestrenge (filters,               PostgreSQL (Dapper/EF
+                                                                                  API DTO’er
+       sortering)                            Core)
+
+
+
+                                                    TCP 5432
+                                                      [SQL]
+
+
+
+
+                                           Database
+                                            [PostgreSQL]
+
+                                        Vedvarende      data
+
+
+
+                                                                               Legend
+                                                                               ▯ container
+                                                                               ▯ component
+                                                                               ▯ container boundary
+Søgemaskine: C4 - Container
+Opgave
+Opgave M7.02
+Canvas opgaver
+
+
+
+
+                 C4 Container diagram:
+
+                    Søgemaskinen
+

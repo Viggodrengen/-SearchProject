@@ -1,0 +1,167 @@
+Introduktion til Caching
+Arkitekt Principper i Operations
+Definition af Cache
+
+            Midlertidig lagring af data, der sandsynligvis vil blive genbrugt.
+
+         Aspect                   Buffer                                              Cache
+                                  Håndterer data midlertidigt, mens der overføres
+                                                                                      Store tilgår ofte data midlertidigt for at reducere
+         Formål                   mellem lokationer eller komponenter med
+                                                                                      adgangstid og belastning på primære datakilder.
+                                  forskellige hastigheder.
+
+                                                                                     Holder data, der sandsynligvis vil blive genbrugt
+                                  Indeholder ofte data, der kun bruges én gang under
+         Datagenanvendelse                                                           flere gange, hvilket muliggør hurtig adgang ved
+                                  overførsel; data kasseres typisk efter behandling.
+Cache                                                                                efterfølgende anmodninger.
+
+ Vs.     Datatype
+                                  Gemmer rådata midlertidigt før behandling, såsom
+                                  data, der venter på CPU-instruktioner eller
+                                                                                   Gemmer behandlede data, beregninger eller ofte
+Buffer                            diskskrivning.
+                                                                                   tilgåede filer for hurtigere hentning.
+
+                                 Udjævner dataflowet mellem komponenter med           Forbedrer ydeevnen ved at reducere tids-
+         Funktion i systemydelse forskellige hastigheder, som RAM og harddiske        /ressourceomkostningerne ved gentagen
+                                 eller netværksenheder.                               dataadgang, hvilket sænker latenstiden.
+
+                                 Normalt kortvarigt, placeret nær umiddelbare         Kan være mere langsigtet, tættere på CPU eller
+         Beliggenhed og varighed overførselspunkter som I/O-enheder eller             bruger, eller distribueret geografisk (f.eks. i
+                                 netværksgrænseflader.                                CDN'er) for løbende hurtig adgang.
+
+
+                                                                          -- The Art of Scalability, M. Abbot, M. Fisher
+Cache Hits og Misses
+
+
+
+
+                  • Cache Hit: Anmodede data fundet i cachen.
+
+                  • Cache Miss: Anmodede data ikke i cachen, hentes fra
+                    primær kilde.
+
+                  • Hit Ratio: Mål for cache effektivitet (hits i forhold til
+                    samlede forespørgsler).
+
+
+
+
+                                            -- The Art of Scalability, M. Abbot, M. Fisher
+Skrivestrategier og lag
+
+
+                          • Write-Through: Data skrives til både cache og
+                            underliggende lager.
+
+                          • Write-Back (Write-Behind): Data skrives først til
+                            cachen, og senere til lager.
+
+                          • Read-Through: Cachen håndterer indlæsning fra
+                            lager ved cache-miss.
+
+                          • Cache-aside (Lazy loading): Applikationen styrer
+                            hvornår data hentes og gemmes i cachen.
+
+
+                                             -- The Art of Scalability, M. Abbot, M. Fisher
+Eviction Policy (nedlæggelsesstrategi)
+
+
+                   • Least Recently Used (LRU)
+                     Fjerner mindst nyligt anvendte data.
+
+
+                   • Most Recently Used (MRU)
+                     Fjerner mest nyligt anvendte data i specifikke tilfælde.
+
+
+                   • FIFO (First In, First Out)
+
+
+
+                                            -- The Art of Scalability, M. Abbot, M. Fisher
+Cachetyper: Objekter
+                       • lagrer ofte anvendte objekter (fra en database eller
+                         beregninger) for at reducere hukommelsesbelastningen.
+
+                       • Objekter er serialiseret for at minimere
+                         hukommelsesforbruget og bliver deserialiserede, når de
+                         hentes.
+
+                       • Cache-operationer inkluderer typisk tilføj, hent, opdater,
+                         og mange sprog understøtter populære caches som
+                         Memcached.
+
+                       • Objektcaches, især til sessionsstyring, kan forbedre
+                         effektiviteten ved at reducere databaselast og balancere
+                         servertrafik.
+
+                       • Caches placeres ofte mellem applikationslag (f.eks.
+                         Web-server, applikationsserver og database) og hjælper
+                         med at reducere gentagne beregninger samt skalere
+                         ydeevne uden ekstra hardware.
+Cachetyper: Applikation
+
+                 • Applikationscacher: Forbedrer ydeevne og ressourceeffektivitet med
+                   fokus på brugeroplevelsen.
+
+                 • Proxycache: Håndterer forespørgsler for flere applikationer fra en
+                   specifik brugergruppe, hvilket reducerer netværksbelastningen.
+
+                 • Reverse Proxy Cache: Cacher svar for mange brugere til et begrænset
+                   sæt applikationer, ofte placeret foran web-servere for at aflaste
+                   forespørgsler.
+
+                 • Valg af Cache Software: Forstå applikationsbehov og overvej robuste
+                   løsninger til høj trafik eller virksomheds-niveau caching.
+
+                 • Tilføjelsesfunktioner vs. Specialbyggede Løsninger: Specialbyggede
+                   caching-løsninger (f.eks. Memcached) overgår ofte tilføjelsesfunktioner
+                   i pålidelighed og ydeevne.
+
+                                                -- The Art of Scalability, M. Abbot, M. Fisher
+Cachetyper: CDN Caches
+
+    • Content Delivery Network (CDN): Cacher indhold tættere på slutbrugerne for
+      hurtigere respons og reduceret serverbelastning.
+
+    • CDN-struktur: Et netværk af geografisk distribuerede gateway-cacher, ofte på
+      forskellige internet-peering-netværk.
+
+    • Fordele ved CDNs: Forbedrer svartid, reducerer forespørgsler til oprindelige
+      servere og kan muligvis sænke leveringsomkostningerne.
+
+    • CDN-aliasopsætning: CDN-domæner linkes med et CNAME i DNS for at
+      levere cachelagret indhold direkte og reducere afhængighed af oprindelige
+      servere.
+
+    • Yderligere CDN-tjenester: Inkluderer DNS-udskiftning, geo-load balancing og
+      applikationsovervågning, med nogle peer-to-peer-muligheder til levering.
+                                                -- The Art of Scalability, M. Abbot, M. Fisher
+Opgave M10.01
+Canvas opgaver
+
+
+
+                 Case: Black Friday hos NordicSneak
+
+
+
+
+                 •    Identificér hvad der kan caches
+                 •    Vælg cachetyper
+                 •    Vælg strategi for læsning og skrivning
+                 •    Håndtér cache miss og eviction
+
+
+
+
+                     Bemærk: leverance til sidst i opgaven !!!
+
+
+                                                                 Gruppe
+

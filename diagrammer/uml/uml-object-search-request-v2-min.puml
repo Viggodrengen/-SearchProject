@@ -1,0 +1,17 @@
+@startuml
+!pragma layout smetana
+skinparam linetype ortho
+
+object "req:SearchRequest\nQuery=energy" as Req
+object "lb:SearchLoadBalancer" as LB
+object "api:SearchApi" as API
+object "cache:Redis <<planned>>" as Cache
+object "db:Postgres" as DB
+object "res:SearchResult" as Res
+
+Req --> LB : send
+LB --> API : route
+API --> Cache : lookup
+API --> DB : query (on miss)
+API --> Res : return result
+@enduml

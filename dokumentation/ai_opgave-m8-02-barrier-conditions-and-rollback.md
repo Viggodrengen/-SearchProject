@@ -1,0 +1,100 @@
+# AI Extract: Opgave M8.02 - Barrier Conditions And Rollback.pdf
+
+- Kilde: `Opgave M8.02 - Barrier Conditions And Rollback.pdf`
+- Type: `pdf`
+- Artefakter: tekst + sidebilleder
+
+## Tekst
+
+```text
+                              Opgave M8.02 - Barrier Conditions And Rollback
+
+
+
+
+ Arkitektur principper i praksis
+
+ M8.02 - Rollback vs. Markdown
+
+Formål
+I denne diskussionsopgave skal I overveje hvad passer bedst: en rollback eller en markdown
+løsning i forbindelse med en udrulning af en fejlslagen softwareopdatering.
+
+
+
+    Case: Translogistics A/S
+   Baggrund:
+   TransLogistics A/S er en global logistikvirksomhed, der specialiserer sig i supply chain
+   management og speditionstjenester. For at forbedre effektiviteten og kundetilfredsheden
+   beslutter virksomheden at lancere en ny funktion i deres fragtsporingssystem: realtids GPS-
+   opdateringer for alle leverancer, tilgængelig for kunder via en webportal og mobilapp.
+
+   Scenarie:
+   Udviklingsteamet implementerer den nye GPS-sporingsfunktion og udruller den under et
+   planlagt vedligeholdelsesvindue. Kort efter implementeringen begynder virksomheden at
+   modtage rapporter om nedgang i systemets performance og lejlighedsvise nedbrud. Intern
+   overvågning afslører, at den nye funktion bruger flere serverressourcer end forventet, hvilket
+   fører til performanceforringelse på tværs af platformen.
+
+
+
+
+ Udfordringen
+TransLogistics skal hurtigt beslutte, hvordan man løser problemet for at minimere påvirkningen på
+kunder, der er afhængige af systemet for kritisk fragtinformation.
+
+
+ Mulighed 1: Rollback
+    Handling: Tilbageføre systemet til den tidligere stabile version uden GPS-sporingsfunktionen.
+    Overvejelser:
+
+
+
+                                                 Side 1/2
+                             Opgave M8.02 - Barrier Conditions And Rollback
+
+        Fordele: Gendanner systemets performance hurtigt; eliminerer det øjeblikkelige
+        ressourcepres.
+        Ulemper: Fjerner ikke kun den problematiske funktion, men også andre opdateringer
+        inkluderet i releasen; kunder mister adgang til andre nye funktioner og rettelser.
+
+
+ Mulighed 2: Markdown (funktionsdeaktivering)
+    Handling: Deaktivere GPS-sporingsfunktionen, mens resten af releasen forbliver intakt.
+    Overvejelser:
+        Fordele: Aflaster performanceproblemer forårsaget af den nye funktion; bevarer andre
+        forbedringer fra releasen; minimal forstyrrelse for kunder, der bruger andre funktioner.
+        Ulemper: Kræver, at systemet er designet til at tillade dynamisk deaktivering af funktioner;
+        kan involvere yderligere udviklingsarbejde for at implementere sådan fleksibilitet.
+
+
+
+
+ Diskussionspunkter
+    Påvirkning af kunder: Hvilken mulighed minimerer forstyrrelsen for kunder, der er afhængige
+    af systemet?
+    Teknisk mulighed: Understøtter den nuværende systemarkitektur funktionsdeaktivering, eller
+    er rollback den eneste umiddelbare løsning?
+    Langsigtet strategi: Hvordan kan TransLogistics A/S justere deres udviklingspraksis for bedre
+    at håndtere lignende situationer i fremtiden, måske ved at designe funktioner til at blive
+    deaktiveret og planlægge for rollbacks?
+    Ressourceallokering: Hvad er omkostningsimplikationerne af hver mulighed, og hvordan
+    påvirker de projektets tidsplaner og budgetter?
+
+
+
+
+
+
+
+
+
+                                                Side 2/2
+
+```
+
+## Sider som billeder
+
+![ai_opgave-m8-02-barrier-conditions-and-rollback__page_001.png](ai_opgave-m8-02-barrier-conditions-and-rollback__page_001.png)
+![ai_opgave-m8-02-barrier-conditions-and-rollback__page_002.png](ai_opgave-m8-02-barrier-conditions-and-rollback__page_002.png)
+
