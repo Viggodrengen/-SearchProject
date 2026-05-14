@@ -1,0 +1,3 @@
+SoCal energy market report.
+SearchProject indexes this mail so the search API can find socal and energy together.
+Repeated search requests should become cache hits after Redis stores the SearchResult.

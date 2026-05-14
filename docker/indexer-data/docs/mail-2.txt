@@ -1,0 +1,3 @@
+socal energy update.
+The load balancer can route search traffic to another API replica when one backend is stopped.
+Redis cache keeps hot search results shared between replicas.
