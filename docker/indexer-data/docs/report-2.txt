@@ -1,0 +1,3 @@
+Observability and operations note.
+Loki stores logs, Grafana shows dashboards, and Prometheus is the next metrics component.
+The system is designed for clear operational evidence during the exam.
