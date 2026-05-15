@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SearchProject – mini præsentation</title>
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#111;color:#fff}
+    section{min-height:100vh;padding:7vh 8vw;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid #333}
+    h1{font-size:4rem;margin:.2em 0;color:#93c5fd} h2{font-size:3rem;color:#bfdbfe} li{font-size:1.6rem;margin:.6rem 0;line-height:1.35}
+    .tag{color:#fde68a;font-weight:700}.grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}.box{background:#1f2937;border:1px solid #374151;border-radius:18px;padding:1.4rem}
+  </style>
+</head>
+<body>
+<section>
+  <p class="tag">Slide 1 / Arkitekturfortælling</p>
+  <h1>SearchProject</h1>
+  <ul>
+    <li>Walking skeleton for en søgeplatform med web, API, indexer, database, cache og observability.</li>
+    <li>Y-akse: funktionel opdeling i selvstændige services/containere.</li>
+    <li>X-akse: stateless SearchApi kan køre som flere replikaer.</li>
+    <li>Z-akse: database-retning med read replicas, partitionering eller sharding.</li>
+  </ul>
+</section>
+
+<section>
+  <p class="tag">Slide 2 / Vigtige valg</p>
+  <h2>Nginx, Redis og observability</h2>
+  <div class="grid">
+    <div class="box"><h3>Nginx / Kubernetes</h3><p>Routing og load balancing ligger i infrastrukturen – ikke i C# forretningskode. Docker Compose bruger Nginx; Kubernetes bruger Ingress + Service.</p></div>
+    <div class="box"><h3>Redis cache</h3><p>SearchApi bruger cache-aside. Cold-cache giver miss, hot-cache giver hit og lavere latency ved gentagne søgninger.</p></div>
+    <div class="box"><h3>PostgreSQL</h3><p>Persistent state. I Kubernetes kræver det PVC/backup eller managed database.</p></div>
+    <div class="box"><h3>Loki/Grafana/Prometheus</h3><p>Logs, dashboards og metrics gør arkitekturen observerbar og testbar.</p></div>
+  </div>
+</section>
+
+<section>
+  <p class="tag">Slide 3 / Eksamen take-away</p>
+  <h2>Hvad viser projektet?</h2>
+  <ul>
+    <li>Vi kan forbinde kode, Docker Compose og Kubernetes-diagrammer til samme arkitektur.</li>
+    <li>Vi kan begrunde valg: Nginx/Ingress til routing, Redis til caching, Postgres til state.</li>
+    <li>Vi har testet: build, xUnit, Docker Compose config, performance/cache og failover.</li>
+    <li>Konklusion: simpelt projekt, men med tydelige arkitekturprincipper og produktionsretning.</li>
+  </ul>
+</section>
+</body>
+</html>
