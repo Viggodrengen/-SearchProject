@@ -50,9 +50,9 @@ Arkitekturprincipper der allerede er i spil:
 
 ## 4) Diagrammer (eksamensversion)
 
-- C4 Container: `docs/diagrams/c4_container_searchproject.puml`
-- UML Class: `docs/diagrams/uml_class_cache_resilience.puml`
-- UML Deployment: `docs/diagrams/uml_deployment_searchproject.puml`
+- Samlet draw.io-fil: `diagrammer/SearchProject diagrams - UML + C4.drawio`
+- Primært: C4 Containerdiagram og Kubernetes produktionsdiagram
+- Backup/bilag: UML class/object/deployment og C4 context/component
 
 ## 5) Arbejdsstyring
 

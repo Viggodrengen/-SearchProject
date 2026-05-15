@@ -22,6 +22,6 @@ Vigtige endpoints:
 ## Dokumentation
 - Aktiv arkitekturretning: `docs/architecture/architecture.md`
 - Projektdefinition: `docs/exam/projektdefinition_eksamen_searchproject_v0_2.md`
-- Diagrammer: `docs/diagrams/`
+- Diagrammer: `diagrammer/SearchProject diagrams - UML + C4.drawio`
 - Arbejdsplan: `TODO.md`
 - Arkiv/undervisningsnoter: `docs/legacy/`

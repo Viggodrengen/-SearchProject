@@ -1,40 +1,23 @@
 # Diagrammer
 
-Denne mappe samler projektets arkitekturdiagrammer.
+Denne mappe indeholder én samlet, præsentationsklar draw.io-fil:
 
-## Primær fil
+- `SearchProject diagrams - UML + C4.drawio`
 
-- `SearchProject diagrams - UML + C4.drawio`  
-  Samlet præsentationsklar draw.io-fil med seks sider:
-  1. UML Class
-  2. UML Object
-  3. UML Deployment
-  4. C4 Context
-  5. C4 Container
-  6. C4 Component
+Filen samler de diagrammer vi bruger til eksamen, så vi undgår gamle/parallelle arbejdsfiler med forældet arkitektur.
 
-## Arbejdsfiler
+## Primære sider
 
-- `UML class + object + deployment .drawio`  
-  Arbejdsfil med UML-diagrammerne.
+De vigtigste sider er:
 
-- `C4 context + container + component.drawio`  
-  Arbejdsfil med C4-diagrammerne.
+1. **C4 Containerdiagram** – viser SearchWebApp, ConsoleSearch, Nginx, SearchApi-replikaer, Indexer, PostgreSQL, Redis og observability.
+2. **Kubernetes produktionsdiagram** – viser Ingress/Service/Pods/Deployments og hvordan SearchApi skaleres i Kubernetes.
+3. **UML Deployment** – viser Docker Compose/walking skeleton med Nginx foran API-replikaer.
 
-## Anvendelse til eksamen
+## Backup / bilag
 
-C4-diagrammerne bruges til at forklare systemet fra højere abstraktionsniveau:
-
-1. **Context**: hvem bruger systemet, og hvilke eksterne systemer/platforme indgår.
-2. **Container**: hvilke applikationer og runtime-komponenter SearchProject består af.
-3. **Component**: hvordan den centrale søgedel er opdelt internt.
-
-UML-diagrammerne bruges til at forklare de mere konkrete strukturer:
-
-1. **Class diagram**: datamodellen og DTO-strukturen for søgninger og søgeresultater.
-2. **Object diagram**: et konkret runtime-eksempel på en søgning og et cached søgeresultat.
-3. **Deployment diagram**: hvordan udviklingsmiljøet kører i Docker Compose med webapp, Nginx/reverse proxy, API-replikaer, database, cache og observability.
+Filen kan også indeholde UML class/object og C4 context/component som bilag, men de er sekundære til eksamensfremlæggelsen.
 
 ## Eksport
 
-Åbn `.drawio`-filerne i draw.io/diagrams.net og eksportér de relevante sider som PNG/SVG til slides.
+Åbn `.drawio`-filen i draw.io/diagrams.net og eksportér kun de relevante sider som PNG/SVG til slides.
