@@ -28,7 +28,7 @@ for command in curl docker awk date; do
 done
 
 if ! curl -fsS "$BASE_URL/api/health" >/dev/null; then
-  echo "Load balancer is not reachable at $BASE_URL/api/health" >&2
+  echo "Nginx/API endpoint is not reachable at $BASE_URL/api/health" >&2
   exit 1
 fi
 
@@ -92,8 +92,8 @@ request_once() {
     status="${curl_result%% *}"
     seconds="${curl_result##* }"
     cache_status="$(header_value "$headers" "X-Search-Cache")"
-    backend="$(header_value "$headers" "X-LB-Backend")"
-    instance="$(header_value "$headers" "X-SearchApi-Instance")"
+    backend="$(header_value "$headers" "X-LB-Backend" | tr ',' ';')"
+    instance="$(header_value "$headers" "X-SearchApi-Instance" | tr ',' ';')"
   fi
 
   rm -f "$headers" "$body"

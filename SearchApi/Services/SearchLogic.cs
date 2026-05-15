@@ -45,6 +45,7 @@ public class SearchLogic
             };
         }
 
+        // Query the index once for all matching word IDs, then rank documents in memory.
         var allWordIds = termGroups
             .SelectMany(group => group.ids)
             .Distinct()

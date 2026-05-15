@@ -57,6 +57,7 @@ public class SearchService
             SearchMetrics.RecordCacheStatus("miss", request.Database);
         }
 
+        // Keep persistence behind the repository abstraction; the search algorithm stays database-agnostic.
         using var database = DatabaseFactory.Create(request.Database);
         var config = new SearchConfig { CaseSensitive = request.CaseSensitive };
         var logic = new SearchLogic(database, config);

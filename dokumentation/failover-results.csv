@@ -1,61 +1,9 @@
 timestamp,phase,iteration,http_status,curl_exit,cache_status,backend,instance,time_ms
-2026-05-14T09:09:20Z,before-stop,1,200,0,miss,search-api-2 (http://searchapi2:8080),search-api-2,255.137
-2026-05-14T09:09:20Z,before-stop,2,200,0,hit,search-api-1 (http://searchapi1:8080),search-api-1,67.935
-2026-05-14T09:09:20Z,before-stop,3,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,7.856
-2026-05-14T09:09:20Z,before-stop,4,200,0,hit,search-api-1 (http://searchapi1:8080),search-api-1,6.836
-2026-05-14T09:09:20Z,before-stop,5,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,5.967
-2026-05-14T09:09:21Z,before-stop,6,200,0,hit,search-api-1 (http://searchapi1:8080),search-api-1,9.379
-2026-05-14T09:09:21Z,before-stop,7,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.701
-2026-05-14T09:09:21Z,before-stop,8,200,0,hit,search-api-1 (http://searchapi1:8080),search-api-1,3.793
-2026-05-14T09:09:21Z,before-stop,9,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.630
-2026-05-14T09:09:21Z,before-stop,10,200,0,hit,search-api-1 (http://searchapi1:8080),search-api-1,3.763
-2026-05-14T09:09:22Z,during-stop,1,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.787
-2026-05-14T09:09:22Z,during-stop,2,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,161.068
-2026-05-14T09:09:22Z,during-stop,3,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.280
-2026-05-14T09:09:22Z,during-stop,4,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,14.749
-2026-05-14T09:09:22Z,during-stop,5,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.893
-2026-05-14T09:09:22Z,during-stop,6,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,14.058
-2026-05-14T09:09:22Z,during-stop,7,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.928
-2026-05-14T09:09:22Z,during-stop,8,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,16.286
-2026-05-14T09:09:22Z,during-stop,9,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.571
-2026-05-14T09:09:23Z,during-stop,10,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,9.728
-2026-05-14T09:09:23Z,during-stop,11,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.000
-2026-05-14T09:09:23Z,during-stop,12,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,13.250
-2026-05-14T09:09:23Z,during-stop,13,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,5.675
-2026-05-14T09:09:23Z,during-stop,14,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,8.158
-2026-05-14T09:09:23Z,during-stop,15,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.723
-2026-05-14T09:09:23Z,during-stop,16,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,11.141
-2026-05-14T09:09:23Z,during-stop,17,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.508
-2026-05-14T09:09:23Z,during-stop,18,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,7.977
-2026-05-14T09:09:23Z,during-stop,19,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.158
-2026-05-14T09:09:24Z,during-stop,20,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,12.799
-2026-05-14T09:09:24Z,during-stop,21,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,5.069
-2026-05-14T09:09:24Z,during-stop,22,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,9.461
-2026-05-14T09:09:24Z,during-stop,23,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.098
-2026-05-14T09:09:24Z,during-stop,24,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,12.394
-2026-05-14T09:09:24Z,during-stop,25,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.167
-2026-05-14T09:09:24Z,during-stop,26,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,10.262
-2026-05-14T09:09:24Z,during-stop,27,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.058
-2026-05-14T09:09:24Z,during-stop,28,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,9.511
-2026-05-14T09:09:24Z,during-stop,29,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.813
-2026-05-14T09:09:25Z,during-stop,30,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,9.837
-2026-05-14T09:09:25Z,during-stop,31,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.735
-2026-05-14T09:09:25Z,during-stop,32,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,11.767
-2026-05-14T09:09:25Z,during-stop,33,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.008
-2026-05-14T09:09:25Z,during-stop,34,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,10.110
-2026-05-14T09:09:25Z,during-stop,35,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.313
-2026-05-14T09:09:25Z,during-stop,36,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,10.890
-2026-05-14T09:09:25Z,during-stop,37,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.371
-2026-05-14T09:09:25Z,during-stop,38,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,10.669
-2026-05-14T09:09:25Z,during-stop,39,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.530
-2026-05-14T09:09:25Z,during-stop,40,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,13.739
-2026-05-14T09:09:26Z,after-restart,1,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.345
-2026-05-14T09:09:26Z,after-restart,2,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,9.903
-2026-05-14T09:09:26Z,after-restart,3,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.794
-2026-05-14T09:09:27Z,after-restart,4,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,11.058
-2026-05-14T09:09:27Z,after-restart,5,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,4.317
-2026-05-14T09:09:27Z,after-restart,6,200,0,hit,search-api-1 (http://searchapi1:8080),search-api-1,207.610
-2026-05-14T09:09:27Z,after-restart,7,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,3.357
-2026-05-14T09:09:27Z,after-restart,8,200,0,hit,search-api-1 (http://searchapi1:8080),search-api-1,6.974
-2026-05-14T09:09:27Z,after-restart,9,200,0,hit,search-api-2 (http://searchapi2:8080),search-api-2,6.252
-2026-05-14T09:09:27Z,after-restart,10,200,0,hit,search-api-1 (http://searchapi1:8080),search-api-1,4.161
+2026-05-15T11:03:40Z,before-stop,1,200,0,hit,172.18.0.9:8080,search-api-2,5.568
+2026-05-15T11:03:40Z,before-stop,2,200,0,hit,172.18.0.8:8080,search-api-1,77.239
+2026-05-15T11:03:41Z,during-stop,1,200,0,hit,172.18.0.9:8080,search-api-2,3.678
+2026-05-15T11:03:41Z,during-stop,2,200,0,hit,172.18.0.8:8080; 172.18.0.9:8080,search-api-2,5013.500
+2026-05-15T11:03:46Z,during-stop,3,200,0,hit,172.18.0.9:8080,search-api-2,3.303
+2026-05-15T11:03:46Z,during-stop,4,200,0,hit,172.18.0.9:8080,search-api-2,3.500
+2026-05-15T11:03:47Z,after-restart,1,200,0,miss,172.18.0.9:8080,search-api-2,5.280
+2026-05-15T11:03:47Z,after-restart,2,200,0,hit,172.18.0.9:8080,search-api-2,1.889
