@@ -1,0 +1,82 @@
+Monitorering af applikationer
+Arkitekt Principper i Operations
+Hvorfor opdagede vi det ikke tidligere ?!?
+                   Nøglespørgsmål:
+
+                   “Hvilke fejl tillod et deployment uden korrekt overvågning?”
+
+                  • Systemer mangler ofte proaktiv overvågning; overvågning bør
+                    bygges ind i designet.
+
+                  • Forstå og overvåg Key Performance Indicators (KPI’er), der er
+                    relevante for forretningsmål.
+
+
+
+
+ Tilgang: “Design til at blive overvåget” for effektiv overvågning i realtid.
+Et ”Framework” for Overvågning
+   Brug en evolutionær tilgang:
+   “Er der en hændelse?”  “Hvor er problemet?”  “Hvad er problemet?”
+
+
+                           • Start med at opdage hændelser baseret på
+                             afvigelser fra forventet adfærd.
+
+                           • Indsnævr fokus gradvist for at identificere og
+                             isolere specifikke problemer ved hjælp af
+                             dataanalyse.
+
+                           • Anvend agile metoder til at tilpasse
+                             overvågningssystemer, når produkter og krav
+                             udvikler sig.
+Brugeroplevelse og Forretningsmålinger
+
+              • Vigtigt for at afgøre, om der er en hændelse ved at overvåge
+                centrale bruger- og forretningsaktiviteter.
+
+
+              • Målinger som omsætning, forladte indkøbskurve og svartider
+                kan indikere problemer.
+
+
+              • Brug Statistisk Proceskontrol (SPCC) til at automatisere
+                alarmer baseret på afvigelser.
+
+
+              • Tredjepartsværktøjer øger synligheden af kundernes
+                oplevelser på tværs af forskellige placeringer.
+Overvågningen
+
+          Systemovervågning:
+
+          • Systemovervågning fokuserer på ydeevnen af hardware- og softwaregrupper.
+          • Leverer data til kapacitetsplanlægning og håndtering af hændelser/kriser.
+
+
+          Applikationsovervågning:
+
+          • Besvarer “Hvad er problemet?” ved at diagnosticere problemer i applikationer.
+          • Udvikl værktøjer til at spore fejl, udførelsestider og svartider på tjenester.
+
+
+          Procesovervågning:
+          • Overvågningsdata integreres med forretningsprocesser for at måle systemets
+            sundhed og tilgængelighed
+          • Data understøtter kapacitetsplanlægning, hændelseshåndtering og ydeevnetestning
+Måling af overvågning: Hvad er og er ikke værdifuldt?
+
+
+
+                   • Overvåg kun det, der er værdifuldt for at reducere støj
+                     og ressourceforbrug.
+
+                   • Fokus på kritiske hændelsesmonitorer (3-10), der giver
+                     forudsigende indsigter.
+
+                   • Håndter datamængder effektivt for detaljeret analyse
+                     uden overdreven lagring.
+
+                   • Bevar rådata strategisk (f.eks. to uger) for at balancere
+                     indsigt og omkostninger.
+

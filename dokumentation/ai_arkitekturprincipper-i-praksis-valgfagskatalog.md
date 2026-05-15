@@ -1,0 +1,66 @@
+# AI Extract: arkitekturprincipper i praksis - valgfagskatalog.pdf
+
+- Kilde: `arkitekturprincipper i praksis - valgfagskatalog.pdf`
+- Type: `pdf`
+- Artefakter: tekst + sidebilleder
+
+## Tekst
+
+```text
+Valgfag
+
+Arkitekturprincipper i praksis 10 ECTS
+
+Indhold
+Fagelementet Arkitekturprincipper i praksis omhandler de forretningsmæssige, designmæssige og praktiske
+aspekter af arkitekturprincipper for software-baserede systemer.
+
+
+Læringsmål for Arkitekturprincipper i praksis
+
+Viden
+Den studerende kan:
+   • Forstå begrebet arkitekturprincip.
+   • Forstå de mest almindelige arkitekturprincipper, som knytter sig komplekse software.
+   • Forstå både de forretningsmæssige og de praktiske aspekter for de mest almindelige
+       arkitekturprincipper
+
+Færdigheder
+Den studerende kan:
+   • Vurdere arkitekturprincippers potentielle forretningsmæssig gevinst og omkostninger en given
+       kontekst.
+   • Anvende arkitekturprincipper i konstruktionen af et software-baseret system.
+   • Definere og implementere arkitekturprincipper til håndtering af særlige krav og rammer for et
+       software-baseret system.
+
+Kompetencer
+Den studerende kan
+   • Håndtere komplekse og udviklingsorienterede situationer med afsæt arkitekturprincipper
+   • Selvstændigt indgå i praktisk arbejde med arkitektur med en professionel tilgang.
+
+
+Prøveform og tilrettelæggelse herunder evt. formkrav
+
+Eksamen i fagelementet Arkitekturprincipper i praksis er en individuel mundtlig eksamination bestående af
+et oplæg og efterfølgende eksamination. I oplægget præsenterer den studerende et antal arkitektur principper
+og viser i et fungerende system hvordan principperne er implementeret. Den mundtlige eksamen har en
+varighed af 30 minutter, heraf:
+    - 10 minutters mundtligt oplæg
+    - 15 minutters mundtlig eksamination
+    - 5 minutter votering og meddelelse af karakter
+
+Bedømmelseskriterier og censurtype
+Bedømmelseskriterierne er lig med læringsmål for det valgfrie uddannelseselement Arkitekturprincipper i
+praksis. Bedømmelsen er en helhedsvurdering af det mundtlige oplæg samt den efterfølgende eksamination.
+Bedømmelse sker efter 7-trinsskalaen, og der er intern censur.
+
+Fuldførelse af prøven
+Hvis den studerende ikke opnår minimum karakteren 02, skal den studerende til omprøve i den mundtlige
+prøve.
+
+```
+
+## Sider som billeder
+
+![ai_arkitekturprincipper-i-praksis-valgfagskatalog__page_001.png](ai_arkitekturprincipper-i-praksis-valgfagskatalog__page_001.png)
+

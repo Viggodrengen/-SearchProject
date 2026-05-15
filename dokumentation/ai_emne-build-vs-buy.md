@@ -1,0 +1,55 @@
+# AI Extract: Emne - Build vs Buy.pdf
+
+- Kilde: `Emne - Build vs Buy.pdf`
+- Type: `pdf`
+- Artefakter: tekst + sidebilleder
+
+## Tekst
+
+\`\`\`text
+Build vs. Buy
+Arkitektur Principper i Operations
+Checklist: Four Simple Questions
+
+  Use this simple checklist of four questions to help you in your build versus buy decisions:
+
+      • Does this component create strategic competitive differentiation? Are we going to have long-
+        term sustainable differentiation as a result of this in terms of switching costs, barriers to
+        entry, or something else?
+      • Are we the best owners of this component or asset? Are we the best equipped to build it and
+        why? Should we sell it if we build it?
+      • What is the competition for this component? How soon until the competition catches up to us
+        and offers similar functionality?
+      • Can we build this component cost-effectively? Are we reducing our costs and creating
+        additional shareholder value, and are we avoiding losing opportunities for revenues?
+
+  Remember that you are always likely to be biased toward building, so do your best to protect
+  against that bias. The odds are against you if you try to build a better product than those already
+  available. Instead, you should tune your bias toward continuing to do what you do well today—your
+  primary business.
+
+                                                   -- The Art of Scalability, M. Abbot, M. Fisher, s.255
+Opgave M8.01
+Canvas opgaver
+
+
+
+
+                 Case Study:
+
+                     Cloudify Solutions - Bygge eller Købe
+
+
+
+
+                                                             Gruppe
+
+\`\`\`
+
+## Sider som billeder
+
+![ai_emne-build-vs-buy__page_001.png](ai_emne-build-vs-buy__page_001.png)
+![ai_emne-build-vs-buy__page_002.png](ai_emne-build-vs-buy__page_002.png)
+![ai_emne-build-vs-buy__page_003.png](ai_emne-build-vs-buy__page_003.png)
+![ai_emne-build-vs-buy__page_004.png](ai_emne-build-vs-buy__page_004.png)
+

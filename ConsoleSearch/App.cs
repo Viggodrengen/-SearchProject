@@ -83,7 +83,7 @@ public class App
 
             if (!string.IsNullOrWhiteSpace(apiResponse.Backend))
             {
-                Console.WriteLine($"Served by: {apiResponse.Backend} | strategy: {apiResponse.Strategy} | instance: {apiResponse.SearchApiInstance}");
+                Console.WriteLine($"Served by: {apiResponse.Backend} | strategy: {apiResponse.Strategy} | instance: {apiResponse.SearchApiInstance} | cache: {apiResponse.CacheStatus}");
             }
 
             if (result.Ignored.Count > 0)

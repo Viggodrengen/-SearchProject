@@ -1,0 +1,133 @@
+Erhvervsakademi Aarhus, IT-Arkitektur
+
+Valgfag 6. semester: Arkitekturprincipper i Praksis – forår 2026
+
+
+Eksamensprojekt, version 1.0
+Dette dokument indeholder en kort orientering om eksamensprojektet i faget
+arkitekturprincipper i praksis.
+
+
+Form og indhold
+I den sidste del af faget skal I gennemføre et mindre projekt, hvor fokus er på anvendelse
+af arkitekturprincipper. Projektet skal derfor have en natur og kompleksitet som
+indebærer overvejelser om arkitektur og samtidig skal dele af det implementeres. Det
+(del)system som I vælger at udvikle i jeres projekt, kan I opfatte som et walking-skeleton
+system, hvor det er arkitekturen som skal kvalitet sikres.
+
+Projekter kan udføres i grupper - I danner selv grupperne.
+
+Der skal ikke aﬂeveres nogen rapport eller system i forbindelse med projektet. Selve
+aﬂeveringen sker i forbindelse med den mundtlige eksamen. Derfor skal I opfatte
+projektet som et grundlag for eksamen – selve projektet bliver derfor ikke bedømt til
+eksamen.
+
+
+Plan
+Inden projektperioden skal I have valgt hvilket (del)system I vil udvikle. Dette valg skal
+beskrives i en såkaldt projektdeﬁnition, som må fylde max en side. Fokuser på de
+features I vil implementere og - kun på skitseform - angive hvordan I forestiller jer det
+påvirker arkitekturen. Det er vigtigt, at projektdeﬁnitionen er afstemt med og godkendt af
+underviserne.
+
+Projektperioden starter den 20. april 2026 og alle grupper skal have deres
+projektdeﬁnition godkendt på dette tidspunkt. Så sørg for at få aﬂeveret et udkast i god
+tid inden til underviserne. Her anbefaler vi den 8. april 2026. Så er der tid til at få
+relevans, omfang og sværhedsgrad til at passe sammen.
+
+Eksamen afholdes i uge 21. Se studieplan for hvordan den kommer til at foregå.
+
+
+Generelle krav
+Uanset hvilket delsystem/features I vælger at implementere i jeres projekt, skal det
+opfylde følgende generelle krav til hvordan det udvikles og hvordan det driftes:
+
+   •   I skal udvikle i .net med c# som kodesprog.
+
+
+
+
+                                            1
+Erhvervsakademi Aarhus, IT-Arkitektur
+
+Valgfag 6. semester: Arkitekturprincipper i Praksis – forår 2026
+
+   •   Driftsmiljø: Løsningen skal om muligt driftes i et modulært miljø med mulighed
+       for skalering i x-aksen for udvalgte komponenter. Dette kan være et container-
+       baseret miljø som f.eks. Kubernetes.
+   •   Overvågning: Det skal være muligt for de driftsansvarlige at monitorere
+       løsningen.
+   •   Fejltolerance og ydeevne: Hvis det giver mening, kan der udarbejdes tests for at
+       kvantiﬁcere driftsmiljøet i forhold til ydeevne og med fokus på nøgle
+       komponenter/services i miljøet.
+   •   Databaser: Hvis jeres delsystem indeholder en database-server i driftsmiljøet,
+       forventes det at I anviser hvorledes denne kan skaleres ud ad z-aksen.
+   •   Caching: Det forventes at I forholder til brug af caching i jeres delsystem. Dette
+       kan ske ved at inkludere en caching komponent i jeres delsystem – eller på
+       arkitektur niveau kommer med anvisninger til hvor og hvorfor en caching
+       komponent kan anvendes.
+
+Til eksamen forventes det, at I giver en kort demo af systemet i drift og derefter kort
+præsenterer jeres arkitektur, kode-base og driftsmiljø. Når I præsenterer arkitekturen,
+forventes det at I fremviser denne via UML diagrammer (class-, object-, deploy-
+diagrammer).
+
+
+Eksempler fra søgemaskinen
+Nedenstående eksempler er udvidelser af søgemaskinen. I projektet kan I også vælge et
+helt andet system (se næste afsnit), måske noget som er inspireret af jeres praktik eller
+noget som kommer fra cases som I er stødt på tidligere.
+
+Termnet
+Søgemaskinen skal udvides med mulighed for synonym søgning. Dette skal ske gennem
+anvendelse af såkaldte termnet, som indeholder ord og vægtede synonym relationer.
+Der kan være tale om generelle termnet og mere domænespeciﬁkke termnet. I
+søgemaskinen skal det være muligt at udvide søgning med synonymer fra forskellige
+termnet.
+
+Indeksering
+Søgemaskinen udvides på indekssiden så der anvendes en mere relevant arkitektur og
+den gøres skalerbar. Her er ﬂere muligheder:
+
+   a) Den grundlæggende indeksering kan opfattes som en pipeline og dette giver
+      mulighed for at anvende netop dette arkitekturmønster. Dette er en y-skalering.
+   b) Indekseringen udvides, så der indekseres til ﬂere databaser (y- eller z-skalering).
+
+
+
+                                            2
+Erhvervsakademi Aarhus, IT-Arkitektur
+
+Valgfag 6. semester: Arkitekturprincipper i Praksis – forår 2026
+
+   c) Indeksering udvides så der kan indekseres mere end en type dokumenter.
+
+Snippet
+Søgemaskinen udvides ved at resultater også skal indeholde snippet – dvs. korte uddrag
+af dokumentet, som indeholder ord fra forespørgslen.
+
+Servicebus
+Søgemaskinen i versionen hvor der er skaleret på både x- og y-aksen ændres, så der
+indføres en servicebus. Det kan være en RabbitMQ.
+
+Søgeagenter
+Søgemaskinen udvides så der indføres søgeagenter. En søgeagent indeholder en
+forespørgsel og nogle notiﬁkationsdata. Når der indekseres et dokument som matcher
+forespørgslen, skal der notiﬁceres som angivet i søgeagenten.
+
+
+Andre eksempler
+I må gerne anvende andet end søgemaskinen som grundlag for jeres projekt; det kan
+være et tidligere skoleprojekt eller noget fra studiejob/praktik/fritid. Herunder er nogle
+eksempler
+
+Integration til motorkontoret
+I jeres auktionshus system fra 4. semester ændres dette, så det kun er køretøjer der kan
+komme på auktion. I den forbindelse skal der ved oprettelse af et køretøj til auktionen
+ske en validering mod motorkontoret og eventuel restgæld.
+
+
+
+
+                                             3
+

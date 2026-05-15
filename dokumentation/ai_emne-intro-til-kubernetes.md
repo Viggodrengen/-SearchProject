@@ -1,0 +1,189 @@
+# AI Extract: Emne - Intro til Kubernetes.pdf
+
+- Kilde: `Emne - Intro til Kubernetes.pdf`
+- Type: `pdf`
+- Artefakter: tekst + sidebilleder
+
+## Tekst
+
+\`\`\`text
+Operations med Kubernetes
+Hvad er Docker Desktop Application?
+
+
+                   Definition:
+                      • Lokal udviklingsmiljø til bygning, deling og kørsel af Docker-
+                          containere på desktop-maskiner (Windows og macOS).
+
+                   Funktioner:
+                      • Brugervenlig GUI til containerstyring.
+                      • Integration med udviklingsværktøjer og IDE'er.
+                      • Single-node Kubernetes-kluster til testformål.
+
+                   Anvendelse:
+                      • Velegnet til udviklings- og testmiljøer.
+                      • Hurtig prototyping og lokal udvikling.
+Hvad er Kubernetes (k8s)?
+
+                Definition:
+                   • Open-source platform til automatisering af deployment,
+                      skalering og management af containeriserede
+                      applikationer.
+
+                Funktioner:
+                   • Orkestrering af containere på tværs af flere værter.
+                   • Load balancing, self-healing, automatisk skalering.
+
+                Anvendelse:
+                   • Ideel til produktionsmiljøer med komplekse
+                     applikationer.
+                   • Håndtering af microservices og distribuerede systemer.
+Kubernetes vs. Docker Desktop
+
+
+   Aspekt              Kubernetes                               Docker Desktop
+
+   Skalering og        Designet til storskala orkestrering på   Lokal kørsel af containere, primært til
+   Orkestrering        tværs af multi-knudet-klynger.           udvikling.
+
+                                                                Udvikling og test på en enkelt
+   Anvendelsesområde   Produktion og komplekse miljøer.
+                                                                maskine.
+
+                       Avancerede funktioner
+                                                                Simpel containerstyring, begrænset
+   Funktionalitet      som automatisk skalering, rolling
+                                                                orkestrering.
+                       updates, self-healing.
+
+
+                       Konfigureres via YAML-                   Grafisk brugergrænseflade og enkel
+   Brugerflade
+                       manifester og CLI-værktøjer.             CLI.
+Vi bruger Minikube!
+
+
+                        Minikube giver en simpel måde at eksperimentere med
+                        Kubernetes uden at skulle opsætte en kompleks,
+                        produktionsklar klynge. Det er særligt nyttigt for udviklere,
+                        der ønsker at lære Kubernetes eller teste applikationer
+                        lokalt.
+
+
+
+    Klyngeopsætning:
+
+      Det opretter som standard en enkelt-knudet klynge, men kan
+      konfigureres til at understøtte flere knuder, hvis det ønskes
+                                                                https://minikube.sigs.k8s.io/
+Kubernetes Arkitektur
+Kubernetes Cluster Arkitektur
+
+
+
+
+                                https://kubernetes.io/docs/concepts/architecture/
+Kubernetes Pods
+
+• En Pod kan beskrives som en gruppe af en
+  eller flere containere, der deler
+  netværksressourcer, IP-adresse og
+  lagerplads.
+
+• Dette design gør det muligt for containerne at
+  kommunikere effektivt og dele data med
+  hinanden.
+
+• Pods er altid planlagt til at køre på samme
+  knude i et Kubernetes-cluster, hvilket sikrer,
+  at de kan arbejde tæt sammen
+
+
+                                                   https://kubernetes.io/docs/concepts/workloads/pods/
+Kubernetes Services
+
+
+
+                      • En Kubernetes Service fungerer som en
+                        abstraktion, der eksponerer et sæt af Pods
+                        over et netværk.
+
+                      • Dette gør det muligt for klienter at interagere
+                        med disse Pods uden at skulle bekymre sig
+                        om deres dynamiske livscyklus, da Pods kan
+                        oprettes og destrueres efter behov.
+
+
+
+                       https://bsdnet.github.io/posts/kubernetes-service-illustrated/
+                       https://kubernetes.io/docs/concepts/services-networking/service/
+Kubernetes Namespaces
+
+
+                • I Kubernetes fungerer namespaces som en mekanisme
+                  til at isolere grupper af ressourcer inden for en enkelt
+                  klynge.
+
+                • Navne på ressourcer skal være unikke inden for et
+                  namespace, men ikke på tværs af namespace.
+
+                • Namespace-baseret scoping gælder kun for objekter
+                  (f.eks. implementeringer, tjenester osv.) og ikke for
+                  klyngeomfattende objekter (f.eks. StorageClass, noder,
+                  persistentVolumes osv.).
+
+
+                    https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+Kubernetes Deployment         1) Opret namespace:
+apiVersion: apps/v1              $ kubectl create namespace search-ngin
+kind: Deployment
+metadata:
+  name: nginx-deployment      2) Deploy pods til cluster:
+spec:
+  selector:
+    matchLabels:                 $ kubectl apply -f deployment.yaml –n search-ngin
+      app: nginx
+  replicas: 2
+  template:                   3) Opret en service omkring pods:
+    metadata:
+      labels:                   $ kubectl expose deployment nginx-deployment \
+        app: nginx                     --type=NodePort \
+    spec:                              --name=nginx-service \
+      containers:                      -n search-ngin
+      - name: nginx
+        image: nginx:1.14.2   4) Opret lokal forbindelse til service:
+        ports:
+        - containerPort: 80
+                                 $ minikube service nginx-service –n search-ngin --url
+Opgave
+Opgave M7.03
+Canvas opgaver
+
+
+
+
+                 Kubernetes App med minikube
+
+
+
+
+                                               Par
+
+\`\`\`
+
+## Sider som billeder
+
+![ai_emne-intro-til-kubernetes__page_001.png](ai_emne-intro-til-kubernetes__page_001.png)
+![ai_emne-intro-til-kubernetes__page_002.png](ai_emne-intro-til-kubernetes__page_002.png)
+![ai_emne-intro-til-kubernetes__page_003.png](ai_emne-intro-til-kubernetes__page_003.png)
+![ai_emne-intro-til-kubernetes__page_004.png](ai_emne-intro-til-kubernetes__page_004.png)
+![ai_emne-intro-til-kubernetes__page_005.png](ai_emne-intro-til-kubernetes__page_005.png)
+![ai_emne-intro-til-kubernetes__page_006.png](ai_emne-intro-til-kubernetes__page_006.png)
+![ai_emne-intro-til-kubernetes__page_007.png](ai_emne-intro-til-kubernetes__page_007.png)
+![ai_emne-intro-til-kubernetes__page_008.png](ai_emne-intro-til-kubernetes__page_008.png)
+![ai_emne-intro-til-kubernetes__page_009.png](ai_emne-intro-til-kubernetes__page_009.png)
+![ai_emne-intro-til-kubernetes__page_010.png](ai_emne-intro-til-kubernetes__page_010.png)
+![ai_emne-intro-til-kubernetes__page_011.png](ai_emne-intro-til-kubernetes__page_011.png)
+![ai_emne-intro-til-kubernetes__page_012.png](ai_emne-intro-til-kubernetes__page_012.png)
+![ai_emne-intro-til-kubernetes__page_013.png](ai_emne-intro-til-kubernetes__page_013.png)
+

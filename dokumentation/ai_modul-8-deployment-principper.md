@@ -1,0 +1,66 @@
+# AI Extract: Modul 8 - Deployment principper.pdf
+
+- Kilde: `Modul 8 - Deployment principper.pdf`
+- Type: `pdf`
+- Artefakter: tekst + sidebilleder
+
+## Tekst
+
+```text
+Arkitektur Principper i praksis
+Modul 9 – Skalering af operations
+Roadmap
+Dagens Program
+
+
+
+
+                    Barriererbetingelser
+                             &
+                          Rollback         Monitorering
+
+
+    Build vs. buy
+Dagens litteraturliste
+
+   [Abbott&Fisher2015]:
+
+      •   kap. 15 - Focus on Core Competencies: Build Versus Buy (10 sider)
+      •   kap. 18 - Barrier Conditions and Rollback (11 sider)
+      •   kap. 31 - Monitoring Applications (12 sider)
+      •   [devtron.ai] Introduction to Helm.
+      •   [kubernetes.io] Running Multiple Instances of Your App
+      • [kubernetes.io] Kubernetes: Performing a Rolling Update
+
+
+Supplerende:
+      • [helm.sh] Quickstart Guide.
+      • [daily.dev] Microservices Rollback: Ensuring Data Consistency
+      • [TheNewStack] 5 Deployment Strategies: The Pros and Cons
+Afrunding
+Næste gang
+                    Performance: metrics & caching
+
+
+
+Litteraturliste :
+
+• [Abbot&Fisher]:
+
+   • Kapitel 17 – Performance and Stress Testing (17 sider)
+   • Kapitel 25 – Caching for Performance and Scale (15 sider)
+
+• [opentelemetry.io] What is OpenTelemetry?
+• [Prometheus.io] What is Prometheus?
+
+```
+
+## Sider som billeder
+
+![ai_modul-8-deployment-principper__page_001.png](ai_modul-8-deployment-principper__page_001.png)
+![ai_modul-8-deployment-principper__page_002.png](ai_modul-8-deployment-principper__page_002.png)
+![ai_modul-8-deployment-principper__page_003.png](ai_modul-8-deployment-principper__page_003.png)
+![ai_modul-8-deployment-principper__page_004.png](ai_modul-8-deployment-principper__page_004.png)
+![ai_modul-8-deployment-principper__page_005.png](ai_modul-8-deployment-principper__page_005.png)
+![ai_modul-8-deployment-principper__page_006.png](ai_modul-8-deployment-principper__page_006.png)
+
