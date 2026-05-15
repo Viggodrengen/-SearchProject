@@ -1,23 +1,19 @@
-using Microsoft.Data.Sqlite;
+using Npgsql;
+using SearchApi.Interfaces;
 using Shared;
 using Shared.Model;
 
-namespace SearchApi.Search;
+namespace SearchApi.Repository;
 
-public class DatabaseSqlite : IDatabase
+public class DatabasePostgres : IDatabase
 {
-    private readonly SqliteConnection _connection;
+    private readonly NpgsqlConnection _connection;
     private Dictionary<string, int>? _exactWordMap;
     private Dictionary<string, List<int>>? _caseInsensitiveWordMap;
 
-    public DatabaseSqlite()
+    public DatabasePostgres()
     {
-        var connectionStringBuilder = new SqliteConnectionStringBuilder
-        {
-            DataSource = Paths.SQLITE_DATABASE
-        };
-
-        _connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
+        _connection = new NpgsqlConnection(Paths.POSTGRES_DATABASE);
         _connection.Open();
     }
 

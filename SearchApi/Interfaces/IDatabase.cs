@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Shared.Model;
 
-namespace SearchApi.Search;
+namespace SearchApi.Interfaces;
 
 public interface IDatabase : IDisposable
 {

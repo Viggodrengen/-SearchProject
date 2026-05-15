@@ -1,6 +1,7 @@
+using SearchApi.Interfaces;
 using Shared.Model;
 
-namespace SearchApi.Search;
+namespace SearchApi.Services;
 
 public class SearchLogic
 {

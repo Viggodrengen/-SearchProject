@@ -1,4 +1,6 @@
-namespace SearchApi.Search;
+using SearchApi.Interfaces;
+
+namespace SearchApi.Repository;
 
 public static class DatabaseFactory
 {

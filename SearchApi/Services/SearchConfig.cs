@@ -1,4 +1,4 @@
-namespace SearchApi.Search;
+namespace SearchApi.Services;
 
 public class SearchConfig
 {

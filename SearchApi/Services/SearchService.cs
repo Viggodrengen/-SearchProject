@@ -3,9 +3,10 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using SearchApi.Repository;
 using Shared.Model;
 
-namespace SearchApi.Search;
+namespace SearchApi.Services;
 
 public class SearchService
 {

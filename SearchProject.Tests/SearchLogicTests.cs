@@ -1,4 +1,5 @@
-using SearchApi.Search;
+using SearchApi.Interfaces;
+using SearchApi.Services;
 using Shared.Model;
 using Xunit;
 
