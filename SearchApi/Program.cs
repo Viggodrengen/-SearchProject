@@ -2,7 +2,7 @@ using System.Diagnostics;
 using NLog.Web;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
-using SearchApi.Search;
+using SearchApi.Application;
 using Shared.Model;
 
 var builder = WebApplication.CreateBuilder(args);

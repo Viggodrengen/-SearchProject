@@ -1,6 +1,6 @@
 using System.Diagnostics.Metrics;
 
-namespace SearchApi.Search;
+namespace SearchApi.Application;
 
 public static class SearchMetrics
 {

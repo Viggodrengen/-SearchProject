@@ -1,4 +1,4 @@
-using SearchApi.Search;
+using SearchApi.Domain;
 using Shared.Model;
 using Xunit;
 
@@ -78,7 +78,7 @@ public class SearchLogicTests
         Assert.Equal(1, hit.NoOfHits);
     }
 
-    private sealed class InMemorySearchDatabase : IDatabase
+    private sealed class InMemorySearchDatabase : ISearchIndexRepository
     {
         private readonly Dictionary<string, List<int>> _words;
         private readonly Dictionary<int, HashSet<int>> _matches;

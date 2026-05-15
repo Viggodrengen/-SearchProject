@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Shared.Model;
 
-namespace SearchApi.Search;
+namespace SearchApi.Domain;
 
-public interface IDatabase : IDisposable
+public interface ISearchIndexRepository : IDisposable
 {
     List<int> GetWordIds(string word, bool caseSensitive);
 
