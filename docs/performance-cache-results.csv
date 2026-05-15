@@ -1,7 +1,0 @@
-scenario,iteration,http_status,cache_status,backend,instance,time_ms
-cold-cache,1,200,miss,172.18.0.9:8080,search-api-2,2.804
-cold-cache,2,200,miss,172.18.0.9:8080,search-api-2,3.151
-cold-cache,3,200,miss,172.18.0.9:8080,search-api-2,3.025
-hot-cache,1,200,hit,172.18.0.9:8080,search-api-2,1.802
-hot-cache,2,200,hit,172.18.0.9:8080,search-api-2,1.809
-hot-cache,3,200,hit,172.18.0.9:8080,search-api-2,1.976

@@ -1,9 +1,0 @@
-timestamp,phase,iteration,http_status,curl_exit,cache_status,backend,instance,time_ms
-2026-05-15T11:03:40Z,before-stop,1,200,0,hit,172.18.0.9:8080,search-api-2,5.568
-2026-05-15T11:03:40Z,before-stop,2,200,0,hit,172.18.0.8:8080,search-api-1,77.239
-2026-05-15T11:03:41Z,during-stop,1,200,0,hit,172.18.0.9:8080,search-api-2,3.678
-2026-05-15T11:03:41Z,during-stop,2,200,0,hit,172.18.0.8:8080; 172.18.0.9:8080,search-api-2,5013.500
-2026-05-15T11:03:46Z,during-stop,3,200,0,hit,172.18.0.9:8080,search-api-2,3.303
-2026-05-15T11:03:46Z,during-stop,4,200,0,hit,172.18.0.9:8080,search-api-2,3.500
-2026-05-15T11:03:47Z,after-restart,1,200,0,miss,172.18.0.9:8080,search-api-2,5.280
-2026-05-15T11:03:47Z,after-restart,2,200,0,hit,172.18.0.9:8080,search-api-2,1.889

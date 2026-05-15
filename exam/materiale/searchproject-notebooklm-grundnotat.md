@@ -1,630 +1,816 @@
-# SearchProject – grundigt NotebookLM-notat til eksamen
+# SearchProject – NotebookLM grundnotat (teori + argumentation + eksamen)
 
-> Formål: Dette dokument er skrevet som et samlet vidensgrundlag til NotebookLM. Det skal kunne bruges til at lave podcast, øve eksamen og forklare projektets arkitektur med en tydelig rød tråd i undervisningen.
-
-## 0. Den korte fortælling
-
-SearchProject er et walking skeleton for en søgeplatform. Systemet kan indeksere dokumenter, gemme et søgeindeks, modtage søgeforespørgsler, returnere rangerede resultater, cache gentagne søgninger og vise drift/performance via observability.
-
-Det er ikke et færdigt enterprise-produkt. Det er et eksamensprojekt, der demonstrerer arkitekturprincipper i praksis:
-
-- **Y-akse:** systemet er delt funktionelt i WebApp, Console-klient, SearchApi, Indexer, PostgreSQL, Redis, Nginx og observability.
-- **X-akse:** SearchApi kan køre som flere stateless replikaer bag Nginx i Docker Compose eller Service/Ingress i Kubernetes.
-- **Z-akse:** database-skalering er beskrevet som retning: read replicas, partitionering/sharding eller managed database.
-- **Caching:** Redis bruges som cache-aside for gentagne søgninger.
-- **Operations/observability:** Loki, Grafana og Prometheus bruges til logs, dashboards og metrics.
-- **Deployment:** Docker Compose er demo-miljø; Kubernetes er produktionsretning.
-
-Den vigtigste nyere beslutning er, at den hjemmelavede C# `SearchLoadBalancer` er fjernet. Load balancing/routing er flyttet til infrastrukturen:
-
-- I Docker Compose: **Nginx**.
-- I Kubernetes: **Ingress + Service**, eventuelt med Nginx Ingress Controller.
-
-Det er en central eksamenspointe: routing er ikke forretningslogik og bør ikke ligge i applikationskoden.
+> **Formål**
+> Dette notat er lavet til tre ting:
+> 1) at du kan læse dig op på **faglig teori** før eksamen,
+> 2) at du kan koble teorien direkte til **SearchProject**,
+> 3) at NotebookLM kan lave en podcast med **dyb argumentation** i stedet for overfladiske highlights.
 
 ---
 
-## 1. Projektets komponenter
+## 0. Hvad eksamen faktisk måler (kilde: `docs/ai_eksamensprojektet-v1-0-1.md`)
 
-### 1.1 SearchWebApp
+Eksamensprojektet er et **walking skeleton**. Det betyder:
 
-SearchWebApp er webgrænsefladen. Den er bygget som Blazor webapp og har ansvaret for brugerinteraktion:
+- I skal ikke levere et færdigt enterprise-produkt.
+- I skal vise, at I kan anvende arkitekturprincipper i et realistisk delsystem.
+- I skal kunne argumentere for valg i både kode og drift.
 
-- bruger skriver en søgning,
-- vælger database,
-- vælger antal resultater,
-- vælger case-sensitivity,
-- ser resultater, cache-status og hvilken API-instans der svarede.
+Eksamen forventer typisk:
 
-SearchWebApp ejer ikke forretningslogikken. Den kalder et API endpoint via `SearchApiClient`.
+1. kort demo i drift,
+2. arkitekturpræsentation (diagrammer),
+3. kodegennemgang af nøgledele,
+4. forklaring af driftsmiljø, monitorering, caching og skalering.
 
-Struktur:
+**Nøgleindsigt:**
+Du scorer ikke ved at nævne flest værktøjer. Du scorer ved at vise:
 
-- `SearchWebApp/Components/` – UI-komponenter.
-- `SearchWebApp/Components/Pages/Home.razor` – søgesiden.
-- `SearchWebApp/Services/SearchApiClient.cs` – HTTP-klient.
-- `SearchWebApp/Interfaces/ISearchApiClient.cs` – interface for klienten.
-
-Arkitekturargument: WebApp er en selvstændig deployable UI-service. Den kan skaleres eller ændres uafhængigt af SearchApi. Den fungerer som en slags lille micro-frontend i projektets walking skeleton.
-
-### 1.2 ConsoleSearch
-
-ConsoleSearch er en CLI-klient. Den viser, at SearchApi ikke er bundet til webappen. Flere klienttyper kan bruge samme API.
-
-Arkitekturargument: Det understøtter separation mellem klienter og backend. API’et er den centrale kontrakt.
-
-### 1.3 Nginx
-
-Nginx er reverse proxy og load balancing-komponent i Docker Compose.
-
-Den lytter på `localhost:5075` og videresender `/api/*` til:
-
-- `searchapi1:8080`
-- `searchapi2:8080`
-
-Konfiguration:
-
-- `docker/nginx/search-api.conf`
-
-Hvorfor Nginx?
-
-- Load balancing er et infrastrukturansvar.
-- Det er mere realistisk end at skrive egen C# load balancer.
-- Det matcher undervisning om deployment, operations og build vs buy: vi bygger ikke platformskomponenter selv, hvis standardkomponenter løser opgaven bedre.
-- Det svarer bedre til produktionsretningen i Kubernetes, hvor Ingress/Service håndterer routing.
-
-### 1.4 SearchApi
-
-SearchApi er den vigtigste forretningsservice. Den modtager søgninger og returnerer resultater.
-
-Struktur:
-
-- `SearchApi/Interfaces/IDatabase.cs`
-- `SearchApi/Repository/DatabaseFactory.cs`
-- `SearchApi/Repository/DatabasePostgres.cs`
-- `SearchApi/Repository/DatabaseSqlite.cs`
-- `SearchApi/Services/SearchService.cs`
-- `SearchApi/Services/SearchLogic.cs`
-- `SearchApi/Services/SearchCacheOptions.cs`
-- `SearchApi/Services/SearchMetrics.cs`
-- `SearchApi/Program.cs`
-
-Den følger en simpel struktur inspireret af tidligere AuthService: Interfaces, Repository og Services. Det er ikke overengineered, men viser god separation:
-
-- Repository-laget skjuler databaseadgang.
-- Service-laget orkestrerer cache og søgelogik.
-- SearchLogic indeholder den centrale rankinglogik.
-- Program.cs er composition root og HTTP endpoint setup.
-
-SearchApi er stateless ift. HTTP requests. State ligger i PostgreSQL og Redis. Derfor kan SearchApi x-skaleres.
-
-### 1.5 Indexer
-
-Indexer opbygger søgeindekset. Den læser dokumenter og skriver ord/dokument-relationer til database.
-
-Struktur:
-
-- `indexer/Interfaces/IDatabase.cs`
-- `indexer/Repository/DatabasePostgres.cs`
-- `indexer/Repository/DatabaseSqlite.cs`
-- `indexer/Services/App.cs`
-- `indexer/Services/Crawler.cs`
-- `indexer/Services/Renamer.cs`
-- `indexer/Program.cs`
-
-Arkitekturargument: Indexer er adskilt fra SearchApi, fordi indeksering og søgning har forskellige ansvar og runtime-profiler. Det er y-akse opdeling.
-
-### 1.6 Shared
-
-Shared indeholder kontrakter og DTO-lignende modeller:
-
-- `SearchRequest`
-- `SearchResult`
-- `DocumentHit`
-- `BEDocument`
-
-Shared skal ikke indeholde forretningslogik. Det er kun fælles dataformer mellem projekterne.
-
-### 1.7 PostgreSQL
-
-PostgreSQL er persistent database. Den gemmer dokumenter, ord og relationer mellem dokumenter og ord.
-
-Arkitekturargument:
-
-- Persistent state er adskilt fra stateless services.
-- I Docker Compose bruges volume.
-- I Kubernetes kræver Postgres enten StatefulSet/PVC/backup eller managed database.
-
-### 1.8 Redis
-
-Redis er cache. SearchApi bruger cache-aside:
-
-1. Modtag request.
-2. Byg cache key.
-3. Spørg Redis.
-4. Ved hit returneres cached result.
-5. Ved miss læses database og resultat gemmes i Redis med TTL.
-
-Arkitekturargument: Redis reducerer latency og databasearbejde ved gentagne søgninger. Det kobler direkte til undervisningen om caching for performance and scale.
-
-### 1.9 Loki, Grafana og Prometheus
-
-Observability-stacken viser drift og runtime-adfærd:
-
-- Loki: logs.
-- Grafana: dashboards.
-- Prometheus: metrics scraping.
-
-Arkitekturargument: Man kan ikke kun tegne systemet; man skal kunne observere og måle det.
+- problemforståelse,
+- begrundede valg,
+- konsekvensforståelse (fordele/ulemper),
+- og realistisk produktionsretning.
 
 ---
 
-## 2. Runtime-flow: hvad sker der ved en søgning?
+## 1. Din røde tråd (brug den hele vejen)
 
-1. Brugeren åbner SearchWebApp på `localhost:5249`.
-2. Brugeren indtaster query, fx “socal energy”.
-3. WebApp bygger en `SearchRequest`.
-4. WebApp kalder Nginx på `/api/search`.
-5. Nginx fordeler requesten til enten `searchapi1` eller `searchapi2`.
-6. SearchApi validerer query, databasevalg og maxAmount.
-7. SearchService bygger cache key.
-8. SearchService spørger Redis.
-9. Hvis cache hit: returnér SearchResult.
-10. Hvis cache miss: vælg repository via DatabaseFactory.
-11. Repository læser relevante word IDs og dokumentmatches fra PostgreSQL.
-12. SearchLogic ranker dokumenter efter matchende termer.
-13. SearchResult returneres.
-14. Ved miss gemmes resultatet i Redis.
-15. UI viser resultat, cache-status og API-instans.
-16. Logs/metrics kan ses i observability.
+Hvis du går i stå, så vend altid tilbage til:
+
+1. **Problem:** intern søgning skal være hurtig, stabil og forklarbar.
+2. **Valg:** ansvar fordeles mellem WebApp, SearchApi, Indexer, Nginx, Redis, PostgreSQL, observability.
+3. **Bevis:** build/test, failover, performance/cache, og klar Kubernetes-retning.
+
+Korte kernesætninger du kan gentage:
+
+- “Vi prioriterer ansvar før teknologi.”
+- “Vi bygger domænelogik selv, men bruger standardkomponenter til platformopgaver.”
+- “Vi måler effekter i stedet for at antage dem.”
 
 ---
 
-## 3. Modul-for-modul kobling til undervisningen
+## 2. SearchProject i én arkitektursætning
 
-Denne sektion er vigtig til oplæsning og podcast: hvert modul kobles til en konkret del af projektet.
+> SearchProject er en microservice-inspireret søgeløsning, hvor online søgning, indeksering, caching, routing og observability er adskilt, så systemet kan forklares, skaleres og driftes med tydelige trade-offs.
 
-### Modul 1 – Introduktion til arkitekturprincipper
+### 2.1 Komponenter
 
-Undervisningsfokus:
+- **SearchWebApp**: UI og brugerflow.
+- **ConsoleSearch**: alternativ klient (viser API-kontraktens uafhængighed).
+- **SearchApi**: søgelogik, ranking, cache-orchestration.
+- **Indexer**: opbygger indeksdata (offline/forberedende flow).
+- **PostgreSQL**: persistent data.
+- **Redis**: cache for gentagne søgninger.
+- **Nginx**: reverse proxy/load balancing i Compose.
+- **Grafana/Loki/Prometheus**: observability.
 
-- Hvad er arkitektur?
-- Arkitektur som valg og trade-offs.
-- Ansvar, kvalitetsegenskaber og begrundelser.
+### 2.2 Kodeprincip i SearchApi
 
-Projektkobling:
+Strukturen `Interfaces / Repository / Services` er bevidst enkel:
 
-SearchProject viser, at arkitektur ikke kun er mapper og kode. Arkitektur er de valg, vi kan forklare:
+- nok separation til testbarhed,
+- lav kompleksitet,
+- hurtig gennemskuelighed til eksamen.
 
-- Hvorfor WebApp ikke taler direkte med databasen.
-- Hvorfor SearchApi er stateless.
-- Hvorfor cache ligger i Redis.
-- Hvorfor routing ligger i Nginx/Ingress og ikke i C#.
-- Hvorfor PostgreSQL er persistent state.
-- Hvorfor observability er en del af systemet.
+Det er et bevidst valg imod “for tung enterprise layering”.
 
-Eksamenspointe:
+---
 
-> “Vi bruger projektet til at vise arkitekturvalg i praksis: ansvar placeres bevidst, og hvert valg kan kobles til en kvalitetsegenskab som skalerbarhed, performance, drift eller maintainability.”
+## 3. Arkitekturbeslutninger (ADR-format)
 
-### Modul 2 – Case og systemforståelse
+## ADR-1: Custom C# load balancer fjernet → Nginx indført
 
-Undervisningsfokus:
+**Kontekst:**
+Tidligere havde projektet en custom load balancing-komponent i C#.
 
-- Forstå domænet/casen.
-- Identificere centrale use cases.
-- Bygge en arkitektur omkring systemets formål.
+**Beslutning:**
+Routing/load balancing flyttes til infrastruktur (Nginx i Compose, Ingress/Service i K8s).
 
-Projektkobling:
+**Hvorfor:**
 
-Use casen er dokumentsøgning. Derfor har systemet:
+- build-vs-buy (modul 8),
+- tydelig ansvarsplacering,
+- færre fejl i egen platformkode,
+- bedre alignment med produktionspraksis.
 
-- en Indexer, der forbereder data,
-- en SearchApi, der svarer på søgninger,
-- klienter, der viser eller tester søgning,
-- cache, fordi samme søgninger kan gentages.
+**Alternativer:**
 
-Eksamenspointe:
+- beholde custom LB,
+- bruge .NET YARP i egen service,
+- cloud-managed gateway direkte.
 
-> “Vi har ikke valgt komponenter tilfældigt. De følger af use casen: documents skal indekseres, queries skal besvares hurtigt, og resultater skal kunne observeres og måles.”
+**Konsekvenser:**
 
-### Modul 3 – Skalering og AKF scaling cube
+- plus: mindre domænestøj, bedre driftsmodel,
+- minus: mere infrastrukturkonfiguration.
 
-Undervisningsfokus:
+---
 
-- Scale out, not only scale up.
-- X-, Y- og Z-akse.
-- Skalering af service/kode og data.
+## ADR-2: Beholde enkel SearchApi struktur
 
-Projektkobling:
+**Kontekst:**
+Der var mulighed for tung Domain/Application/Infrastructure-opdeling.
 
-Y-akse:
+**Beslutning:**
+Enkel struktur bevares for læsbarhed og fokus.
 
-- WebApp, API, Indexer, Nginx, Redis, PostgreSQL og observability har forskellige ansvar.
+**Hvorfor:**
 
-X-akse:
+- passer til projektets størrelse,
+- hurtig onboarding,
+- stærk eksamensforklarbarhed.
 
-- SearchApi kører som `searchapi1` og `searchapi2`.
-- Nginx fordeler trafik.
-- I Kubernetes svarer det til flere pods bag Service.
+**Konsekvens:**
 
-Z-akse:
+- plus: lav kognitiv belastning,
+- minus: mindre “enterprise-eksplicit” lagdeling.
 
-- Ikke implementeret fuldt, men beskrevet som database-retning.
-- Mulige shard keys: tenant, datadomæne, dokumenttype eller tid.
+---
 
-Eksamenspointe:
+## ADR-3: Redis cache-aside
 
-> “Det vigtigste implementerede skaleringseksempel er x-akse på SearchApi. Y-aksen ses i serviceopdelingen, mens z-aksen er vores database-retning for fremtidig vækst.”
+**Kontekst:**
+Søgning har gentagne forespørgsler.
 
-### Modul 4–5 – Arkitekturarbejde og roadmap
+**Beslutning:**
+SearchApi bruger cache-aside med TTL.
 
-Selvom projektets primære filer især rammer de senere moduler, kan modul 4–5 kobles til arkitekturarbejdets proces:
+**Hvorfor:**
 
-- identificere scope,
-- lave walking skeleton,
-- vælge hvad der implementeres nu,
-- vælge hvad der kun beskrives som arkitekturretning.
+- lavere latency ved hits,
+- mindre databasebelastning,
+- passer til distributed runtime.
 
-Projektkobling:
+**Trade-offs:**
 
-Vi implementerer:
+- stale data,
+- key design og invalidation,
+- ekstra driftspunkt.
 
-- Docker Compose runtime,
-- Nginx,
-- to API-instanser,
-- Redis cache,
-- tests og scripts,
-- observability stack.
+---
 
-Vi beskriver som retning:
+## ADR-4: Compose som demo, Kubernetes som produktionsretning
 
-- Kubernetes produktion,
-- HPA,
-- Ingress/Service,
-- database z-skalering,
-- managed database eller read replicas.
+**Kontekst:**
+Eksamen kræver driftstankegang, men ikke fuld enterprise-udrulning.
 
-Eksamenspointe:
+**Beslutning:**
+Compose bruges til stabil demo; Kubernetes beskrives som ønsket produktion.
 
-> “Walking skeleton betyder, at vi implementerer nok til at demonstrere arkitekturen, men ikke bygger et komplet produktionssetup.”
+**Hvorfor:**
 
-### Modul 6 – Z-scale og data partitioning
+- korrekt modenhedsniveau for walking skeleton,
+- viser både praktisk drift nu og realistisk evolution.
 
-Undervisningsfokus:
+---
 
-- Z-skalering som data partitioning/sharding.
-- Dele data i uafhængige partitioner.
-- Route requests til den partition, der ejer data.
+## ADR-5: Z-skalering som roadmap, ikke big bang implementation
 
-Projektkobling:
+**Kontekst:**
+Database-skalering er kompleks og dyr at implementere tidligt.
 
-SearchProject bruger én PostgreSQL database i demoen. Det er bevidst simpelt. Men vi kan forklare, hvordan z-aksen kunne udbygges:
+**Beslutning:**
+Roadmap: single DB → read replicas → partitionering → evt. sharding.
 
-- Shard efter tenant eller kunde.
-- Shard efter datadomæne, fx mail, rapporter, logs.
-- Partitionér efter tid, hvis dokumentmængden vokser historisk.
-- Brug read replicas til tunge søgninger.
-- Introducer routerlogik i API eller database-lag.
+**Hvorfor:**
 
-Trade-off:
+- styrer kompleksitet,
+- følger målte behov,
+- undgår overengineering.
 
-- Fordel: bedre skalerbarhed og isolation.
-- Ulempe: mere kompleks routing, migrationsstrategi, konsistens og drift.
+---
 
-Eksamenspointe:
+## 4. Modul 1–12: teori + begreber + kobling + mini-svar
 
-> “Vi implementerer ikke sharding i walking skeleton’et, fordi kompleksiteten ikke står mål med casens størrelse. Men vi kan forklare konkret, hvordan z-skalering ville se ud.”
+Nedenfor er den del, der skal give dig **faglig dybde** før eksamen.
 
-### Modul 7 – Intro til operations og Kubernetes
+---
 
-Undervisningsfokus:
+## Modul 1 – Intro til arkitekturprincipper
 
-- Docker images.
-- Kubernetes overview.
-- Pods, Services, Secrets, ConfigMaps.
-- Miljøer og operations.
+### Hvad modulet handler om
 
-Projektkobling:
+Arkitektur er ikke “hvilket framework vi valgte”. Arkitektur er de valg, der bestemmer:
 
-Docker Compose viser driftsmiljøet lokalt:
+- hvordan systemet ændres over tid,
+- hvordan det fejler,
+- hvordan det driftes,
+- og hvem der ejer hvilke beslutninger.
 
-- container images for SearchApi, SearchWebApp og Indexer,
-- standard images for PostgreSQL, Redis, Nginx, Loki, Grafana og Prometheus.
+### Begreber du skal kunne
 
-Kubernetes-diagrammet viser produktionsretningen:
+- separation of concerns,
+- cohesion/coupling,
+- quality attributes,
+- trade-offs,
+- architecture as decisions.
 
-- Ingress for ekstern adgang,
-- Services for stabile endpoints,
-- Pods/Deployments for workloads,
-- Secrets/Vault for credentials,
-- PVC for state.
+### SearchProject-kobling
 
-Eksamenspointe:
+Ansvar er opdelt i klient, API, indeks, data, cache, proxy og observability.
 
-> “Docker Compose er demo og udvikling; Kubernetes er modellen for produktion. Begge viser samme principper, men på forskellige modenhedsniveauer.”
+### Hvorfor valget er fagligt stærkt
 
-### Modul 8 – Deployment, build vs buy, barrier conditions og rollback
+Uden tydelig ansvarsdeling bliver både fejlfinding og skalering dyrere.
 
-Undervisningsfokus:
+### Mini-svar til eksamen
 
-- Build vs buy.
-- Barrier conditions.
-- Rollback.
-- Flere instanser og rolling updates.
-- Deploymentstrategier.
+> “Vores vigtigste M1-princip er ansvarsplacering: søgelogik i API, routing i infrastruktur, state i database og driftssynlighed i observability.”
 
-Projektkobling:
+---
 
-Build vs buy:
+## Modul 2 – Intro case
 
-- Vi bygger ikke vores egen load balancer.
-- Vi bruger Nginx i Compose og Ingress/Service i Kubernetes.
-- Vi bruger Redis, PostgreSQL, Grafana, Loki og Prometheus som standardkomponenter.
+### Hvad modulet handler om
 
-Barrier conditions:
+Casearbejde betyder, at systemet skal formes af problemet: hvad er workflow, hvem er bruger, hvad er kritisk svartid, hvor er dataflow?
 
-- Før deployment bør build og tests være grønne.
-- Docker Compose config skal validere.
-- Health endpoint skal svare.
-- Performance/failover scripts skal kunne køre.
+### Begreber
 
-Rollback:
+- use case,
+- online vs offline flow,
+- bounded responsibility.
 
-- I Compose kan man rulle tilbage via tidligere image/commit.
-- I Kubernetes kan Deployment lave rollout/rollback.
+### SearchProject-kobling
 
-Eksamenspointe:
+Vi har to tydelige flows:
 
-> “Vi fokuserer vores egen kode på søgedomænet og bruger standard infrastruktur til platformopgaver.”
+1. **Indexer-flow** (forberedende, batch-orienteret),
+2. **Search-flow** (online, svartidsfølsomt).
 
-### Modul 9 – Performance, metrics, OpenTelemetry og Prometheus
+### Argumentation
 
-Undervisningsfokus:
+Denne opdeling gør det muligt at optimere flows forskelligt uden at koble alt sammen i én service.
 
-- Performance and stress testing.
-- Metrics.
-- OpenTelemetry.
-- Prometheus.
-- Grafana.
+### Mini-svar
 
-Projektkobling:
+> “Indexer og SearchApi findes, fordi casen har to runtime-profiler: tung forberedelse og hurtig online søgning.”
 
-SearchProject har:
+---
 
-- performance/cache script,
-- Prometheus metrics endpoint,
-- Grafana dashboard,
-- cache hit/miss metrics,
-- HTTP headers der viser cache og API-instans.
+## Modul 3 – Skalering (AKF X/Y/Z)
 
-Performance-testens pointe:
+### Hvad modulet handler om
 
-- Cold-cache viser miss.
-- Hot-cache viser hit.
-- Det dokumenterer cachingens effekt.
+Skalering er ikke kun flere CPU-kerner. Man skalerer via struktur:
 
-Eksamenspointe:
+- **X**: flere instanser,
+- **Y**: funktionel opdeling,
+- **Z**: dataopdeling.
 
-> “Performance er ikke bare en påstand. Vi har scripts og metrics, så vi kan måle og forklare runtime-adfærd.”
+### Begreber
 
-### Modul 10 – Caching med Redis
+- stateless scaling,
+- service decomposition,
+- partitioning bias.
 
-Undervisningsfokus:
+### SearchProject-kobling
 
-- Caching for performance and scale.
-- Redis.
-- Query caching.
-- Distributed caching i ASP.NET Core.
+- X: `searchapi1` + `searchapi2` bag Nginx.
+- Y: adskilte komponenter for UI/API/index/cache/data/observability.
+- Z: planlagt dataevolution.
 
-Projektkobling:
+### Argumentation
 
-SearchApi bruger `IDistributedCache` med Redis. Cache key bygges ud fra:
+X og Y giver hurtig praktisk gevinst. Z holdes som roadmap pga. høj kompleksitet.
 
-- database,
-- case sensitivity,
-- maxAmount,
-- query terms.
+### Mini-svar
 
-Cache-aside flow:
+> “Vi har implementeret X og Y nu, og vi har en konkret Z-plan, så vi kan skalere data når behovet er målt.”
 
-1. Check cache.
-2. Hit: returnér.
-3. Miss: beregn resultat.
-4. Gem i cache.
-5. Returnér.
+---
 
-Trade-offs:
+## Modul 4 – Workshop med y-skalering
 
-- TTL skal vælges fornuftigt.
-- Cache invalidation er svært.
-- Cache må ikke være eneste sandhed.
+### Hvad modulet handler om
 
-Eksamenspointe:
+Y-skalering træner evnen til at splitte systemansvar efter funktion, ikke efter teknologi.
 
-> “Redis er ikke bare en ekstra container. Den er en arkitekturkomponent, der ændrer performanceprofilen for gentagne søgninger.”
+### Begreber
 
-### Modul 11 – Databaser i Kubernetes og volumes
+- service boundaries,
+- contract-first thinking,
+- responsibility-driven decomposition.
 
-Undervisningsfokus:
+### SearchProject-kobling
 
-- Volumes i Kubernetes.
-- Databaser i Kubernetes.
-- Skal man køre database i cluster eller bruge managed database?
+SearchWebApp/ConsoleSearch er klienter; SearchApi er backendkontrakt. Dette reducerer kobling.
 
-Projektkobling:
+### Argumentation
 
-PostgreSQL kører i Docker Compose med volume. I Kubernetes vil PostgreSQL kræve:
+Når klienter er adskilt fra API-kontrakt, kan UI ændres uden at ødelægge søgelogikken.
 
-- PersistentVolumeClaim,
+### Mini-svar
+
+> “Y-skalering i vores projekt er først og fremmest ansvars-skalering: vi splitter funktioner før vi splitter deployment.”
+
+---
+
+## Modul 5 – X-skalering af kode
+
+### Hvad modulet handler om
+
+Horisontal skalering og trafikfordeling.
+
+### Begreber
+
+- replica,
+- load balancing,
+- failure isolation.
+
+### SearchProject-kobling
+
+Flere SearchApi-instanser kører bag Nginx.
+
+### Argumentation
+
+Vi tog modul 5-princippet og gjorde det mere professionelt med infrastruktur-routing.
+
+### Mini-svar
+
+> “Vi bevarer X-princippet, men flytter mekanismen ud af domænekoden.”
+
+---
+
+## Modul 6 – Z-scale
+
+### Hvad modulet handler om
+
+Dataskalering med partitionering/splitting, når volumen eller adgangsmønster kræver det.
+
+### Begreber
+
+- read replicas,
+- partitioning,
+- sharding,
+- routing strategy.
+
+### SearchProject-kobling
+
+Roadmap:
+
+1. single Postgres,
+2. read replicas,
+3. partitionering efter domæne/tenant/tid,
+4. evt. sharding.
+
+### Argumentation
+
+Z-skalering giver kapacitet, men gør konsistens, migration og drift markant sværere.
+
+### Mini-svar
+
+> “Vi har bevidst valgt en trinvis Z-roadmap, fordi dataskalering er den dyreste arkitekturændring.”
+
+---
+
+## Modul 7 – Intro til operations
+
+### Hvad modulet handler om
+
+Arkitektur er også driftsarkitektur: miljøer, deploymentmodeller og operationel synlighed.
+
+### Begreber
+
+- dev/test/prod,
+- container runtime,
+- Kubernetes primitives.
+
+### SearchProject-kobling
+
+Compose bruges til demo/validering. Kubernetes-diagrammet viser ønsket produktion.
+
+### Argumentation
+
+Det er fagligt stærkt at kunne skelne mellem “hvad vi demonstrerer nu” og “hvordan vi drifter i skala”.
+
+### Mini-svar
+
+> “Compose er vores verificerbare demo-miljø; Kubernetes er vores målarkitektur for drift.”
+
+---
+
+## Modul 8 – Deploymentprincipper
+
+### Hvad modulet handler om
+
+At reducere release-risiko gennem:
+
+- build-vs-buy,
+- barrier conditions,
+- rollback,
+- monitorering.
+
+### Begreber
+
+- release gates,
+- rollback window,
+- operational readiness,
+- Helm som deployment-pakkestyring.
+
+### SearchProject-kobling
+
+- build: SearchApi-domænelogik,
+- buy/use: Nginx, Redis, Postgres, Prometheus, Grafana, Loki,
+- gates: build/test/compose/health/scripts.
+
+### Argumentation
+
+Det mest modne valg var at fjerne custom LB-kode fremfor at “vinde” på egen platformkode.
+
+### Mini-svar
+
+> “Vi bruger build-vs-buy aktivt: vi bygger det der differentierer (søgelogik), og køber det der er commoditized (routing/observability).”
+
+---
+
+## Modul 9 – Performance og metrics
+
+### Hvad modulet handler om
+
+Performance engineering kræver hypoteser, målinger og feedback loops.
+
+### Begreber
+
+- latency/throughput,
+- instrumentation,
+- telemetry pipeline,
+- KPI vs tekniske metrics.
+
+### SearchProject-kobling
+
+- performance-cache script,
+- metrics-scraping,
+- dashboards,
+- synlig cache hit/miss-adfærd.
+
+### Argumentation
+
+Uden målinger bliver arkitekturvalg trosbaserede.
+
+### Mini-svar
+
+> “Vi beviser cache-effekten med cold/hot-scenarier i stedet for at antage forbedring.”
+
+---
+
+## Modul 10 – Caching
+
+### Hvad modulet handler om
+
+Caching som arkitekturprincip: hvor i flowet man cacher, og hvad man betaler for det.
+
+### Begreber
+
+- cache-aside,
+- TTL,
+- invalidation,
+- staleness budget.
+
+### SearchProject-kobling
+
+SearchApi bruger Redis cache-aside med key baseret på query/options.
+
+### Argumentation
+
+Cache passer godt til read-heavy søgescenarier, men kræver disciplin i datafriskhed.
+
+### Mini-svar
+
+> “Cache giver os fart; TTL og cache-nøgledesign beskytter os mod ukontrolleret staleness.”
+
+---
+
+## Modul 11 – Databaser i Kubernetes + volumes
+
+### Hvad modulet handler om
+
+Stateful workloads i containerplatforme kræver persistence-modeller og driftsdisciplin.
+
+### Begreber
+
+- PVC/PV,
 - backup/restore,
-- resource limits,
-- eventuelt StatefulSet,
-- eller managed database udenfor cluster.
+- RPO/RTO,
+- stateful operational burden.
 
-Eksamenspointe:
+### SearchProject-kobling
 
-> “Stateless services er nemme at skalere; stateful databaser kræver mere driftsansvar.”
+Postgres er state. I K8s skal dette håndteres med PVC/backup eller managed DB.
 
-### Modul 12 – Databaser 2, StatefulSets og splitting databases
+### Argumentation
 
-Undervisningsfokus:
+Det er let at skalere stateless API-pods; det er sværere at drive korrekt stateful data.
 
-- StatefulSets.
-- Splitting databases.
-- Read replicas.
-- Database-skalering.
+### Mini-svar
 
-Projektkobling:
-
-SearchProject kan vokse sådan:
-
-- Step 1: én PostgreSQL database.
-- Step 2: read replica til søgeforespørgsler.
-- Step 3: partitionering efter datadomæne.
-- Step 4: sharding med routing.
-- Step 5: managed database eller specialiseret search engine hvis casen kræver det.
-
-Eksamenspointe:
-
-> “Z-akse er vores database-skalering. Den er bevidst ikke implementeret fuldt, men vi kan forklare en realistisk migrationsvej.”
+> “Vores største produktionsrisiko ligger i stateful data, ikke i API-deployment.”
 
 ---
 
-## 4. Diagrammernes rolle
+## Modul 12 – Databaser 2 (StatefulSets, replicas, splitting)
 
-Den aktive diagramfil er:
+### Hvad modulet handler om
 
-- `diagrammer/SearchProject diagrams - UML + C4.drawio`
+Hvordan databaser skaleres og stabiliseres over tid i et K8s-landskab.
 
-De vigtigste sider er:
+### Begreber
 
-1. **C4 Container syntax eksperiment**
-2. **Kubernetes syntax eksperiment**
+- StatefulSet,
+- replication,
+- database split patterns,
+- consistency/availability trade-offs.
 
-### C4 Container
+### SearchProject-kobling
 
-C4 Container viser runtime-containere og ansvar:
+Z-roadmap binder modul 12 sammen med modul 3 og 11.
 
-- Bruger.
-- SearchWebApp.
-- ConsoleSearch.
-- Nginx.
-- SearchApi.
-- Indexer.
-- PostgreSQL.
-- Redis.
-- Observability.
+### Argumentation
 
-Bruges til at forklare:
+StatefulSets/replicas er ikke bare teknik; de ændrer fejlbillede, driftsansvar og recoveryflow.
 
-- Y-akse.
-- X-akse.
-- Caching.
-- Observability.
-- Hvorfor Nginx er infrastruktur.
+### Mini-svar
 
-### Kubernetes diagram
-
-Kubernetes-diagrammet viser produktionsretning:
-
-- Ingress.
-- Nginx Ingress Controller.
-- Services.
-- Deployments.
-- Pods.
-- HPA.
-- StatefulSet/PVC.
-- Secrets/Vault.
-- Observability namespace.
-
-Bruges til at forklare:
-
-- Hvordan Compose-arkitekturen kan oversættes til Kubernetes.
-- Hvor load balancing sker.
-- Hvordan stateless og stateful workloads adskilles.
-- Hvordan cloud vs on-prem påvirker valg af ingress/load balancer.
+> “Vi bruger modul 12 som plan for næste modenhedstrin, ikke som pynt i diagrammet.”
 
 ---
 
-## 5. Test og kvalitet
+## 5. Ønsket Kubernetes-produktionssetup (fremadrettet)
 
-Projektet verificeres på flere niveauer:
+Dette er den del, der skal vise “reel faglig forståelse” af drift og arkitektur.
 
-### Unit tests
+### 5.1 Målbillede
 
-`SearchProject.Tests` tester SearchLogic. Det er hurtigt og uafhængigt af Docker.
+- Ingress controller håndterer ekstern trafik.
+- Service abstraherer pods.
+- SearchApi deployes som stateless Deployment med flere replikaer.
+- HPA skalerer på CPU/latency/evt. custom metrics.
+- Redis og Postgres håndteres stateful (med persistence-strategi).
+- Observability namespace med Prometheus/Grafana/Loki.
 
-### Build
+### 5.2 Miljømodel
 
-Hele solution bygges med `dotnet build`.
+- **Dev:** lokal Compose, hurtig feedback.
+- **Test/Staging:** K8s-lignende miljø med release gates.
+- **Prod:** kontrollerede rollouts, rollback og SLO-overvågning.
 
-### Docker Compose validation
+### 5.3 Deploymentdisciplin
 
-`docker compose config --quiet` sikrer, at Compose-konfigurationen er gyldig.
+- CI build + tests,
+- image scan,
+- Helm chart versionering,
+- progressive rollout,
+- rollback ved brud på gates.
 
-### Smoke test
+### 5.4 Hvad vi vinder
 
-Health og search endpoint testes via Nginx på `localhost:5075`.
+- konsistent runtime-model,
+- lettere drift ved vækst,
+- bedre fejlisolation,
+- observability på tværs af services.
 
-### Performance/cache script
+### 5.5 Hvad vi betaler
 
-`performance-cache-test.sh` viser cold-cache vs hot-cache.
-
-### Failover script
-
-`failover-test.sh` stopper en API-instans og verificerer, at trafikken stadig kan gå til den anden.
-
----
-
-## 6. Fremlæggelsesstruktur
-
-En stærk 8-10 minutters fremlæggelse kan være:
-
-1. Problem og system: dokumentsøgning.
-2. C4 Container: ansvar og serviceopdeling.
-3. Nginx-beslutningen: routing flyttet til infrastruktur.
-4. X/Y/Z-skalering.
-5. Redis caching og performance.
-6. Kubernetes produktionsretning.
-7. Observability og tests.
-8. Konklusion og trade-offs.
+- øget driftskompleksitet,
+- større krav til platformkompetence,
+- flere moving parts.
 
 ---
 
-## 7. Svar på forventelige eksamensspørgsmål
+## 6. Risiko- og trade-off matrix
 
-### Hvorfor ikke egen C# load balancer?
-
-Fordi load balancing er et infrastrukturansvar. Nginx, Ingress og Services er standardkomponenter, der er bedre egnede. C#-koden skal fokusere på søgedomænet.
-
-### Er projektet microservices?
-
-Det er et samlet repo, men med microservice-inspirerede deployable services. Ideelt kunne hver service ligge i eget repo, og infrastruktur i et separat repo. Til eksamen er mono-repo valgt for overskuelighed.
-
-### Hvorfor Redis?
-
-Fordi gentagne søgninger kan besvares hurtigere fra cache. Det reducerer latency og databasebelastning.
-
-### Hvorfor Kubernetes?
-
-Kubernetes viser produktionsretningen for scaling, deployment, service discovery, routing, secrets og storage.
-
-### Hvad er den største begrænsning?
-
-Database-skalering er mest planlagt, ikke implementeret. Det er bevidst, fordi z-skalering er kompleks og uden for walking skeletonets scope.
+| Emne | Fordel | Ulempe | Mitigerende valg |
+|---|---|---|---|
+| Nginx vs custom LB | moden routing, mindre domænekode | ekstra infra config | versionsstyring + simple config-filer |
+| Redis cache | lavere latency | stale data | TTL, key-strategi, fallback til DB |
+| X-skalering API | højere robusthed | mere koordinering i drift | health checks + failover test |
+| K8s målarkitektur | skalerbar drift | høj kompleksitet | trinvis indførsel + automatisering |
+| Z-roadmap | fremtidig datakapacitet | kompleks migration | faseopdelt plan og målebaseret trigger |
 
 ---
 
-## 8. Endelig konklusion
+## 7. 7–8 minutters eksamenspitch (praktisk)
 
-SearchProject viser, hvordan undervisningens arkitekturprincipper kan bruges i et konkret system. Projektet forbinder kode, Docker Compose, Nginx, Redis, PostgreSQL, observability, tests og Kubernetes-diagrammer i én samlet fortælling.
+## 0:00–1:00 – Problem + krav
 
-Det vigtigste er ikke, at systemet er stort. Det vigtigste er, at det er forklarbart:
+“Vi byggede et walking skeleton, der opfylder krav om skalering, monitorering, caching og database-retning.”
 
-- Hver komponent har et ansvar.
-- Hvert valg kan begrundes.
-- Skalering kan forklares med x, y og z.
-- Performance kan måles.
-- Drift kan observeres.
-- Produktion kan beskrives med Kubernetes.
+## 1:00–3:30 – Løsning i drift (C4)
+
+- gennemgå komponenter,
+- forklar Nginx-beslutning,
+- forklar cache-flow.
+
+## 3:30–5:30 – Ønsket produktion (K8s)
+
+- Ingress/Service/Deployments/HPA,
+- stateful vs stateless,
+- fordele/ulemper.
+
+## 5:30–7:30 – Kode + bevis
+
+- SearchApi struktur,
+- SearchService/SearchLogic,
+- tests/performance/failover.
+
+---
+
+## 8. Forberedte svar til underviser/censor
+
+### “Hvorfor fjernede I custom load balancer?”
+Fordi routing er platformansvar. Build-vs-buy tilsiger, at vi skal fokusere egen kode på søgedomænet.
+
+### “Er jeres K8s-plan realistisk?”
+Ja, fordi vi skelner tydeligt mellem stateless og stateful ansvar, og vi har en trinvis drift-/release-model.
+
+### “Hvorfor er z-skalering ikke implementeret fuldt?”
+Fordi det er den dyreste kompleksitet i casen. Vi har en konkret roadmap, som aktiveres ved målte behov.
+
+### “Hvordan dokumenterer I performance?”
+Med tests/scripts og observability-data, ikke med subjektive oplevelser.
+
+### “Hvad er projektets største svaghed?”
+Stateful datadrift i K8s er stadig roadmap-tung og kræver mere operationsmodenhed.
+
+---
+
+## 9. Mini-ordliste til sikker eksamenssprogbrug
+
+- **Walking skeleton:** minimumsløsning der demonstrerer arkitektur i drift.
+- **X-skalering:** flere ens instanser.
+- **Y-skalering:** funktionel opdeling i services.
+- **Z-skalering:** dataopdeling på tværs af partitioner/shards.
+- **Cache-aside:** appen styrer cache lookup + populate.
+- **Barrier condition:** release gate, som skal være opfyldt.
+- **Rollback window:** tidsrum hvor tilbageførsel kan ske sikkert.
+- **Observability:** evnen til at forstå driftstilstand via telemetry.
+
+---
+
+## 10. Konklusion
+
+Hvis du kan stå på dette notat, kan du vise:
+
+1. dyb teoriforståelse fra undervisningen,
+2. konkret kobling mellem teori og SearchProject,
+3. argumentation for arkitekturvalg,
+4. realistisk produktionstænkning i Kubernetes,
+5. og moden håndtering af fordele, ulemper og fremtidige risici.
+
+Det er præcis den type faglighed, der løfter en mundtlig eksamen fra “demo” til “arkitekturforsvar”.
+
+---
+
+## 11. Produktionsmodenhed: fra demo til drift (konkret plan)
+
+Denne sektion er lavet for at kunne svare på spørgsmålet: “Okay, fint projekt – men hvordan ville I faktisk køre det i produktion?”
+
+### Trin 1 – Stabil containerplatform
+
+- Etabler namespace-struktur (fx `search`, `data`, `observability`).
+- Definér resource requests/limits for API og background jobs.
+- Kør SearchApi som Deployment med mindst 2 replikaer.
+- Konfigurer readiness/liveness probes.
+
+**Hvorfor:**
+Uden klare probes og resourcegrænser bliver autoskalering og failover ustabilt.
+
+### Trin 2 – Releasekontrol og rollback
+
+- Introducér Helm chart med versionsstyring.
+- Opsæt CI/CD-gates: build, tests, image scan, smoke checks.
+- Kør kontrolleret rollout (rolling update) med rollback-plan.
+
+**Hvorfor:**
+Hurtige deploys uden kontrol øger risikoen for driftshændelser.
+
+### Trin 3 – Observability som driftskontrakt
+
+- Definér minimumsdashboard for SLI’er (latency, error rate, throughput).
+- Etabler alarmer på fejlbudget-/fejlrate-grænser.
+- Standardisér log-korrelation med request IDs.
+
+**Hvorfor:**
+Hvis man ikke kan observere systemet, kan man ikke styre det.
+
+### Trin 4 – Stateful modenhed
+
+- Vælg database-strategi (self-managed i cluster vs managed service).
+- Definér backup/restore testfrekvens.
+- Definér RPO/RTO mål for data.
+
+**Hvorfor:**
+Stateful data er typisk den største risiko i skalerede systemer.
+
+---
+
+## 12. Uddybede alternativer (og hvorfor de ikke blev valgt nu)
+
+### Alternativ A: Beholde custom C# load balancer
+
+**Fordel:** fuld kontrol i egen kode.
+**Ulempe:** høj vedligeholdelsesbyrde, større risiko, dårligere separation mellem domæne og platform.
+
+**Konklusion:** fravalgt pga. build-vs-buy og driftsrealisme.
+
+### Alternativ B: Gå direkte til fuld Kubernetes implementation
+
+**Fordel:** stærk produktionsnær demonstration.
+**Ulempe:** tidskrævende setup, høj fejlrisiko, mindre fokus på arkitekturargumentation i selve casen.
+
+**Konklusion:** fravalgt som første step; valgt som målarkitektur.
+
+### Alternativ C: Ingen cache
+
+**Fordel:** simplere datafriskhedsbillede.
+**Ulempe:** dårligere svartider ved gentagne søgninger, højere DB-load.
+
+**Konklusion:** fravalgt fordi casen er read-heavy.
+
+### Alternativ D: Fuld z-skalering nu
+
+**Fordel:** tidlig data-skalerbarhed.
+**Ulempe:** høj migrations- og driftskompleksitet uden dokumenteret behov.
+
+**Konklusion:** fravalgt nu; roadmap valgt.
+
+---
+
+## 13. Failure-scenarier og hvordan arkitekturen håndterer dem
+
+### Scenarie 1 – Én SearchApi-instans går ned
+
+- Nginx ruter fortsat til den anden instans.
+- Failover-script bruges som driftstest.
+
+**Læring:** X-skalering giver robusthed mod enkeltinstans-fejl.
+
+### Scenarie 2 – Redis utilgængelig
+
+- API skal kunne falde tilbage til DB-opslag.
+- Ydeevnen falder, men funktionalitet bevares.
+
+**Læring:** Cache er acceleration, ikke eneste sandhed.
+
+### Scenarie 3 – Postgres performanceflaskehals
+
+- Start med query-optimering + index-review.
+- Næste trin: read replicas.
+- Derefter overvej partitionering.
+
+**Læring:** Z-roadmap aktiveres af målte flaskehalse.
+
+### Scenarie 4 – Fejlfuld deployment
+
+- Barrier conditions bør stoppe release tidligt.
+- Hvis fejl passerer gates: rollback.
+
+**Læring:** release-sikkerhed er en proces, ikke et værktøj.
+
+---
+
+## 14. SLI/SLO tænkning (så du kan tale professionelt om drift)
+
+Selvom fulde SLO’er ikke er implementeret, kan du forklare en realistisk model:
+
+### Mulige SLI’er
+
+- P95-latency på `/api/search`.
+- Error-rate (5xx).
+- Cache hit ratio.
+- Query-responstid mod DB.
+
+### Mulige SLO’er (eksempler)
+
+- 99% requests under 300 ms ved normal load.
+- 5xx-rate under 0,5% pr. time.
+- Cache hit ratio over 60% på hot queries.
+
+### Hvorfor vigtigt i eksamen
+
+Det viser, at I ikke kun tænker “kører det?”, men “kører det godt nok, og hvordan ved vi det?”
+
+---
+
+## 15. Udvidet spørgsmålstræning (kort, men dyb)
+
+### “Hvordan begrunder I at projektet er et walking skeleton?”
+Det demonstrerer kernearkitekturen i drift, men afgrænser bevidst enterprise-kompleksitet som roadmap.
+
+### “Hvad ville I gøre først, hvis brugertallet fordobles?”
+Skaler SearchApi X-aksen, monitorér bottlenecks, justér cache/DB-kapacitet, og først derefter overvej Z-tiltag.
+
+### “Hvad er forskellen på at kunne deploye og at kunne drifte?”
+Deploy er at få software op at køre; drift er at kunne observere, måle, rollbacke og forbedre stabilt over tid.
+
+### “Hvad er den vigtigste arkitekturfaglige læring i jeres case?”
+At korrekt ansvarsplacering reducerer både udviklings- og driftskompleksitet.
+
+### “Hvorfor er jeres argumentation bedre end bare ‘det virker’?”
+Fordi vi kan forklare sammenhængen mellem teori, valg, konsekvens og målelig effekt.
+
+---
+
+## 16. Afsluttende eksamensstatement (kan læses op)
+
+> “SearchProject er bygget som et bevidst walking skeleton. Vi har valgt en enkel og forklarbar kodearkitektur, flyttet platformansvar til standardkomponenter, målt performance frem for at antage den, og dokumenteret en realistisk Kubernetes-retning med klare trade-offs. Derfor kan vi ikke kun vise en demo – vi kan forsvare en arkitektur.”

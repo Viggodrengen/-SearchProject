@@ -59,5 +59,5 @@
 
 - Dagens opgave 1
 
-![ai_modul-3-en-roadmap-for-y-scale__slide_006__img_01.tiff](ai_modul-3-en-roadmap-for-y-scale__slide_006__img_01.tiff)
+![ai_modul-3-en-roadmap-for-y-scale__slide_006__img_01.png](ai_modul-3-en-roadmap-for-y-scale__slide_006__img_01.png)
 

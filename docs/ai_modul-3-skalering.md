@@ -19,7 +19,7 @@
 
 - Skalering af service
 
-![ai_modul-3-skalering__slide_002__img_01.jpg](ai_modul-3-skalering__slide_002__img_01.jpg)
+![ai_modul-3-skalering__slide_002__img_01.png](ai_modul-3-skalering__slide_002__img_01.png)
 
 ## Slide 3
 
@@ -47,7 +47,7 @@
 - Logic - API
 - Data - database
 
-![ai_modul-3-skalering__slide_004__img_01.svg](ai_modul-3-skalering__slide_004__img_01.svg)
+![ai_modul-3-skalering__slide_004__img_01.png](ai_modul-3-skalering__slide_004__img_01.png)
 ![ai_modul-3-skalering__slide_004__img_02.png](ai_modul-3-skalering__slide_004__img_02.png)
 
 ## Slide 5
@@ -79,7 +79,7 @@
 - Data - database
 - = data
 
-![ai_modul-3-skalering__slide_006__img_01.svg](ai_modul-3-skalering__slide_006__img_01.svg)
+![ai_modul-3-skalering__slide_006__img_01.png](ai_modul-3-skalering__slide_006__img_01.png)
 ![ai_modul-3-skalering__slide_006__img_02.png](ai_modul-3-skalering__slide_006__img_02.png)
 
 ## Slide 7
@@ -104,7 +104,7 @@
 - y-
 - skalering
 
-![ai_modul-3-skalering__slide_007__img_01.svg](ai_modul-3-skalering__slide_007__img_01.svg)
+![ai_modul-3-skalering__slide_007__img_01.png](ai_modul-3-skalering__slide_007__img_01.png)
 ![ai_modul-3-skalering__slide_007__img_02.png](ai_modul-3-skalering__slide_007__img_02.png)
 
 ## Slide 8
@@ -140,7 +140,7 @@
 
 - Skalering af data / tilstand
 
-![ai_modul-3-skalering__slide_009__img_01.jpg](ai_modul-3-skalering__slide_009__img_01.jpg)
+![ai_modul-3-skalering__slide_009__img_01.png](ai_modul-3-skalering__slide_009__img_01.png)
 
 ## Slide 10
 
@@ -192,9 +192,9 @@
 - Reception – API
 - Redirect
 
-![ai_modul-3-skalering__slide_012__img_01.gif](ai_modul-3-skalering__slide_012__img_01.gif)
-![ai_modul-3-skalering__slide_012__img_02.gif](ai_modul-3-skalering__slide_012__img_02.gif)
-![ai_modul-3-skalering__slide_012__img_03.gif](ai_modul-3-skalering__slide_012__img_03.gif)
+![ai_modul-3-skalering__slide_012__img_01.png](ai_modul-3-skalering__slide_012__img_01.png)
+![ai_modul-3-skalering__slide_012__img_02.png](ai_modul-3-skalering__slide_012__img_02.png)
+![ai_modul-3-skalering__slide_012__img_03.png](ai_modul-3-skalering__slide_012__img_03.png)
 
 ## Slide 13
 
