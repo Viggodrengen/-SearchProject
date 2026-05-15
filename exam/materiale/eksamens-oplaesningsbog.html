@@ -3,64 +3,125 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SearchProject – eksamens oplæsningsbog</title>
+  <title>SearchProject – oplæsningsbog til eksamen</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.65;margin:0;background:#f7f7f5;color:#222}
-    main{max-width:980px;margin:auto;background:white;padding:48px 64px;box-shadow:0 0 30px #0001}
-    h1,h2,h3{line-height:1.2;color:#123} h1{font-size:2.4rem} h2{margin-top:2.5rem;border-top:2px solid #ddd;padding-top:1.2rem}
-    .cue{background:#fff7d6;border-left:6px solid #d6a600;padding:1rem;margin:1rem 0}
-    .say{background:#eef6ff;border-left:6px solid #3b82f6;padding:1rem;margin:1rem 0}
-    .module{background:#f4f7f4;border:1px solid #d8e5d8;border-radius:12px;padding:1rem;margin:1rem 0}
-    code{background:#eee;padding:.1rem .3rem;border-radius:4px}
+    :root{--bg:#071712;--paper:#fffaf0;--paper2:#f5efe2;--ink:#17211b;--muted:#5e6b63;--green:#0d5b46;--mint:#b9ecd2;--gold:#f4c76b;--blue:#91c7ff;--coral:#ff7f63;--line:rgba(23,33,27,.14);--shadow:0 28px 80px rgba(7,23,18,.18);--r:28px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--bg)}body{margin:0;color:var(--ink);font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;line-height:1.68;background:radial-gradient(circle at 12% 4%,rgba(185,236,210,.24),transparent 30%),linear-gradient(135deg,#071712,#10251f 50%,#071712)}
+    header{color:var(--paper);padding:64px min(7vw,80px) 36px;max-width:1280px;margin:auto}header h1{font-family:Georgia,serif;font-size:clamp(3rem,7vw,6.8rem);line-height:.95;margin:0;letter-spacing:-.06em}header p{font-size:1.25rem;max-width:820px;color:rgba(255,250,240,.78)}
+    nav{position:sticky;top:0;z-index:10;background:rgba(7,23,18,.86);backdrop-filter:blur(18px);border-block:1px solid rgba(255,255,255,.12);padding:12px min(7vw,80px);display:flex;gap:10px;overflow:auto}nav a{color:var(--paper);text-decoration:none;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 12px;font-size:.9rem;white-space:nowrap}nav a:hover{background:rgba(255,255,255,.12)}
+    main{max-width:1180px;margin:0 auto 80px;padding:0 min(5vw,48px)}section{background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);padding:34px;margin:28px 0;border:1px solid rgba(255,255,255,.55)}h2{font-family:Georgia,serif;font-size:2.2rem;margin:.1rem 0 1rem;letter-spacing:-.03em}h3{margin-top:1.5rem;color:var(--green)}.kicker{text-transform:uppercase;letter-spacing:.14em;color:var(--green);font-weight:800;font-size:.82rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px}.say{background:#eaf7f0;border-left:7px solid var(--green);padding:18px;border-radius:14px;margin:16px 0}.exam{background:#fff5d7;border-left:7px solid var(--gold);padding:18px;border-radius:14px;margin:16px 0}.warn{background:#ffe8df;border-left:7px solid var(--coral);padding:18px;border-radius:14px;margin:16px 0}code{background:#eee6d8;border-radius:6px;padding:.12rem .35rem}ul{padding-left:1.4rem}li{margin:.35rem 0}.script{font-size:1.06rem;background:var(--paper2);border:1px dashed #ceb98b;padding:18px;border-radius:18px}
   </style>
 </head>
 <body>
+<header>
+  <div class="kicker">Arkitekturprincipper i praksis</div>
+  <h1>SearchProject oplæsningsbog</h1>
+  <p>En modulopdelt eksamensbog, hvor hvert undervisningsmodul kobles direkte til projektets kode, Docker Compose, Nginx, Redis, PostgreSQL, observability og Kubernetes-diagrammer.</p>
+</header>
+<nav>
+  <a href="#intro">Intro</a><a href="#m1">M1</a><a href="#m2">M2</a><a href="#m3">M3</a><a href="#m6">M6</a><a href="#m7">M7</a><a href="#m8">M8</a><a href="#m9">M9</a><a href="#m10">M10</a><a href="#m11">M11</a><a href="#m12">M12</a><a href="#diagrammer">Diagrammer</a><a href="#spm">Spørgsmål</a>
+</nav>
 <main>
-  <h1>SearchProject – eksamens oplæsningsbog</h1>
-  <p>Denne oplæsningsbog er skrevet som et fremlæggelsesmanuskript. Den kan læses højt modul for modul og bruges som grundlag for en podcast eller mundtlig træning.</p>
-
-  <div class="cue"><strong>Rød tråd:</strong> Vi viser et søgesystem, der er bygget som et walking skeleton for en microservice-inspireret arkitektur. Fokus er ikke kun kode, men hvorfor ansvaret er fordelt som det er.</div>
-
-  <h2>Åbning</h2>
-  <div class="say">SearchProject er en søgeplatform, hvor brugeren kan søge i dokumenter via en webapp eller console-klient. Bagved ligger en SearchApi, en Indexer, PostgreSQL, Redis, Nginx og en observability stack med Loki, Grafana og Prometheus.</div>
-  <p>Det centrale arkitekturvalg er, at SearchApi er stateless og kan køre i flere instanser. Routing ligger ikke i C#-kode, men i infrastrukturen: Nginx i Docker Compose og Ingress/Service i Kubernetes-retningen.</p>
-
-  <h2>Modul 1–2: Arkitekturprincipper og caseforståelse</h2>
-  <div class="module">
-    <p>Her kobler vi projektet til grundideen i arkitekturprincipper: arkitektur handler om vigtige valg, trade-offs og begrundelser. Vi har ikke bare lavet et program, men et system med tydelige ansvarsområder.</p>
-    <p>SearchWebApp er UI. SearchApi er søge-use-casen. Indexer bygger indeks. PostgreSQL gemmer state. Redis er cache. Nginx er infrastruktur-routing. Observability er drift.</p>
+<section id="intro">
+  <div class="kicker">Åbning</div>
+  <h2>Den røde tråd</h2>
+  <div class="script">SearchProject er et walking skeleton for en søgeplatform. Det centrale er ikke, at systemet er stort, men at det er arkitektonisk forklarbart. Vi har en WebApp, en Console-klient, en SearchApi, en Indexer, PostgreSQL, Redis, Nginx og observability. Hver del har et ansvar, og hvert valg kan kobles til undervisningens arkitekturprincipper.</div>
+  <p>Den vigtigste ændring i projektet er, at den hjemmelavede C# load balancer er fjernet. I stedet bruger vi Nginx i Docker Compose og beskriver Kubernetes-produktion med Ingress og Service. Det giver en stærk eksamenspointe: platformopgaver som routing og load balancing skal ligge i infrastrukturen, ikke i domænekoden.</p>
+  <div class="grid">
+    <div class="card"><strong>Docker Compose</strong><br>Stabil demo: WebApp → Nginx → SearchApi A/B → Redis/PostgreSQL.</div>
+    <div class="card"><strong>Kubernetes</strong><br>Produktionsretning: Ingress → Service → Pods/Deployments → Stateful data.</div>
+    <div class="card"><strong>Undervisning</strong><br>x/y/z-skalering, caching, performance, operations, deployment og databaser.</div>
   </div>
+</section>
 
-  <h2>Modul 3: Skalering – x, y og z</h2>
-  <div class="say">Y-aksen ses i funktionel opdeling: WebApp, API, Indexer, database, cache og observability. X-aksen ses ved at SearchApi kan klones i flere replikaer. Z-aksen er database-retningen: sharding, partitionering eller read replicas.</div>
-  <p>Vores vigtigste konkrete skalering er x-akse på SearchApi. I Docker Compose kører <code>searchapi1</code> og <code>searchapi2</code> bag Nginx. I Kubernetes bliver det pods bag en Service.</p>
+<section id="m1">
+  <div class="kicker">Modul 1</div><h2>Introduktion og arkitekturprincipper</h2>
+  <p>Modul 1 handler om, at arkitektur er de vigtige valg og begrundelser. I SearchProject kan vi pege på konkrete valg i stedet for bare at tale abstrakt.</p>
+  <h3>Kobling til projektet</h3>
+  <ul><li>SearchWebApp håndterer UI, men ikke søgelogik.</li><li>SearchApi håndterer søge-use-casen.</li><li>Indexer håndterer opbygning af indeks.</li><li>PostgreSQL ejer persistent state.</li><li>Redis er cache.</li><li>Nginx er routing-infrastruktur.</li><li>Loki/Grafana/Prometheus er drift og observability.</li></ul>
+  <div class="say"><strong>Sig det sådan:</strong> “Projektets arkitektur handler om at placere ansvar rigtigt. Vi kan forklare, hvorfor hver komponent findes, og hvilken kvalitetsegenskab den understøtter.”</div>
+  <div class="exam"><strong>Eksamenspointe:</strong> Arkitekturvalg er trade-offs. Vi vælger mono-repo for overskuelighed, men strukturerer det som deployable services.</div>
+</section>
 
-  <h2>Modul 6: Z-scale og databaseopdeling</h2>
-  <p>Projektet implementerer ikke fuld sharding, men vi kan forklare retningen. Hvis databasen bliver flaskehals, kan vi dele data efter tenant, datadomæne eller dokumenttype. Alternativt kan vi bruge read replicas for læsetunge søgninger.</p>
-  <div class="cue">Eksamen: Sig tydeligt at z-akse er en arkitekturplan, ikke en implementeret feature.</div>
+<section id="m2">
+  <div class="kicker">Modul 2</div><h2>Caseforståelse og systemets use case</h2>
+  <p>Casen er dokumentsøgning. Det betyder, at vi har to centrale flows: indeksér dokumenter og besvar søgninger.</p>
+  <h3>Projektets domæneflow</h3>
+  <ol><li>Indexer læser dokumenter fra input-mappe.</li><li>Indexer skriver ord og dokumentrelationer til PostgreSQL.</li><li>Bruger søger via WebApp eller ConsoleSearch.</li><li>Nginx sender request til en SearchApi-replika.</li><li>SearchApi bruger Redis og PostgreSQL til at returnere SearchResult.</li></ol>
+  <div class="say"><strong>Sig det sådan:</strong> “Komponenterne følger use casen. Vi har ikke tilføjet Redis, Nginx eller observability tilfældigt; de løser konkrete runtime-problemer.”</div>
+</section>
 
-  <h2>Modul 7–8: Operations, miljøer og deployment</h2>
-  <p>Docker Compose er vores stabile demo-miljø. Det starter Postgres, Redis, SearchApi-replikaer, Nginx, WebApp og observability. Kubernetes er produktionsmodellen.</p>
-  <p>I Kubernetes bruger vi Ingress, Service, Deployment, Pods, HPA, StatefulSet/PVC og Secrets. Control Plane tegnes ikke, fordi det er platformens styringslag.</p>
-  <div class="say">I cloud kan Kubernetes kobles til cloud-providerens load balancer. Lokalt/on-prem kan man bruge Nginx Ingress Controller, Traefik, MetalLB eller minikube tunnel.</div>
+<section id="m3">
+  <div class="kicker">Modul 3</div><h2>Skalering: x, y og z</h2>
+  <p>Skaleringskuben er en af de vigtigste undervisningskoblinger.</p>
+  <div class="grid"><div class="card"><h3>Y-akse</h3><p>Funktionel opdeling: WebApp, SearchApi, Indexer, database, cache, proxy og observability.</p></div><div class="card"><h3>X-akse</h3><p>SearchApi er stateless og kører som flere replikaer bag Nginx/Service.</p></div><div class="card"><h3>Z-akse</h3><p>Database-retning: read replicas, partitionering eller sharding efter tenant/domæne/tid.</p></div></div>
+  <div class="script">Når jeg viser C4 Containerdiagrammet, vil jeg sige: “Her ser vi y-aksen i opdelingen mellem komponenterne. X-aksen ses ved SearchApi, som er markeret som skalerbar. Z-aksen ligger ikke som implementeret kode, men som databaseplanen for fremtidig vækst.”</div>
+</section>
 
-  <h2>Modul 9: Performance og metrics</h2>
-  <p>Vi bruger performance/cache-scriptet til at måle forskel på cold-cache og hot-cache. Pointen er at kunne dokumentere, at Redis faktisk ændrer systemets runtime-adfærd.</p>
-  <p>Prometheus og Grafana understøtter metrics-retningen, mens scripts giver konkrete tal til eksamen.</p>
+<section id="m6">
+  <div class="kicker">Modul 6</div><h2>Z-scale og splitting databases</h2>
+  <p>Z-skalering betyder, at man deler data i partitioner og router requests til den partition, der ejer data. SearchProject implementerer ikke sharding, men vi har en konkret plan.</p>
+  <ul><li>Først: én PostgreSQL database.</li><li>Næste trin: read replica til søgeforespørgsler.</li><li>Senere: partitionering efter datadomæne, dokumenttype eller tenant.</li><li>Til sidst: egentlig sharding med routingansvar.</li></ul>
+  <div class="warn"><strong>Trade-off:</strong> Z-skalering giver bedre skalering og isolation, men øger kompleksitet i routing, migration, konsistens og drift.</div>
+  <div class="say"><strong>Sig det sådan:</strong> “Vi har valgt ikke at implementere sharding i walking skeleton’et, fordi det ville være overengineering, men vi kan forklare en realistisk migrationsvej.”</div>
+</section>
 
-  <h2>Modul 10: Caching</h2>
-  <p>SearchApi bruger cache-aside med Redis. Først spørges cache. Hvis der er hit, returneres resultatet hurtigt. Hvis der er miss, læses data fra PostgreSQL, SearchLogic bygger resultatet, og resultatet gemmes i Redis med TTL.</p>
-  <div class="cue">Trade-off: Cache reducerer latency, men kræver TTL/invalidation-overvejelse.</div>
+<section id="m7">
+  <div class="kicker">Modul 7</div><h2>Operations, Docker og Kubernetes-introduktion</h2>
+  <p>Docker Compose er vores demo-miljø. Kubernetes er produktionsretningen. Det er vigtigt at kunne forklare forskellen.</p>
+  <div class="grid"><div class="card"><h3>Compose</h3><p>Starter hele stacken lokalt: Postgres, Redis, Indexer, SearchApi A/B, Nginx, WebApp, Loki, Grafana og Prometheus.</p></div><div class="card"><h3>Kubernetes</h3><p>Bruger Ingress, Services, Deployments, Pods, HPA, Secrets og PVC til produktion.</p></div></div>
+  <div class="say"><strong>Sig det sådan:</strong> “Compose demonstrerer arkitekturen stabilt. Kubernetes-diagrammet viser, hvordan samme ansvar oversættes til produktionsplatformens begreber.”</div>
+</section>
 
-  <h2>Modul 11–12: Databaser og Kubernetes state</h2>
-  <p>PostgreSQL er stateful. I Docker Compose bruger vi volumes. I Kubernetes skal state håndteres med PVC, backup og eventuelt StatefulSet eller managed database. Redis kan køre som cache-workload, men cache er mindre kritisk end persistent data.</p>
+<section id="m8">
+  <div class="kicker">Modul 8</div><h2>Deployment, build vs buy, rollback og barrier conditions</h2>
+  <p>Dette modul kobler direkte til beslutningen om Nginx. Vi bygger ikke en platformkomponent selv, når en standardkomponent er bedre.</p>
+  <h3>Build vs buy i projektet</h3>
+  <ul><li>Vi bygger SearchApi, fordi det er vores domæne.</li><li>Vi bruger Nginx til reverse proxy/load balancing.</li><li>Vi bruger Redis til cache.</li><li>Vi bruger PostgreSQL til persistent database.</li><li>Vi bruger Loki/Grafana/Prometheus til observability.</li></ul>
+  <h3>Barrier conditions</h3>
+  <ul><li>Build skal være grøn.</li><li>xUnit tests skal være grønne.</li><li>Docker Compose config skal validere.</li><li>Health endpoint skal svare.</li><li>Performance/failover scripts skal kunne køres.</li></ul>
+  <div class="say"><strong>Sig det sådan:</strong> “Build vs buy handler her om at fokusere vores egen kode på søgedomænet og bruge robuste standardkomponenter til infrastruktur.”</div>
+</section>
 
-  <h2>Diagramgennemgang</h2>
-  <p>Det vigtigste diagram er C4 Container. Det viser systemets runtime-containere og ansvar. Brug det til at forklare y-akse, x-akse, caching og observability.</p>
-  <p>Det andet vigtige diagram er Kubernetes produktionsdiagrammet. Brug det til at forklare Ingress, Service, Pods, HPA, PVC, Secrets og observability.</p>
+<section id="m9">
+  <div class="kicker">Modul 9</div><h2>Performance, metrics, OpenTelemetry og Prometheus</h2>
+  <p>Performance skal måles, ikke bare påstås. Projektet har scripts og observability til at dokumentere adfærd.</p>
+  <ul><li>`performance-cache-test.sh` sammenligner cold-cache og hot-cache.</li><li>Prometheus scraper metrics.</li><li>Grafana viser dashboards.</li><li>Headers viser cache-status og API-instans.</li></ul>
+  <div class="script">“Når vi siger, at Redis forbedrer performance, kan vi vise det med testscriptet: cold-cache giver miss, hot-cache giver hit. Det er en konkret måling af arkitekturvalgets effekt.”</div>
+</section>
 
-  <h2>Afslutning</h2>
-  <div class="say">Konklusionen er, at projektet er et walking skeleton, der viser de rigtige arkitekturprincipper: ansvar er delt op, SearchApi kan x-skaleres, caching reducerer latency, routing ligger i infrastrukturen, og Kubernetes-diagrammet viser produktionsretningen.</div>
+<section id="m10">
+  <div class="kicker">Modul 10</div><h2>Caching med Redis</h2>
+  <p>SearchApi bruger cache-aside. Det betyder, at applikationen selv styrer opslag og skrivning til cache.</p>
+  <ol><li>Byg cache key fra query, database, case-sensitivity og maxAmount.</li><li>Spørg Redis.</li><li>Hit: returnér SearchResult.</li><li>Miss: læs PostgreSQL, rank resultater, gem i Redis.</li></ol>
+  <div class="exam"><strong>Trade-off:</strong> Cache reducerer latency og databasebelastning, men kræver TTL og invalidation-overvejelse. I vores demo er TTL tilstrækkeligt, fordi data er relativt statisk.</div>
+</section>
+
+<section id="m11">
+  <div class="kicker">Modul 11</div><h2>Databaser i Kubernetes og volumes</h2>
+  <p>PostgreSQL er stateful. Det gør den anderledes end SearchApi.</p>
+  <div class="grid"><div class="card"><h3>Stateless</h3><p>SearchApi pods kan smides væk og genskabes, fordi state ligger udenfor.</p></div><div class="card"><h3>Stateful</h3><p>PostgreSQL kræver volume, backup, restore og muligvis StatefulSet eller managed database.</p></div></div>
+  <div class="say"><strong>Sig det sådan:</strong> “Kubernetes gør stateless scaling nemt, men stateful data kræver mere disciplin. Derfor er managed database også en realistisk produktionsmulighed.”</div>
+</section>
+
+<section id="m12">
+  <div class="kicker">Modul 12</div><h2>Databaser 2, replicas og splitting databases</h2>
+  <p>Dette modul samler database-retningen: read replicas, StatefulSets og splitting databases.</p>
+  <ul><li>Read replica kan aflaste læsetunge søgninger.</li><li>Partitionering kan dele data efter domæne.</li><li>Sharding kræver routingansvar.</li><li>Managed database kan reducere driftsbyrde.</li></ul>
+  <div class="script">“Hvis systemet voksede, ville vi først måle flaskehalsen. Hvis det er databasen, ville vi starte med read replicas og derefter overveje partitionering eller sharding. Det er z-akse-retningen.”</div>
+</section>
+
+<section id="diagrammer">
+  <div class="kicker">Diagrammer</div><h2>Sådan bruger vi diagrammerne til eksamen</h2>
+  <h3>C4 Containerdiagram</h3><p>Bruges til at vise ansvar, y-akse, x-akse, Redis, Nginx og observability. Det er hoveddiagrammet.</p>
+  <h3>Kubernetes produktionsdiagram</h3><p>Bruges til at vise Ingress, Service, Pods, HPA, PVC, Secrets og observability. Det viser produktionsretningen.</p>
+  <div class="say"><strong>Overgangssætning:</strong> “C4 viser hvad systemet består af. Kubernetes viser hvordan vi ville drifte det i produktion.”</div>
+</section>
+
+<section id="spm">
+  <div class="kicker">Typiske spørgsmål</div><h2>Spørgsmål og korte svar</h2>
+  <div class="grid"><div class="card"><h3>Hvorfor Nginx?</h3><p>Fordi routing/load balancing er infrastruktur. C# skal fokusere på søgedomænet.</p></div><div class="card"><h3>Er det microservices?</h3><p>Det er et mono-repo med deployable services. Arkitekturen er microservice-inspireret.</p></div><div class="card"><h3>Hvorfor Redis?</h3><p>For at reducere latency ved gentagne søgninger og aflaste databasen.</p></div><div class="card"><h3>Hvorfor Kubernetes?</h3><p>For at vise produktionsretningen for scaling, deployment, secrets, routing og state.</p></div></div>
+</section>
 </main>
 </body>
 </html>

@@ -1,48 +1,38 @@
 <!doctype html>
 <html lang="da">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SearchProject – mini præsentation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SearchProject – eksamenspræsentation</title>
   <style>
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#111;color:#fff}
-    section{min-height:100vh;padding:7vh 8vw;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid #333}
-    h1{font-size:4rem;margin:.2em 0;color:#93c5fd} h2{font-size:3rem;color:#bfdbfe} li{font-size:1.6rem;margin:.6rem 0;line-height:1.35}
-    .tag{color:#fde68a;font-weight:700}.grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}.box{background:#1f2937;border:1px solid #374151;border-radius:18px;padding:1.4rem}
+    :root{--bg:#061514;--card:#fffaf0;--ink:#142320;--muted:#5f6f68;--green:#00a884;--blue:#326ce5;--gold:#f4c76b;--coral:#ff6b57;--line:rgba(255,250,240,.22)}
+    *{box-sizing:border-box}body{margin:0;overflow:hidden;font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 12% 10%,rgba(0,168,132,.36),transparent 28%),linear-gradient(135deg,#061514,#0d2421);color:var(--ink)}
+    .top{position:fixed;top:0;left:0;right:0;height:58px;background:rgba(6,21,20,.86);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#fff;z-index:5;border-bottom:1px solid var(--line)}.count{color:#c7d8d2}.slide{position:absolute;inset:58px 0 0;display:none;overflow:auto;padding:34px 46px 70px}.slide.active{display:block}.canvas{min-height:calc(100vh - 150px);background:linear-gradient(135deg,rgba(255,250,240,.96),rgba(240,248,244,.9));border:1px solid rgba(255,255,255,.45);border-radius:34px;padding:34px;box-shadow:0 24px 70px rgba(0,0,0,.22)}
+    h1{font-family:Georgia,serif;font-size:clamp(3rem,6vw,6rem);line-height:.95;margin:.1em 0;letter-spacing:-.06em}h2{font-family:Georgia,serif;font-size:clamp(2.2rem,4vw,4rem);line-height:1;margin:0 0 20px;letter-spacing:-.04em}.kicker{text-transform:uppercase;letter-spacing:.14em;font-weight:800;color:#0b6b55}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}.card{background:#fff;border:1px solid rgba(20,35,32,.13);border-radius:22px;padding:20px}.card h3{margin-top:0;color:#0b5a46}.big{font-size:1.35rem;line-height:1.45}.pill{display:inline-block;background:#e5f7ef;border:1px solid #b8e6d0;border-radius:999px;padding:7px 12px;margin:4px;font-weight:700}.notes{margin-top:22px;background:#10251f;color:#fff;border-radius:22px;padding:18px}.notes strong{color:var(--gold)}ul{padding-left:1.2rem}li{margin:.45rem 0}.footer{position:fixed;bottom:0;left:0;right:0;height:44px;color:#d6eee4;background:rgba(6,21,20,.86);display:flex;align-items:center;justify-content:center;font-size:.9rem}
   </style>
 </head>
 <body>
-<section>
-  <p class="tag">Slide 1 / Arkitekturfortælling</p>
-  <h1>SearchProject</h1>
-  <ul>
-    <li>Walking skeleton for en søgeplatform med web, API, indexer, database, cache og observability.</li>
-    <li>Y-akse: funktionel opdeling i selvstændige services/containere.</li>
-    <li>X-akse: stateless SearchApi kan køre som flere replikaer.</li>
-    <li>Z-akse: database-retning med read replicas, partitionering eller sharding.</li>
-  </ul>
-</section>
+<div class="top"><div>SearchProject – Arkitekturprincipper i praksis</div><div class="count" id="count"></div></div>
 
-<section>
-  <p class="tag">Slide 2 / Vigtige valg</p>
-  <h2>Nginx, Redis og observability</h2>
-  <div class="grid">
-    <div class="box"><h3>Nginx / Kubernetes</h3><p>Routing og load balancing ligger i infrastrukturen – ikke i C# forretningskode. Docker Compose bruger Nginx; Kubernetes bruger Ingress + Service.</p></div>
-    <div class="box"><h3>Redis cache</h3><p>SearchApi bruger cache-aside. Cold-cache giver miss, hot-cache giver hit og lavere latency ved gentagne søgninger.</p></div>
-    <div class="box"><h3>PostgreSQL</h3><p>Persistent state. I Kubernetes kræver det PVC/backup eller managed database.</p></div>
-    <div class="box"><h3>Loki/Grafana/Prometheus</h3><p>Logs, dashboards og metrics gør arkitekturen observerbar og testbar.</p></div>
-  </div>
-</section>
+<section class="slide active"><div class="canvas"><div class="kicker">Slide 1</div><h1>Fra søgeprogram til arkitekturfortælling</h1><p class="big">SearchProject er et walking skeleton for en søgeplatform. Det viser hvordan kode, Docker Compose, Nginx, Redis, PostgreSQL, observability og Kubernetes-diagrammer hænger sammen.</p><div class="grid"><div class="card"><h3>Use case</h3><p>Indeksér dokumenter og besvar søgninger hurtigt.</p></div><div class="card"><h3>Arkitekturvalg</h3><p>Ansvar er delt mellem UI, API, Indexer, data, cache, proxy og observability.</p></div><div class="card"><h3>Eksamen</h3><p>Vi viser ikke bare kode – vi begrunder valg med undervisningens principper.</p></div></div><div class="notes"><strong>Speaker note:</strong> Start med at sige at projektet er simpelt med vilje, men arkitektonisk rigt. Det er et walking skeleton, hvor vi kan pege på konkrete valg.</div></div></section>
 
-<section>
-  <p class="tag">Slide 3 / Eksamen take-away</p>
-  <h2>Hvad viser projektet?</h2>
-  <ul>
-    <li>Vi kan forbinde kode, Docker Compose og Kubernetes-diagrammer til samme arkitektur.</li>
-    <li>Vi kan begrunde valg: Nginx/Ingress til routing, Redis til caching, Postgres til state.</li>
-    <li>Vi har testet: build, xUnit, Docker Compose config, performance/cache og failover.</li>
-    <li>Konklusion: simpelt projekt, men med tydelige arkitekturprincipper og produktionsretning.</li>
-  </ul>
-</section>
+<section class="slide"><div class="canvas"><div class="kicker">Slide 2</div><h2>C4 Container: ansvar og y-akse</h2><div class="grid"><div class="card"><h3>Klienter</h3><p>SearchWebApp og ConsoleSearch kalder samme API endpoint. UI er adskilt fra søgelogik.</p></div><div class="card"><h3>Domæneservices</h3><p>SearchApi søger og ranker. Indexer bygger indekset. De har forskellige ansvar.</p></div><div class="card"><h3>Infrastructure</h3><p>Nginx router. Redis cacher. PostgreSQL gemmer state. Loki/Grafana/Prometheus observerer.</p></div></div><p><span class="pill">Y-akse = funktionel opdeling</span><span class="pill">Maintainability</span><span class="pill">Tydelige servicegrænser</span></p><div class="notes"><strong>Speaker note:</strong> Vis C4 Containerdiagrammet. Forklar at Y-aksen er opdelingen i ansvar. Det er ikke bare mapper; det er deployable runtime-komponenter.</div></div></section>
+
+<section class="slide"><div class="canvas"><div class="kicker">Slide 3</div><h2>X-akse: stateless SearchApi bag Nginx</h2><p class="big">SearchApi kan køre som flere ens replikaer, fordi persistent state ligger i PostgreSQL og cache ligger i Redis.</p><div class="grid"><div class="card"><h3>Docker Compose</h3><p>Nginx fordeler trafik til <code>searchapi1</code> og <code>searchapi2</code>.</p></div><div class="card"><h3>Kubernetes</h3><p>SearchApi ville køre som pods bag en Service, evt. skaleret med HPA.</p></div><div class="card"><h3>Failover</h3><p>Failover-scriptet stopper én API-instans og verificerer fortsat trafik via den anden.</p></div></div><div class="notes"><strong>Speaker note:</strong> Fremhæv beslutningen: Vi fjernede C# load balancer. Nginx/Ingress/Service er det rigtige lag til routing.</div></div></section>
+
+<section class="slide"><div class="canvas"><div class="kicker">Slide 4</div><h2>Build vs buy: hvorfor Nginx?</h2><div class="grid"><div class="card"><h3>Build</h3><p>Vi bygger SearchApi, fordi søgelogikken er vores domæne.</p></div><div class="card"><h3>Buy/use</h3><p>Vi bruger Nginx, Redis, PostgreSQL, Grafana, Loki og Prometheus som standardkomponenter.</p></div><div class="card"><h3>Argument</h3><p>Platformopgaver skal ikke opfindes i C# for et eksamensprojekt. Det ville være overengineering.</p></div></div><p><span class="pill">Build vs buy</span><span class="pill">Barrier conditions</span><span class="pill">Rollback/operations</span></p><div class="notes"><strong>Speaker note:</strong> Kobl til modul 8. Et godt valg er ikke altid at bygge mere kode. Nogle gange er det professionelle valg at fjerne kode.</div></div></section>
+
+<section class="slide"><div class="canvas"><div class="kicker">Slide 5</div><h2>Redis caching og performance</h2><p class="big">SearchApi bruger cache-aside. Gentagne søgninger kan returneres fra Redis i stedet for at slå op og ranke igen.</p><ol class="big"><li>Byg cache key fra query + options.</li><li>Spørg Redis.</li><li>Hit: returnér SearchResult.</li><li>Miss: læs PostgreSQL, rank, gem i Redis med TTL.</li></ol><div class="notes"><strong>Speaker note:</strong> Kobl til modul 9 og 10. Performance er målt med scripts: cold-cache giver miss, hot-cache giver hit.</div></div></section>
+
+<section class="slide"><div class="canvas"><div class="kicker">Slide 6</div><h2>Kubernetes produktionsretning</h2><div class="grid"><div class="card"><h3>Ingress</h3><p>Ekstern HTTP/HTTPS indgang. Kan implementeres af Nginx Ingress Controller.</p></div><div class="card"><h3>Service</h3><p>Stabilt internt endpoint og load balancing til pods.</p></div><div class="card"><h3>Deployment + Pods</h3><p>SearchApi kører som flere pods og kan skaleres med HPA.</p></div><div class="card"><h3>State</h3><p>PostgreSQL kræver PVC/backup eller managed database.</p></div></div><div class="notes"><strong>Speaker note:</strong> Forklar cloud vs lokal/on-prem: cloud load balancer, Nginx Ingress Controller, Traefik, MetalLB eller minikube tunnel.</div></div></section>
+
+<section class="slide"><div class="canvas"><div class="kicker">Slide 7</div><h2>Z-akse og databaseplan</h2><p class="big">Z-skalering er ikke fuldt implementeret. Den er vores realistiske database-retning.</p><div class="grid"><div class="card"><h3>Nu</h3><p>Én PostgreSQL database med dokumenter og indeks.</p></div><div class="card"><h3>Næste trin</h3><p>Read replicas til læsetunge søgninger.</p></div><div class="card"><h3>Senere</h3><p>Partitionering/sharding efter tenant, domæne, dokumenttype eller tid.</p></div></div><div class="notes"><strong>Speaker note:</strong> Vær ærlig: Vi har ikke implementeret sharding, fordi det er for meget for walking skeleton. Men vi kan forklare trade-off og migrationsvej.</div></div></section>
+
+<section class="slide"><div class="canvas"><div class="kicker">Slide 8</div><h2>Konklusion og testbevis</h2><div class="grid"><div class="card"><h3>Verificeret</h3><p>Build, xUnit tests, Compose config, smoke test, performance/cache og failover.</p></div><div class="card"><h3>Arkitekturprincipper</h3><p>x/y/z, caching, observability, deployment, build vs buy og stateful vs stateless.</p></div><div class="card"><h3>Take-away</h3><p>Vi har et simpelt system, men med en klar produktionsretning og tydelige begrundelser.</p></div></div><div class="notes"><strong>Speaker note:</strong> Slut med at gentage: ansvar er placeret rigtigt. Forretningslogik i SearchApi, routing i infrastruktur, state i database, cache i Redis, drift i observability.</div></div></section>
+
+<div class="footer">Brug piletasterne eller klik for at skifte slide</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;function show(n){i=(n+slides.length)%slides.length;slides.forEach((s,j)=>s.classList.toggle('active',j===i));document.getElementById('count').textContent=(i+1)+' / '+slides.length}show(0);addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1)});addEventListener('click',()=>show(i+1));
+</script>
 </body>
 </html>
