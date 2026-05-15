@@ -1,6 +1,8 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Options;
 using NLog.Web;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using SearchLoadBalancer.LoadBalancing;
 using Shared.Model;
 
@@ -9,6 +11,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 builder.Services.AddOpenApi();
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService(
+        serviceName: "search-load-balancer",
+        serviceInstanceId: Environment.GetEnvironmentVariable("LB_INSTANCE_ID") ?? $"search-load-balancer-{Environment.ProcessId}"))
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddMeter(LoadBalancerMetrics.MeterName)
+            .AddPrometheusExporter();
+    });
 builder.Services.Configure<LoadBalancerOptions>(builder.Configuration.GetSection(LoadBalancerOptions.SectionName));
 builder.Services.AddSingleton<IBackendScheduler, RoundRobinBackendScheduler>();
 builder.Services.AddSingleton<IBackendScheduler, RandomBackendScheduler>();
@@ -116,6 +131,8 @@ app.MapPost("/api/search", async (
 })
 .WithName("LoadBalancedSearch");
 
+app.MapPrometheusScrapingEndpoint();
+
 app.Run();
 
 static void SetRoutingHeaders(
@@ -133,6 +150,15 @@ static void SetRoutingHeaders(
         if (!string.IsNullOrWhiteSpace(instance))
         {
             context.Response.Headers["X-SearchApi-Instance"] = instance;
+        }
+    }
+
+    if (backendResponse.Headers.TryGetValues("X-Search-Cache", out var cacheValues))
+    {
+        var cacheStatus = cacheValues.FirstOrDefault();
+        if (!string.IsNullOrWhiteSpace(cacheStatus))
+        {
+            context.Response.Headers["X-Search-Cache"] = cacheStatus;
         }
     }
 }

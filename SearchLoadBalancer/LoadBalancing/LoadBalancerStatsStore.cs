@@ -19,24 +19,28 @@ public class LoadBalancerStatsStore
     public void RecordIncomingRequest()
     {
         Interlocked.Increment(ref _totalIncomingRequests);
+        LoadBalancerMetrics.RecordIncomingRequest();
     }
 
     public void RecordAttempt(BackendEndpoint backend)
     {
         var counters = _counters.GetOrAdd(backend.Name, _ => new BackendCounters(backend.Name, backend.BaseUrl));
         Interlocked.Increment(ref counters.Attempts);
+        LoadBalancerMetrics.RecordBackendAttempt(backend);
     }
 
     public void RecordSuccess(BackendEndpoint backend)
     {
         var counters = _counters.GetOrAdd(backend.Name, _ => new BackendCounters(backend.Name, backend.BaseUrl));
         Interlocked.Increment(ref counters.Successes);
+        LoadBalancerMetrics.RecordBackendSuccess(backend);
     }
 
     public void RecordFailure(BackendEndpoint backend)
     {
         var counters = _counters.GetOrAdd(backend.Name, _ => new BackendCounters(backend.Name, backend.BaseUrl));
         Interlocked.Increment(ref counters.Failures);
+        LoadBalancerMetrics.RecordBackendFailure(backend);
     }
 
     public LoadBalancerStatsSnapshot Snapshot(string strategy)

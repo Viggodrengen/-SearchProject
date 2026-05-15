@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
     command: -config.file=/etc/loki/local-config.yaml
     ports:
-      - "3100:3100"
+      - "3101:3100"
 
   grafana:
     image: grafana/grafana:12.1.1
@@ -32,6 +32,7 @@ services:
     restart: unless-stopped
     depends_on:
       - loki
+      - prometheus
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
@@ -40,6 +41,52 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
       - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: search-prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: search-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  indexer:
+    build:
+      context: .
+      dockerfile: indexer/Dockerfile
+    container_name: search-indexer
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      INDEXER_NON_INTERACTIVE: "true"
+      INDEXER_DATABASE: postgres
+      INDEXER_FOLDER: /data/indexer
+      INDEXER_EXTENSIONS: .txt
+      INDEXER_TOP_WORDS: 10
+      SEARCH_POSTGRES_CONNECTION: Host=postgres;Port=5432;Username=search;Password=search;Database=searchdb
+      REDIS_CONNECTION_STRING: redis:6379,allowAdmin=true
+    volumes:
+      - ./docker/indexer-data:/data/indexer:ro
 
   searchapi1:
     build:
@@ -52,10 +99,17 @@ services:
         condition: service_healthy
       loki:
         condition: service_started
+      redis:
+        condition: service_healthy
+      indexer:
+        condition: service_completed_successfully
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       SEARCH_INSTANCE_ID: search-api-1
       SEARCH_POSTGRES_CONNECTION: Host=postgres;Port=5432;Username=search;Password=search;Database=searchdb
+      REDIS_CONNECTION_STRING: redis:6379
+      SearchCache__Enabled: "true"
+      SearchCache__TtlSeconds: 120
       LOKI_URL: http://loki:3100
       LOKI_APP: search-api
     ports:
@@ -72,10 +126,17 @@ services:
         condition: service_healthy
       loki:
         condition: service_started
+      redis:
+        condition: service_healthy
+      indexer:
+        condition: service_completed_successfully
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       SEARCH_INSTANCE_ID: search-api-2
       SEARCH_POSTGRES_CONNECTION: Host=postgres;Port=5432;Username=search;Password=search;Database=searchdb
+      REDIS_CONNECTION_STRING: redis:6379
+      SearchCache__Enabled: "true"
+      SearchCache__TtlSeconds: 120
       LOKI_URL: http://loki:3100
       LOKI_APP: search-api
     ports:

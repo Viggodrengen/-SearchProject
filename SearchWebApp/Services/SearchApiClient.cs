@@ -27,13 +27,17 @@ public class SearchApiClient
         var instance = response.Headers.TryGetValues("X-SearchApi-Instance", out var instanceValues)
             ? instanceValues.FirstOrDefault()
             : null;
+        var cacheStatus = response.Headers.TryGetValues("X-Search-Cache", out var cacheValues)
+            ? cacheValues.FirstOrDefault()
+            : null;
 
         return new SearchApiResponse
         {
             Result = result,
             Backend = backend,
             Strategy = strategy,
-            SearchApiInstance = instance
+            SearchApiInstance = instance,
+            CacheStatus = cacheStatus
         };
     }
 }
@@ -47,4 +51,6 @@ public class SearchApiResponse
     public string? Strategy { get; set; }
 
     public string? SearchApiInstance { get; set; }
+
+    public string? CacheStatus { get; set; }
 }

@@ -1,0 +1,3 @@
+Search pipeline report.
+The indexer crawls text files and writes document, word and occurrence rows into PostgreSQL.
+This document is useful for explaining indexing as a separate runtime capability.
