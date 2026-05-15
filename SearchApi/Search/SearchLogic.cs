@@ -1,13 +1,13 @@
 using Shared.Model;
 
-namespace SearchApi.Domain;
+namespace SearchApi.Search;
 
 public class SearchLogic
 {
-    private readonly ISearchIndexRepository _database;
+    private readonly IDatabase _database;
     private readonly SearchConfig _config;
 
-    public SearchLogic(ISearchIndexRepository database, SearchConfig config)
+    public SearchLogic(IDatabase database, SearchConfig config)
     {
         _database = database;
         _config = config;

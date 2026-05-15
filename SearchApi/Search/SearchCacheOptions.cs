@@ -1,4 +1,4 @@
-namespace SearchApi.Application;
+namespace SearchApi.Search;
 
 public class SearchCacheOptions
 {

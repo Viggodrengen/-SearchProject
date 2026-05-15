@@ -3,11 +3,9 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
-using SearchApi.Domain;
-using SearchApi.Infrastructure.Persistence;
 using Shared.Model;
 
-namespace SearchApi.Application;
+namespace SearchApi.Search;
 
 public class SearchService
 {
@@ -58,7 +56,7 @@ public class SearchService
             SearchMetrics.RecordCacheStatus("miss", request.Database);
         }
 
-        using var database = SearchIndexRepositoryFactory.Create(request.Database);
+        using var database = DatabaseFactory.Create(request.Database);
         var config = new SearchConfig { CaseSensitive = request.CaseSensitive };
         var logic = new SearchLogic(database, config);
 
