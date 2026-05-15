@@ -33,7 +33,7 @@ UML-diagrammerne bruges til at forklare de mere konkrete strukturer:
 
 1. **Class diagram**: datamodellen og DTO-strukturen for søgninger og søgeresultater.
 2. **Object diagram**: et konkret runtime-eksempel på en søgning og et cached søgeresultat.
-3. **Deployment diagram**: hvordan udviklingsmiljøet kører i Docker Compose med webapp, load balancer, API-replikaer, database, cache og observability.
+3. **Deployment diagram**: hvordan udviklingsmiljøet kører i Docker Compose med webapp, Nginx/reverse proxy, API-replikaer, database, cache og observability.
 
 ## Eksport
 

@@ -10,7 +10,7 @@ Dette dokument er den aktive arkitekturretning frem mod eksamen.
 Løsningen består af:
 - `SearchWebApp` (UI)
 - `ConsoleSearch` (CLI)
-- `SearchLoadBalancer` (routing/failover mellem API-instanser)
+- `Nginx` (reverse proxy/load balancing mellem API-instanser)
 - `SearchApi` (søgelogik)
 - `Indexer` (indeksering)
 - `Postgres` (data)
@@ -18,7 +18,7 @@ Løsningen består af:
 
 Arkitekturprincipper der allerede er i spil:
 - **Modulær/mikroservice-inspireret opdeling**
-- **X-akse skalering** (flere `SearchApi` instanser bag LB)
+- **X-akse skalering** (flere `SearchApi` instanser bag Nginx/reverse proxy)
 - **Observability** (struktureret logging + dashboards)
 
 ## 2) Eksamensmål (det vi bygger videre med)

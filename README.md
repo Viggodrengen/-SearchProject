@@ -16,7 +16,7 @@ docker compose up -d --build
 
 Vigtige endpoints:
 - Web: `http://localhost:5249`
-- Load balancer health: `http://localhost:5075/api/health`
+- Nginx/API endpoint: `http://localhost:5075/api/health`
 - Grafana: `http://localhost:3000` (admin/admin)
 
 ## Dokumentation

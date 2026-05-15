@@ -189,7 +189,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "up{job=~\"search-api|search-load-balancer\"}",
+          "expr": "up{job=\"search-api\"}",
           "legendFormat": "{{job}} {{instance}}",
           "range": true,
           "refId": "A"

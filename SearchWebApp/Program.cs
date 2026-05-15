@@ -1,4 +1,5 @@
 using SearchWebApp.Components;
+using SearchWebApp.Interfaces;
 using SearchWebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-builder.Services.AddHttpClient<SearchApiClient>((serviceProvider, client) =>
+builder.Services.AddHttpClient<ISearchApiClient, SearchApiClient>((serviceProvider, client) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
     var baseUrl = configuration["SearchApi:BaseUrl"] ?? "http://localhost:5017";

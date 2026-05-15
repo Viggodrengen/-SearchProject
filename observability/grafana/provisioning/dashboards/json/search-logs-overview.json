@@ -51,7 +51,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "{app=~\"search-api|search-load-balancer\"}",
+          "expr": "{app=\"search-api\"}",
           "queryType": "range",
           "refId": "A"
         }

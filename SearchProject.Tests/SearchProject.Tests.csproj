@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SearchApi\SearchApi.csproj" />
-    <ProjectReference Include="..\SearchLoadBalancer\SearchLoadBalancer.csproj" />
   </ItemGroup>
 
 </Project>

@@ -10,7 +10,7 @@ node "Developer machine" {
   node "Minikube Cluster" {
     node "Namespace: searchproject" {
       node "Pod: search-webapp" as web
-      node "Pod: search-load-balancer" as lb
+      node "Pod/Ingress: nginx" as proxy
       node "Deployment: search-api (replicas=2..N)" as api
 
       node "StatefulSet: redis" as redis
@@ -23,15 +23,14 @@ node "Developer machine" {
   }
 }
 
-web --> lb : HTTP /api/search
-lb --> api : HTTP
+web --> proxy : HTTP /api/search
+proxy --> api : HTTP
 api --> redis : cache GET/SET
 api --> pgPrimary : SQL read
 api --> pgReplica : SQL read (fremtidig/påvist)
 
-k6 --> lb : load + latency + failover tests
+k6 --> proxy : load + latency + failover tests
 api --> loki : logs
-lb --> loki : logs
 web --> loki : logs
 
 grafana --> loki : query logs

@@ -33,14 +33,14 @@ Skal kunne forklare:
 - Hvad hver container har ansvar for:
   - `SearchWebApp` – UI
   - `ConsoleSearch` – CLI/testklient
-  - `SearchLoadBalancer` – fordeler requests og giver failover-retning
+  - `Nginx` – reverse proxy/load balancer foran API-replikaer
   - `SearchApi` – stateless søgelogik
   - `Indexer` – opbygger reverse index
   - `PostgreSQL` – persistent data/index
   - `Redis` – cache af gentagne/hyppige søgninger
   - `Loki/Grafana` – logs og driftsoverblik
 - Hvad der skalerer:
-  - primært `SearchApi` via flere replikaer bag load balancer
+  - primært `SearchApi` via flere replikaer bag Nginx/reverse proxy
   - senere kan `Indexer`/pipeline tænkes som y-skalering
 - Hvorfor det er relevant:
   - bedre throughput ved flere søgninger
@@ -54,7 +54,7 @@ Arkitekturprincipper vi kobler på:
 - **Y-akse opdeling:** funktionel opdeling mellem WebApp, API, Indexer, database, cache og observability.
 - **Caching:** Redis som arkitektonisk komponent til hot queries.
 - **Observability:** Loki/Grafana til logs og drift.
-- **Failover-retning:** load balancer kan prøve anden API-instans ved fejl.
+- **Failover-retning:** reverse proxy/Kubernetes Service kan sende trafik til en anden API-instans ved fejl.
 
 ### 2. Kubernetes production diagram
 
@@ -69,7 +69,7 @@ Bør forklare:
 
 - Ingress som ekstern indgang.
 - Services som stabile endpoints foran pods.
-- `SearchWebApp`, `SearchLoadBalancer`, `SearchApi` som Deployments/Pods.
+- `SearchWebApp`, Nginx/Ingress og `SearchApi` som Deployments/Pods/Services.
 - `SearchApi` med flere pods for x-akse skalering.
 - PostgreSQL som stateful del med persistent storage.
 - Redis som cache-workload.
@@ -88,8 +88,8 @@ Koden skal bruges til at vise, at arkitekturen ikke kun er tegnet.
 
 Vi bør kunne pege på:
 
-- `SearchWebApp` kalder load balancer/API.
-- `SearchLoadBalancer` fordeler mellem API backends.
+- `SearchWebApp` kalder Nginx/API endpoint.
+- Nginx fordeler mellem API backends i Docker Compose; i Kubernetes vil Service/Ingress håndtere routing.
 - `SearchApi` indeholder søgelogik, cache og databaseadgang.
 - `Shared/Model` indeholder request/result DTO’er.
 - Docker Compose viser API-instanser, PostgreSQL, Redis, Loki/Grafana og Prometheus/Grafana-metrics.

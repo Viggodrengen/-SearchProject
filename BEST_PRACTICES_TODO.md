@@ -4,19 +4,18 @@
 
 - [x] Work from `main` and verify baseline build.
 - [x] Read architecture/project docs for exam scope: microservice-style deployability, x/y/z scaling, caching, observability, failover.
-- [x] Add focused xUnit tests for pure business logic and load-balancer behavior.
+- [x] Add focused xUnit tests for pure search business logic.
 - [x] Keep tests close to business rules, not Docker/infrastructure.
 - [x] Run full build and test suite after changes.
-- [ ] If Docker is running, smoke-test HTTP endpoints through API/load balancer.
+- [ ] If Docker is running, smoke-test HTTP endpoints through Nginx/API.
 
 ## Architecture/code review notes
 
-- Services are separate deployable projects (`SearchApi`, `SearchLoadBalancer`, `SearchWebApp`, `indexer`) and match the walking-skeleton microservice story.
+- Services are separate deployable projects (`SearchApi`, `SearchWebApp`, `indexer`) with Nginx as infrastructure-level reverse proxy/load balancer.
 - Shared DTOs live in `Shared/Model`, which is acceptable for a small exam baseline. Avoid putting service-specific logic in `Shared`.
 - `SearchApi` follows the same simple style as the AuthService reference: `Interfaces`, `Repository`, `Services` and `Program.cs`.
 - Search ranking is isolated in `SearchApi/Services/SearchLogic`, which makes it testable without HTTP, Redis or PostgreSQL.
 - `SearchApi/Interfaces/IDatabase.cs` is the simple repository abstraction; `SearchApi/Repository/*` contains the concrete SQLite/PostgreSQL data access.
-- Load-balancer scheduling is isolated behind `IBackendScheduler`, which makes strategy behavior testable.
 - Swagger/OpenAPI is already enabled through `AddOpenApi()` and `MapOpenApi()` in Development.
 
 ## Follow-up candidates

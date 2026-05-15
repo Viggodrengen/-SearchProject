@@ -9,7 +9,7 @@
 
 ## Formål og udgangspunkt
 
-Projektet tager udgangspunkt i den eksisterende løsning og viderefører de arkitekturvalg, der allerede er implementeret. Løsningen er opdelt i flere services (ansvars opdeling) og skaleres dermed på y-aksen. Hver service har sit eget ansvar område som fx. SearchApi, Indexer, SearchWebApp. SearchApi kan skaleres på x-aksen ved at køre flere instanser bag load balancer. Drift monitoreres med Loki/Grafana.
+Projektet tager udgangspunkt i den eksisterende løsning og viderefører de arkitekturvalg, der allerede er implementeret. Løsningen er opdelt i flere services (ansvars opdeling) og skaleres dermed på y-aksen. Hver service har sit eget ansvar område som fx. SearchApi, Indexer, SearchWebApp. SearchApi kan skaleres på x-aksen ved at køre flere instanser bag Nginx/reverse proxy i Docker Compose og Service/Ingress i Kubernetes. Drift monitoreres med Loki/Grafana.
 
 Formålet er at styrke kvaliteten af den nuværende arkitektur med fokus på drift, robusthed og dokumenteret performance.
 

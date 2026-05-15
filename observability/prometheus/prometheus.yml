@@ -10,8 +10,3 @@ scrape_configs:
           - searchapi1:8080
           - searchapi2:8080
 
-  - job_name: search-load-balancer
-    metrics_path: /metrics
-    static_configs:
-      - targets:
-          - searchloadbalancer:8080

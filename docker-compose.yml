@@ -142,27 +142,15 @@ services:
     ports:
       - "5018:8080"
 
-  searchloadbalancer:
-    build:
-      context: .
-      dockerfile: SearchLoadBalancer/Dockerfile
-    container_name: search-load-balancer
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: search-nginx
     restart: unless-stopped
     depends_on:
       - searchapi1
       - searchapi2
-      - loki
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      LB_INSTANCE_ID: search-load-balancer-1
-      LOKI_URL: http://loki:3100
-      LOKI_APP: search-load-balancer
-      LoadBalancer__Strategy: round-robin
-      LoadBalancer__BackendTimeoutSeconds: 10
-      LoadBalancer__Backends__0__Name: search-api-1
-      LoadBalancer__Backends__0__BaseUrl: http://searchapi1:8080
-      LoadBalancer__Backends__1__Name: search-api-2
-      LoadBalancer__Backends__1__BaseUrl: http://searchapi2:8080
+    volumes:
+      - ./docker/nginx/search-api.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - "5075:8080"
 
@@ -173,10 +161,10 @@ services:
     container_name: search-web-app
     restart: unless-stopped
     depends_on:
-      - searchloadbalancer
+      - nginx
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      SearchApi__BaseUrl: http://searchloadbalancer:8080
+      SearchApi__BaseUrl: http://nginx:8080
       UseHttpsRedirection: "false"
     ports:
       - "5249:8080"

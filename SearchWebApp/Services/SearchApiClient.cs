@@ -1,9 +1,10 @@
 using System.Net.Http.Json;
+using SearchWebApp.Interfaces;
 using Shared.Model;
 
 namespace SearchWebApp.Services;
 
-public class SearchApiClient
+public class SearchApiClient : ISearchApiClient
 {
     private readonly HttpClient _httpClient;
 
