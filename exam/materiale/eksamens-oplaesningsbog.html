@@ -3,329 +3,431 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SearchProject – oplæsningsbog (dyb version)</title>
+  <title>SearchProject - Oplæsningsbog baseret på modulerne</title>
   <style>
-    :root{--bg:#081a14;--paper:#fffaf0;--ink:#17231f;--muted:#5d6b63;--green:#0f5f4b;--gold:#f2c66e;--coral:#ff7f63;--line:rgba(23,35,31,.14);--shadow:0 26px 70px rgba(8,26,20,.22);--r:24px}
-    *{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--bg)}
-    body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;color:var(--ink);line-height:1.66;background:radial-gradient(circle at 10% 6%,rgba(121,196,255,.22),transparent 30%),linear-gradient(135deg,#081a14,#122b24 52%,#081a14)}
-    header{max-width:1240px;margin:auto;padding:64px min(7vw,82px) 34px;color:#fffaf0}
-    header h1{font-family:Georgia,serif;font-size:clamp(2.9rem,7vw,6.2rem);line-height:.94;letter-spacing:-.06em;margin:0}
-    header p{max-width:960px;color:rgba(255,250,240,.82);font-size:1.18rem}
-    .kicker{text-transform:uppercase;letter-spacing:.14em;font-weight:800;font-size:.82rem;color:#baf2dc}
-    nav{position:sticky;top:0;z-index:10;background:rgba(8,26,20,.9);backdrop-filter:blur(14px);border-block:1px solid rgba(255,255,255,.14);padding:12px min(6vw,72px);display:flex;gap:8px;overflow:auto}
-    nav a{color:#fffaf0;text-decoration:none;white-space:nowrap;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:8px 11px;font-size:.88rem}
-    main{max-width:1160px;margin:0 auto 90px;padding:0 min(5vw,44px)}
-    section{background:var(--paper);border:1px solid rgba(255,255,255,.5);border-radius:var(--r);box-shadow:var(--shadow);padding:34px;margin:24px 0}
-    h2{font-family:Georgia,serif;font-size:2.2rem;line-height:1.05;letter-spacing:-.03em;margin:.1rem 0 1rem}
-    h3{color:var(--green);margin:1.35rem 0 .55rem}
-    h4{margin:1rem 0 .45rem}
-    .lead{font-size:1.08rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px}
-    .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}
-    .say{background:#e9f7f0;border-left:7px solid var(--green);border-radius:11px;padding:14px;margin:12px 0}
-    .exam{background:#fff4d7;border-left:7px solid var(--gold);border-radius:11px;padding:14px;margin:12px 0}
-    .warn{background:#ffe8df;border-left:7px solid var(--coral);border-radius:11px;padding:14px;margin:12px 0}
-    .mini{background:#f6f0e4;border:1px dashed #ccb98b;border-radius:12px;padding:12px;margin:10px 0}
-    table{width:100%;border-collapse:collapse;font-size:.95rem;margin-top:10px}
-    th,td{border:1px solid #e1d6c3;padding:8px;vertical-align:top;text-align:left}th{background:#f4ead8}
-    code{background:#ece4d4;border-radius:6px;padding:.1rem .35rem}
-    ul{padding-left:1.35rem} li{margin:.32rem 0}
-    img{max-width:100%;border:1px solid #d8ccb4;border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.09)}
-    .cap{font-size:.9rem;color:var(--muted);margin-top:7px}
+    :root{
+      --bg:#112232;
+      --paper:#fbf7ef;
+      --ink:#1a242b;
+      --muted:#61707a;
+      --teal:#127a6e;
+      --teal-soft:#e8f7f2;
+      --gold:#f0c87e;
+      --gold-soft:#fff4df;
+      --rose:#e18162;
+      --rose-soft:#ffe4da;
+      --line:rgba(26,36,43,.16);
+      --shadow:0 24px 60px rgba(10,20,30,.22);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family:"Avenir Next","Segø UI",system-ui,sans-serif;
+      line-height:1.64;
+      background:
+        radial-gradient(circle at 12% 8%,rgba(103,181,255,.18),transparent 30%),
+        radial-gradient(circle at 88% 84%,rgba(88,178,149,.14),transparent 28%),
+        linear-gradient(135deg,#112232,#19363d 58%,#112232);
+    }
+    header{
+      max-width:1280px;
+      margin:auto;
+      padding:58px min(7vw,72px) 28px;
+      color:#fbf7ef;
+    }
+    .kicker{
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-weight:800;
+      font-size:.8rem;
+      color:#ccefe6;
+    }
+    h1{
+      margin:.2rem 0 .6rem;
+      font-family:Georgia,serif;
+      font-size:clamp(2.5rem,6vw,5.3rem);
+      line-height:.98;
+      letter-spacing:-.03em;
+    }
+    header p{
+      max-width:980px;
+      color:rgba(251,247,239,.88);
+      font-size:1.08rem;
+    }
+    nav{
+      position:sticky;
+      top:0;
+      z-index:20;
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      padding:12px min(6vw,64px);
+      background:rgba(17,34,50,.88);
+      backdrop-filter:blur(12px);
+      border-block:1px solid rgba(255,255,255,.18);
+    }
+    nav a{
+      color:#fbf7ef;
+      text-decoration:none;
+      white-space:nowrap;
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:999px;
+      padding:7px 11px;
+      font-size:.87rem;
+    }
+    main{
+      max-width:1160px;
+      margin:0 auto 90px;
+      padding:0 min(5vw,40px);
+    }
+    section{
+      background:var(--paper);
+      border:1px solid rgba(255,255,255,.58);
+      border-radius:var(--radius);
+      padding:28px;
+      margin:22px 0;
+      box-shadow:var(--shadow);
+    }
+    section.module{page-break-after:always}
+    h2{
+      margin:.08rem 0 .7rem;
+      font-family:Georgia,serif;
+      font-size:2.15rem;
+      line-height:1.06;
+      letter-spacing:-.02em;
+    }
+    h3{
+      margin:1.1rem 0 .35rem;
+      color:#10695d;
+      font-size:1.03rem;
+    }
+    .module h3{
+      padding-top:.5rem;
+      border-top:1px solid var(--line);
+    }
+    .module .source + h3{
+      margin-top:.5rem;
+      padding-top:0;
+      border-top:0;
+    }
+    p{margin:.32rem 0 .74rem}
+    ul{padding-left:1.2rem}
+    li{margin:.28rem 0}
+    .lead{font-size:1.08rem}
+    .source{
+      margin:.2rem 0 1rem;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+    .grid{
+      display:grid;
+      gap:12px;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    }
+    .card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    .say{
+      margin:.9rem 0;
+      background:var(--teal-soft);
+      border-left:6px solid var(--teal);
+      border-radius:10px;
+      padding:12px;
+    }
+    .exam{
+      margin:.9rem 0;
+      background:var(--gold-soft);
+      border-left:6px solid var(--gold);
+      border-radius:10px;
+      padding:12px;
+    }
+    .risk{
+      margin:.9rem 0;
+      background:var(--rose-soft);
+      border-left:6px solid var(--rose);
+      border-radius:10px;
+      padding:12px;
+    }
+    .index{
+      columns:2;
+      column-gap:24px;
+    }
+    .index li{break-inside:avoid}
+    code{
+      background:#efe7d8;
+      border-radius:6px;
+      padding:.1rem .34rem;
+    }
+    @media (max-width:800px){
+      .index{columns:1}
+      section{padding:18px}
+      h2{font-size:1.82rem}
+    }
+    @media print{
+      body{background:#fff}
+      header,nav,main{max-width:none}
+      nav{display:none}
+      section{
+        box-shadow:none;
+        border:1px solid #ddd;
+        margin:0 0 14px;
+      }
+    }
   </style>
 </head>
 <body>
-<header>
-  <div class="kicker">Arkitekturprincipper i praksis • Dyb eksamensforberedelse</div>
-  <h1>SearchProject oplæsningsbog</h1>
-  <p>Denne version er skrevet som en rigtig oplæsningsbog med teori, argumentation, begreber, trade-offs og forventede eksamenssvar. Målet er, at du både kan forklare undervisningen og forsvare jeres konkrete løsning.</p>
-</header>
+  <header>
+    <div class="kicker">Arkitekturprincipper i praksis - modulbaseret eksamensbog</div>
+    <h1>SearchProject oplæsningsbog</h1>
+    <p>Denne version er bevidst lavet som en stor, faglig læsebog og ikke som korte speaker notes. Den er organiseret efter de moduler, I har haft på faget, og hvert modul er skrevet om til en mere sammenhængende forklaring med direkte kobling til SearchProject. Ideen er, at du kan læse den fra ende til anden og fa en rolig, tung faglig repetition, eller slå op på et enkelt modul dagen før eksamen.</p>
+  </header>
 
-<nav>
-  <a href="#krav">Eksamenskrav</a>
-  <a href="#rodtrad">Rød tråd</a>
-  <a href="#beslutninger">Valg & argumenter</a>
-  <a href="#moduler">Modul 1-12</a>
-  <a href="#k8s">Kubernetes produktion</a>
-  <a href="#diagrammer">Diagrammer</a>
-  <a href="#qa">Q&A</a>
-  <a href="#pitch">7-8 min pitch</a>
-</nav>
+  <nav>
+    <a href="#brug">Brug bogen</a>
+    <a href="#m1">M1</a>
+    <a href="#m2">M2</a>
+    <a href="#m3">M3</a>
+    <a href="#m4">M4</a>
+    <a href="#m5">M5</a>
+    <a href="#m6">M6</a>
+    <a href="#m7">M7</a>
+    <a href="#m8">M8</a>
+    <a href="#m9">M9</a>
+    <a href="#m10">M10</a>
+    <a href="#m11">M11</a>
+    <a href="#m12">M12</a>
+  </nav>
 
-<main>
-  <section id="krav">
-    <div class="kicker">Fundament</div>
-    <h2>Hvad eksamen forventer af jer</h2>
-    <p class="lead">I følge <code>docs/ai_eksamensprojektet-v1-0-1.md</code> er projektet et walking skeleton. Det betyder, at fokus er på arkitekturkvalitet og begrundede valg – ikke på at implementere alle tænkelige features.</p>
-    <div class="grid">
-      <div class="card"><strong>Formkrav:</strong><br>kort demo i drift + mundtlig præsentation af arkitektur, kodebase og driftsmiljø.</div>
-      <div class="card"><strong>Tekniske krav:</strong><br>x-skalering for udvalgte komponenter, monitorering, caching-overvejelse, DB-z-retning.</div>
-      <div class="card"><strong>Faglig kerne:</strong><br>I skal kunne argumentere for hvorfor netop jeres valg er relevante i casen.</div>
-    </div>
-    <div class="exam"><strong>Eksamensnøgle:</strong> Et godt svar indeholder altid: problem, valg, konsekvens og hvorfor alternativet ikke var bedre i den konkrete kontekst.</div>
-  </section>
-
-  <section id="rodtrad">
-    <div class="kicker">Metode</div>
-    <h2>Rød tråd du kan bruge i alle svar</h2>
-    <ol>
-      <li><strong>Problem:</strong> intern søgemaskine skal levere hurtige resultater og kunne driftes stabilt.</li>
-      <li><strong>Valg:</strong> ansvar deles mellem WebApp, SearchApi, Indexer, Nginx, Redis, PostgreSQL og observability.</li>
-      <li><strong>Bevis:</strong> build/test/failover/performance valideringer + dokumenteret K8s-produktionsretning.</li>
-    </ol>
-    <div class="say"><strong>Sætning til fremlæggelsen:</strong> “Vi har arbejdet med arkitektur som beslutninger under usikkerhed: hvad løser problemet bedst nu, og hvad giver os en realistisk evolutionsvej senere?”</div>
-  </section>
-
-  <section id="beslutninger">
-    <div class="kicker">Arkitekturforsvar</div>
-    <h2>Valg, begrundelser og konsekvenser</h2>
-
-    <h3>1) Nginx i stedet for custom C# load balancer</h3>
-    <h4>Kontekst</h4>
-    <p>Projektet havde historisk en custom load balancer. Det gav mere kode, men ikke nødvendigvis mere domæneværdi.</p>
-    <h4>Argument</h4>
-    <ul>
-      <li>Build-vs-buy: routing er en commoditized platformopgave.</li>
-      <li>Domænekoden skal fokusere på søgelogik, ikke netværksinfrastruktur.</li>
-      <li>Nginx matcher produktionsmodellen i Kubernetes (Ingress/Service).</li>
-    </ul>
-    <h4>Konsekvens</h4>
-    <p>Fordel: mindre domænestøj og mere realistisk drift. Ulempe: mere konfigurationsansvar i driftlaget.</p>
-
-    <h3>2) Enkel SearchApi-struktur</h3>
-    <h4>Argument</h4>
-    <p>Strukturen <code>Interfaces / Repository / Services</code> er valgt for at balancere arkitekturdisciplin og enkelhed. Den er stærk til eksamen, fordi den er tydelig at forklare og demonstrere i kode.</p>
-    <h4>Trade-off</h4>
-    <p>Man får ikke maksimal enterprise-lagdeling, men man får høj læsbarhed, hurtig onboarding og lavere kompleksitet.</p>
-
-    <h3>3) Redis cache-aside</h3>
-    <h4>Argument</h4>
-    <p>Søgeløsninger har typisk gentagne forespørgsler. Cache-aside giver hurtigere svartider og aflaster DB.</p>
-    <h4>Trade-off</h4>
-    <p>Stale data og invalidation skal håndteres med TTL og tydelig cache-key strategi.</p>
-
-    <h3>4) Compose nu, Kubernetes som mål</h3>
-    <h4>Argument</h4>
-    <p>Walking skeleton skal være demonstrerbar nu. Samtidig skal produktionsretningen være konkret og fagligt realistisk.</p>
-    <h4>Trade-off</h4>
-    <p>Ikke alle produktionsdetaljer er implementeret, men de er tydeligt modelleret og argumenteret.</p>
-
-    <div class="warn"><strong>Vigtig tone i eksamen:</strong> Vær ærlig om begrænsninger. Det øger troværdigheden, når I samtidig viser en klar migrationsplan.</div>
-  </section>
-
-  <section id="moduler">
-    <div class="kicker">Teori med kobling</div>
-    <h2>Modul 1-12: faglig forståelse + anvendelse i SearchProject</h2>
-
-    <h3>Modul 1 – Intro til arkitekturprincipper</h3>
-    <p><strong>Hvad handler modulet om:</strong> Arkitektur som bevidste strukturvalg, quality attributes og ansvarsplacering.</p>
-    <p><strong>Begreber:</strong> cohesion, coupling, trade-offs, maintainability, operability.</p>
-    <p><strong>Kobling:</strong> vores serviceopdeling er valgt for at minimere ansvarsoverlap og gøre fejl domæneafgrænsede.</p>
-    <div class="mini"><strong>Mini-svar:</strong> “Vi bruger modul 1 til at vise, at arkitektur er beslutninger med konsekvenser, ikke bare mappe-struktur.”</div>
-
-    <h3>Modul 2 – Intro case</h3>
-    <p><strong>Hvad handler modulet om:</strong> At lade use casen definere arkitekturen.</p>
-    <p><strong>Begreber:</strong> use-case mapping, online/offline flow, systemgrænser.</p>
-    <p><strong>Kobling:</strong> Indexer (offline) og SearchApi (online) afspejler to forskellige forretningsbehov og performanceprofiler.</p>
-
-    <h3>Modul 3 – Skalering (X/Y/Z)</h3>
-    <p><strong>Hvad handler modulet om:</strong> Skaleringsstrategier skal vælges efter flaskehalse og ansvarsgrænser.</p>
-    <p><strong>Begreber:</strong> x-akse replicering, y-akse decomposition, z-akse data partitioning.</p>
-    <p><strong>Kobling:</strong> X = to API-instanser, Y = komponentopdeling, Z = data-roadmap.</p>
-    <div class="mini"><strong>Mini-svar:</strong> “X/Y er implementeret nu, Z er planlagt trinvis for at styre kompleksitet.”</div>
-
-    <h3>Modul 4 – Y-skalering workshop</h3>
-    <p><strong>Hvad handler modulet om:</strong> Funktionel opdeling før teknisk skalering.</p>
-    <p><strong>Kobling:</strong> klienter er adskilt fra API-kontrakt; det giver lavere kobling mellem UI og søgelogik.</p>
-
-    <h3>Modul 5 – X-skalering af kode</h3>
-    <p><strong>Hvad handler modulet om:</strong> Horisontal skala og trafikfordeling.</p>
-    <p><strong>Kobling:</strong> princippet med flere API-instanser bevares, men mekanismen håndteres i Nginx.</p>
-
-    <h3>Modul 6 – Z-scale</h3>
-    <p><strong>Hvad handler modulet om:</strong> Dataskalering er en modenhedsrejse, ikke et enkelt trin.</p>
-    <p><strong>Kobling:</strong> roadmap: single Postgres → read replicas → partitionering/sharding.</p>
-    <p><strong>Argument:</strong> Z er dyrt i migrationskompleksitet, derfor udsættes implementering til behovet er målt.</p>
-
-    <h3>Modul 7 – Intro til operations</h3>
-    <p><strong>Hvad handler modulet om:</strong> Miljøer, deployment-rammer, drift som arkitekturdisciplin.</p>
-    <p><strong>Kobling:</strong> Compose bruges til stabil demo; K8s-diagram bruges til produktionsmoden retning.</p>
-
-    <h3>Modul 8 – Deploymentprincipper</h3>
-    <p><strong>Hvad handler modulet om:</strong> build-vs-buy, barrier conditions, rollback, monitorering.</p>
-    <p><strong>Kobling:</strong> release gates: build/test/compose/health/scripts. Nginx-beslutning er build-vs-buy i praksis.</p>
-    <p><strong>Ekstra:</strong> Helm omtales som K8s-pakkestyring med versionsstyring og rollback.</p>
-
-    <h3>Modul 9 – Performance & metrics</h3>
-    <p><strong>Hvad handler modulet om:</strong> målinger, instrumentering og monitorering.</p>
-    <p><strong>Kobling:</strong> cache-performance testes i cold/hot scenario; metrics vises i dashboards.</p>
-
-    <h3>Modul 10 – Caching</h3>
-    <p><strong>Hvad handler modulet om:</strong> cache patterns og konsekvenser.</p>
-    <p><strong>Kobling:</strong> Redis cache-aside med TTL og query-baserede cache keys.</p>
-    <p><strong>Trade-off:</strong> hurtighed mod risiko for stale data.</p>
-
-    <h3>Modul 11 – Databaser i Kubernetes / volumes</h3>
-    <p><strong>Hvad handler modulet om:</strong> stateful drift kræver persistence-strategi.</p>
-    <p><strong>Kobling:</strong> Postgres er stateful; i K8s kræver det PVC/backup/resourcedisciplin.</p>
-
-    <h3>Modul 12 – StatefulSets, replicas, splitting</h3>
-    <p><strong>Hvad handler modulet om:</strong> dataskala med replicas og splitting patterns.</p>
-    <p><strong>Kobling:</strong> modul 12 giver teori bag vores fremtidige z-skalering, så roadmap er fagligt forankret.</p>
-
-    <div class="exam"><strong>Tværgående emner fra undervisningen:</strong> miljøbeskrivelser, monitorering af applikationer, OpenTelemetry/Prometheus og Helm er indarbejdet i argumentationen.</div>
-  </section>
-
-  <section id="moduler-dybde">
-    <div class="kicker">Dybde-sektion</div>
-    <h2>Udvidet modulrepetition (til oplæsning dagen før eksamen)</h2>
-    <p>Denne sektion er bevidst længere og mere teoritung. Brug den som “faglig opvarmning”, så dine svar får substans og ikke bare bliver tekniske one-liners.</p>
-
-    <h3>M1-M3: Fra principper til skaleringssprog</h3>
-    <p><strong>M1:</strong> Du skal kunne forklare, at arkitektur handler om konsekvenser over tid. Hvis ansvar placeres forkert, bliver hver ændring dyrere. I SearchProject ses dette ved, at routing, cache og database ikke ligger i samme kodeklump. Vi har bevidst gjort SearchApi til domænecenter og flyttet platformansvar ud.</p>
-    <p><strong>M2:</strong> Caseforståelsen giver systemgrænserne: indexering er ikke det samme som online søgning. Indexering kan tåle batch-tænkning; online søgning har krav om responsivitet. Det giver en legitim årsag til separate komponenter frem for en samlet alt-i-en service.</p>
-    <p><strong>M3:</strong> AKF-kuben er vores forklaringsramme. X-akse forklarer replikaer bag Nginx, Y-akse forklarer funktionel opdeling, og Z-akse forklarer dataevolution. Det vigtige er, at I ikke præsenterer X/Y/Z som teori alene, men som konkrete valg med konkrete konsekvenser.</p>
-
-    <h3>M4-M6: Fra servicegrænser til dataansvar</h3>
-    <p><strong>M4:</strong> Y-skalering bliver praktisk, når man kan pege på kontrakter. SearchWebApp og ConsoleSearch er klienter; SearchApi er kontrakten. Det reducerer kobling og gør det muligt at ændre frontend uden at bryde backend-strukturen.</p>
-    <p><strong>M5:</strong> X-skalering træner tanken om redundans og fejlisolering. Den vigtigste faglige pointe i jeres case er, at I beholdt princippet men forbedrede ansvarsplaceringen: fra custom load balancing i C# til Nginx i infrastruktur-laget.</p>
-    <p><strong>M6:</strong> Z-skalering skal behandles med respekt. Mange projekter siger “vi kan shard’e senere”, men uden konkret plan er det tomt. I jeres case er planen konkret: read replicas som første skridt, derefter partitionering på en forretningsnøgle (fx tenant/domæne/tid), og først derefter egentlig shard-routing hvis behovet er dokumenteret.</p>
-
-    <h3>M7-M8: Operations, release og driftsansvar</h3>
-    <p><strong>M7:</strong> Her er det centralt at skelne mellem at have containere og at have drift. Compose giver jer en stabil demonstrationsplatform. Kubernetes-modellen viser næste modenhedsniveau: service discovery, autoskalering, policy-styring og miljødisciplin.</p>
-    <p><strong>M8:</strong> Build-vs-buy er ikke kun økonomi; det er fokus. Ved at vælge Nginx/Prometheus/Grafana/Loki/Redis/Postgres som standardkomponenter frigør I tid til det, der faktisk differentierer projektet: søgelogik, query-flow og arkitekturbeslutninger. Barrier conditions betyder, at release kræver grøn build/test/config/health, og rollback betyder, at fejl ikke er katastrofer men kontrollerede hændelser.</p>
-
-    <h3>M9-M10: Målbar performance og cache-arkitektur</h3>
-    <p><strong>M9:</strong> Performance uden måling er en holdning. I jeres præsentation skal I derfor bruge ord som baseline, scenarie, metrik og observation. Eksempel: cold cache versus hot cache er ikke bare et teknisk trick; det er en kontrolleret demonstration af arkitekturvalgets effekt.</p>
-    <p><strong>M10:</strong> Cache-aside er valgt fordi læsemønsteret i søgning ofte er repetitivt. Men det er vigtigt at kunne sige højt: “Cache er en hastighedsoptimering med korrekthedsrisiko.” Derfor skal I nævne TTL, key-design og fallback til database. Når censor spørger om risiko, er det netop her I viser modenhed.</p>
-
-    <h3>M11-M12: Stateful realiteter og database-roadmap</h3>
-    <p><strong>M11:</strong> Stateful drift i Kubernetes kræver andre beslutninger end stateless API-drift. Her skal I kunne nævne PVC, backup, restore-test, resource limits og overvågning af database-health. Den vigtige pointe er, at databaseproblemer ofte bliver systemproblemer.</p>
-    <p><strong>M12:</strong> StatefulSets, replicas og splitting databases er kulminationen på dataarkitekturen. Det er helt legitimt ikke at have alt implementeret i et walking skeleton, men kun hvis I kan forklare prioriteringslogikken: først driftssikker basis, derefter dataskaleringslag når indikatorer viser behov.</p>
-
-    <div class="exam"><strong>Metapointe:</strong> Jo tydeligere I kobler modulteori til konkrete beslutninger i SearchProject, jo sværere bliver det for censor at afskrive præsentationen som “overfladisk demo”.</div>
-  </section>
-
-  <section id="k8s">
-    <div class="kicker">Fremtidig drift</div>
-    <h2>Ønsket produktionssetup i Kubernetes</h2>
-    <h3>Målarkitektur</h3>
-    <ul>
-      <li>Ingress til ekstern adgang.</li>
-      <li>Service til intern load balancing.</li>
-      <li>SearchApi som stateless Deployment med HPA-mulighed.</li>
-      <li>Redis/Postgres med stateful strategi (PVC/StatefulSet eller managed services).</li>
-      <li>Prometheus/Grafana/Loki til observability.</li>
-    </ul>
-
-    <h3>Hvorfor denne retning er valgt</h3>
-    <ul>
-      <li>Matcher eksamenskrav om driftbarhed og skalerbarhed.</li>
-      <li>Reducerer coupling mellem domænekode og platformfunktioner.</li>
-      <li>Understøtter reproducerbar deployment og hurtigere rollback.</li>
-    </ul>
-
-    <h3>Reelle ulemper du skal nævne</h3>
-    <ul>
-      <li>Driftskompleksitet stiger.</li>
-      <li>Stateful komponenter kræver moden backup/recovery-praksis.</li>
-      <li>Platformkompetence bliver en forudsætning.</li>
-    </ul>
-
-    <div class="say"><strong>Stærk formulering:</strong> “Vi har valgt Kubernetes som driftssvar på skala og robusthed, men vi anerkender at stateful drift er den tungeste del af modenheden.”</div>
-  </section>
-
-  <section id="diagrammer">
-    <div class="kicker">Visuel forklaring</div>
-    <h2>De to diagrammer du skal tale aktivt ud fra</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>C4 Container</h3>
-        <img src="c4-container-diagram.png" alt="C4 container diagram">
-        <p class="cap">Bruges til at forklare komponentansvar, requestflow, X/Y-skalering og cache/routing.</p>
+  <main>
+    <section id="brug">
+      <div class="kicker">Overblik</div>
+      <h2>Sådan bruger du bogen</h2>
+      <p class="lead">Det vigtigste greb i denne bog er, at hvert modul behandles som et selvstændigt fagligt afsnit. Du skal ikke kun kunne huske overskriften på modulet; du skal kunne forklare hvad problemet var, hvilke arkitekturideer der blev gennemgået, og hvordan de rammer jeres egen løsning.</p>
+      <div class="grid">
+        <div class="card">
+          <strong>Lag 1: Forstå modulet</strong><br>
+          Læs selve modulets afsnit langsomt og fokuser på de centrale begreber.
+        </div>
+        <div class="card">
+          <strong>Lag 2: Knyt det til projektet</strong><br>
+          Hvert modulafsnit peger eksplicit på hvordan teorien ses i SearchProject.
+        </div>
+        <div class="card">
+          <strong>Lag 3: Øv mundtligt</strong><br>
+          Brug boksen "Det du kan sige" som start på et mundtligt svar.
+        </div>
       </div>
-      <div class="card">
-        <h3>Kubernetes målarkitektur</h3>
-        <img src="kubernetes-diagram.png" alt="Kubernetes diagram">
-        <p class="cap">Bruges til produktion: Ingress/Service/Deployments, stateful data, HPA og roadmap.</p>
-      </div>
-    </div>
-    <div class="mini"><strong>Overgangssætning:</strong> “C4 viser systemets logik. Kubernetes viser driftsmodellen for den samme logik i skala.”</div>
-  </section>
+      <h3>Moduler i denne bog</h3>
+      <ul class="index">
+        <li>Modul 1 - Introduktion til arkitekturprincipper</li>
+        <li>Modul 2 - Introduktion til casen og testdata</li>
+        <li>Modul 3 - Skaleringskuben og y-skalering af kode</li>
+        <li>Modul 4 - Workshop med y-skalering og funktionelle kontrakter</li>
+        <li>Modul 5 - X-skalering af kode</li>
+        <li>Modul 6 - Y/Z-skalering af data</li>
+        <li>Modul 7 - Operations, UML/C4 og intro til Kubernetes</li>
+        <li>Modul 8 - Deploymentprincipper: build-vs-buy, rollback og monitoring</li>
+        <li>Modul 9 - Performance, metrics, OpenTelemetry og Prometheus</li>
+        <li>Modul 10 - Caching og Redis</li>
+        <li>Modul 11 - Databaser i Kubernetes og volumes</li>
+        <li>Modul 12 - StatefulSets, replicas og database cube</li>
+      </ul>
+      <div class="exam"><strong>Arbejdshåndtag:</strong> hvis tiden er knap, så læs modul 3, 5, 8, 9, 10 og 12 ekstra grundigt. Det er de moduler, der tydeligst bærer jeres nuværende eksamensfortælling.</div>
+    </section>
 
-  <section id="qa">
-    <div class="kicker">Eksamenstræning</div>
-    <h2>Typiske spørgsmål + fagligt stærke svar</h2>
+    <section class="module" id="m1">
+      <div class="kicker">Modul 1</div>
+      <h2>Introduktion til arkitekturprincipper</h2>
+      <p class="source">Kildespor: <code>docs/ai_modul-1-intro-til-ark-principper.md</code>, <code>docs/modul-01-agenda.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Det første modul satte hele fagets tone: arkitekturprincipper er ikke bare smarte ord eller plakater på væggen, men bevidste retningslinjer for hvordan man bygger systemer, når man gerne vil opnå bestemte egenskaber. I materialet bliver principper beskrevet som best practice og guidelines for arkitekter. Pointen er, at principperne skal hjælpe med at håndtere krav og omstændigheder, som ellers ville blive løst tilfældigt fra sag til sag. De fungerer som en checkliste, og de kan være dyre både at følge og at ignorere. Allerede her ligger en vigtig eksamenspointe: et princip er ikke kun godt fordi det lyder rigtigt, men fordi det styrer konkrete beslutninger og har en pris.</p>
+      <p>Modulet fremhæver flere klassiske principper fra AKF-traditionen, blandt andet <em>scale out, not up</em>, stateless systems, asynchronous design, design to be monitored og design to be disabled. Derudover er SMART-kriteriet centralt: et princip skal være specific, measurable, achievable, realistic og testable. Det betyder i praksis, at et godt princip ikke må være så vagt, at alle kan sige ja til det uden at ændre adfærd. Hvis man for eksempel siger "systemet skal være godt", er det ikke et princip. Hvis man derimod siger "søge-API'et skal være stateless, så vi kan køre flere identiske instanser bag en load balancer", så bliver det både testbart og styrende.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>I SearchProject er modul 1 vigtigt, fordi det giver jer lov til at vælge principper i stedet for at lade som om I bruger dem alle sammen. Det er faktisk en styrke, hvis I kan sige: vi valgte nogle få principper i dybden, fordi de løser vores konkrete case bedst. Når I fremhæver scale out, stateless services, caching, design to be monitored og build-vs-buy, er det helt i tråd med modul 1's budskab. Arkitekten vælger principper fra og til i en given kontekst. En intern søgemaskine med krav om hurtige svar, driftbarhed og realistisk udviklingsomfang har ikke brug for samme prioriteringer som for eksempel en realtidsbørs eller et gaming-netværk.</p>
+      <p>En anden vigtig pointe fra modul 1 er forskellen på udviklerperspektiv og driftsperspektiv. Nogle principper handler mest om kodens struktur, andre om hvordan systemet opfører sig i drift, og nogle er vigtige for begge sider. SearchProject er et godt eksempel på dette krydsfelt. Redis-cachen og SearchApi's struktur hjælper udviklingssiden, men metrics, logging og failover-evne hjælper i høj grad driften. Derfor giver det mening at beskrive jeres system som et sted, hvor udvikling og operations mødes, fremfor som et rent kodningsprojekt.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 1 lærte os at arkitekturprincipper skal være bevidste, testbare og styrende for reelle valg. I SearchProject valgte vi derfor ikke at tale om alle principper, men at arbejde i dybden med dem, der tydeligst forbedrer performance, robusthed og driftbarhed i vores case."</div>
+      <div class="exam"><strong>Typisk spørgsmål:</strong> hvorfor lige de principper? Svar: fordi de matcher de vigtigste kvalitetskrav i casen, og fordi vi faktisk kan dokumentere dem i drift med kode, scripts og målinger.</div>
+    </section>
 
-    <h3>Hvorfor Nginx i stedet for custom load balancer?</h3>
-    <p>Fordi routing er en platformkapabilitet, ikke domænelogik. Build-vs-buy siger, at vi bør fokusere egen kode på det, der differentierer: søgelogikken.</p>
+    <section class="module" id="m2">
+      <div class="kicker">Modul 2</div>
+      <h2>Introduktion til casen og testdata</h2>
+      <p class="source">Kildespor: <code>docs/ai_modul-2-intro-case.md</code>, <code>docs/modul-02-agenda.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 2 gjorde casen konkret. Søgemaskinen er ikke en abstrakt webservice, men en intern søgeløsning til en organisation med mange ansatte, mange dokumenttyper og potentielt enorme mængder ustruktureret data fordelt på flere filservere. Allerede her får man et realistisk arkitekturproblem: brugeren forventer noget, der føles som instant search, men datagrundlaget er stort, heterogent og dyrt at gennemsøge direkte. Derfor bliver indeksering og søgelogik ikke bare implementeringsdetaljer, men selve kernen i systemets arkitektur.</p>
+      <p>Materialet beskriver en brugerflade, der minder om Google: brugeren indtaster en query, og resultatet er en liste af hits med titel, link, dato, score og snippet. Samtidig beskrives der ret skarpe krav: 100 procent recall, faldende rankering, score mellem 0 og 1 og mulighed for domæspecifikke synonymer. Det er vigtigt, fordi det viser, at systemet ikke kun skal "finde noget", men skal have et forklarbart og konsekvent resultatbegreb. Det er netop den slags krav, der senere retfærdiggør en tydelig opdeling mellem indeksering, søgelogik, API og klienter.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Indekseringsdelen er også vigtig i modul 2. Der forklares hvorfor en crawler og et omvendt indeks er nødvendigt, hvis man vil søge effektivt i mange dokumenter. Filsystemet kan godt svare på hvilke ord et bestemt dokument indeholder, men søgemaskinens reelle opgave er det omvendte spørgsmål: hvilke dokumenter indeholder et bestemt ord eller et bestemt sæt af ord? Det leder direkte til den begrebsmæssige og relationelle datamodel i modulet, hvor Document, Term og Occurrence er centrale enheder. Når I forklarer SearchProject, kan I bruge dette som argument for hvorfor databasen ikke bare er "et sted vi gemmer data", men en struktureret repræsentation af et omvendt indeks.</p>
+      <p>Casen giver også en vigtig afgrænsning: synonymer, domæspecifik termnet og flere dokumentformater er relevante, men alt behøver ikke være fuldt implementeret i et walking skeleton. I kan sige, at modul 2 hjalp jer med at forstå hvad den fulde domæproblematik er, mens eksamensprojektet demonstrerer den arkitektoniske kerne omkring søgning, performance, skalering og drift. Det er en moden måde at afgrænse på. I lover ikke mere end I bygger, men I viser, at I forstår det større problemrum.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 2 gjorde det tydeligt, at vores system ikke bare er en webapp med et inputfelt. Det er en søgearkitektur med indeks, rankering, query-behandling og store mængder ustrukturerede dokumenter. Derfor giver det mening, at vi har adskilt indexer, API, klienter og persistent data."</div>
+      <div class="risk"><strong>Faldgrube:</strong> hvis I kun beskriver brugerfladen og ikke det omvendte indeks, lyder løsningen lettere end den faktisk er. Censor skal mærke at I forstår hvorfor casen er arkitekturfagligt interessant.</div>
+    </section>
 
-    <h3>Hvorfor ikke implementere fuld z-skalering nu?</h3>
-    <p>Fordi z-skalering har høj kompleksitetspris. Vi har en målebaseret roadmap, så vi ikke introducerer dyr kompleksitet før behovet er dokumenteret.</p>
+    <section class="module" id="m3">
+      <div class="kicker">Modul 3</div>
+      <h2>Skaleringskuben og y-skalering af kode</h2>
+      <p class="source">Kildespor: <code>docs/ai_modul-3-skalering.md</code>, <code>docs/ai_modul-3-en-roadmap-for-y-scale.md</code>, <code>docs/modul-03-agenda.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 3 er et af de mest centrale moduler for hele SearchProject, fordi det giver jer sproget til at beskrive skalering som mere end bare "flere containere". AKF-skaleringskuben introducerer tre dimensioner: x-scale er kloning af den samme service på flere computere, y-scale er opdeling af kodebasen i separate services eller ansvar, og z-scale er opdeling ud fra request-kontekst eller dataeje. Allerede her kommer den store pointe: forskellige flaskehalse kalder på forskellige skaleringsgreb, og hvis man bruger det forkerte greb, kan man let øge kompleksiteten uden at løse problemet.</p>
+      <p>Modulet skelner mellem stateless og stateful logik. Hvis en komponent er stateless, kan x-skalering være usynlig for klienterne: flere identiske instanser kan ligge bag en load balancer, og brugeren behøver ikke vide hvilken instans der svarede. Hvis logikken derimod er stateful, bliver det mere besværligt, og der er ofte brug for y-skalering først, så state kan isoleres i en anden komponent. Denne pointe rammer SearchProject meget godt. SearchApi er designet til at være stateless, mens data og cache ligger i henholdsvis Postgres og Redis. Det er netop derfor jeres to API-instansers failover giver mening.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Roadmap-delen i modulet er også meget praktisk. Den viser en trinvis vej til y-skalering: introducer et interface og en factory, kopier logikken og byg et API, og lav derefter en proxy eller klient, der bruger API'et. Det er et godt eksempel på hvordan arkitekturforbedringer kan laves trinvis fremfor som total omskrivning. I SearchProject ses det i separationen mellem `SearchWebApp`, `ConsoleSearch` og `SearchApi`, og i brugen af delte kontrakter i `Shared`. Man kan derfor sige, at projektet ikke kun viser y-skalering som diagram, men som en reel evolution fra lokal logik til API-baseret serviceadgang.</p>
+      <p>Det er også i modul 3, at I kan begynde at forklare hvorfor en load balancer ikke er "x-skalering i sig selv". X-skalering er muligheden for at køre flere identiske instanser; load balanceren er mekanismen, der gør denne kloning brugbar for klienterne. Det er en vigtig skelnen, fordi den viser at I forstår både princip og mekanisme. Nginx er i jeres nuværende løsning platformværktøjet, men princippet bagved kommer direkte fra modul 3.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 3 gav os AKF-kuben som forklaringsramme. I vores projekt er y-skaleringen serviceopdelingen mellem klienter, API, indexer og data; x-skaleringen er de to stateless API-instansers kørsel bag Nginx; og z-skaleringen er en planlagt dataroadmap, ikke noget vi påstår er fuldt implementeret nu."</div>
+      <div class="exam"><strong>God detalje at nævne:</strong> x-skalering er usynlig for klienten, hvis den skalerede komponent er stateless og kontrakten er stabil. Det er præcis det jeres failover-scenario demonstrerer.</div>
+    </section>
 
-    <h3>Hvordan beviser I performanceforbedring?</h3>
-    <p>Ved konkrete testscenarier (cold/hot cache) og metrics. Vi undgår antagelsesbaseret performanceargumentation.</p>
+    <section class="module" id="m4">
+      <div class="kicker">Modul 4</div>
+      <h2>Workshop med y-skalering og funktionelle kontrakter</h2>
+      <p class="source">Kildespor: <code>docs/modul-04-agenda.md</code>, <code>docs/ai_spec-of-functions-jan-26.md</code>, koblet til SearchProjects kodeorganisation</p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 4 var mere workshop-orienteret, men det betyder ikke at det er mindre vigtigt. Tværtimod er det her, y-skalering bliver til konkret udviklingspraksis. Agendaen peger på opdeling af `ConsoleSearch` i UI og API samt arbejde med funktionelle specifikationer. Det betyder, at fokus ikke kun er på "at dele noget i to", men på at kunne beskrive grænsen mellem de to dele præcist. Når man flytter logik over i et API, bliver kontrakten pludselig afgørende: hvilke input accepteres, hvilke output loves, og hvad er fejltilfældene?</p>
+      <p>Her bliver noten om functional specifications relevant. Den introducerer tanken om en funktion som en kontrakt mellem server og klient, beskrevet gennem pre-conditions og post-conditions. Selvom jeres SearchApi ikke er specificeret i ren formel logik, er grundtanken stadig meget anvendelig. Et API-endpoint som `/api/search` skal have tydelige krav til input: query må ikke være tom, database må være gyldig, og resultatet skal have en meningsfuld struktur. Når I validerer input i `Program.cs` og returnerer `BadRequest` ved ugyldige kald, er det i praksis en implementering af kontrakt-tanken: klienten skal opfylde visse forudsætninger, og serveren lover et bestemt resultat hvis de er opfyldt.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Modulet er også vigtigt i forhold til kobling. Når UI og API skilles ad, er det fristende at tro, at man automatisk får en god arkitektur. Det får man ikke. Hvis kontrakten er uklar, eller hvis klient og server deler skjulte antagelser, bliver systemet bare fordelt og samtidig skørt. Derfor er modul 4 et godt sted at tale om `Shared`-projektet i SearchProject. De delte modeller er med til at holde klient og server enige om dataformat, men de skal stadig bruges med disciplin, så man ikke glider tilbage i skjult kobling.</p>
+      <p>Den store læring fra modul 4 er derfor, at y-skalering ikke bare handler om at flytte kode; det handler om at gøre ansvar og kontrakter skarpere. Det er også et godt sted at argumentere for den bevidst enkle struktur i SearchApi: `Interfaces`, `Repository`, `Services`. Den slags struktur kan virke mindre "enterprise" end en meget lagdelt arkitektur, men den er let at forklare, let at teste og passer godt til et undervisningsprojekt, hvor gennemsigtighed og arkitektonisk forklarbarhed er vigtige.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 4 gjorde os opmærksomme på, at når man y-skalerer en kodebase, skal man samtidig skærpe kontrakterne. I SearchProject ses det i API-grænsen, de delte modeller og den meget tydelige validering af input til søge-endpointet."</div>
+      <div class="exam"><strong>Hvis censor går ned i kode:</strong> forklar at kontraktideen lever i endpoint-validation, `Shared`-modeller og servicegrænserne, selvom I ikke formelt har skrevet pre- og post-conditions med logisk notation.</div>
+    </section>
 
-    <h3>Hvad er jeres største risikoområde fremadrettet?</h3>
-    <p>Stateful datadrift i K8s (backup/restore/failover/disaster recovery) er den mest krævende modenhedsdel.</p>
+    <section class="module" id="m5">
+      <div class="kicker">Modul 5</div>
+      <h2>X-skalering af kode</h2>
+      <p class="source">Kildespor: <code>docs/modul-05-agenda.md</code>, sammenholdt med projektets nuværende Nginx- og SearchApi-setup</p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 5 flytter fokus fra opdeling til replikering. Når man x-skalerer, tager man den samme service og kører flere identiske instanser. Det kan være fristende at beskrive det som en simpel ydelsesforbedring, men modulet viser, at det kun virker godt under bestemte forudsætninger. For det første skal der være et lag, der fordeler trafikken, altså en load balancer. For det andet skal den skalerede service helst være stateless eller i det mindste ikke have lokal, skjult tilstand, som gør requests afhængige af den instans, de lander på.</p>
+      <p>Agendaen peger på oprettelse af en load balancer API, start af to eller flere SearchApi-instansers lokalkørsel og synlig routing, så effekten kan verificeres. Den synlige routing er en vigtig detalje. Hvis man ikke kan se hvilken replika der svarer, kan man nemt påstå x-skalering uden egentlig at kunne demonstrere den. I jeres løsning er dette greb bevaret, blandt andet via headers som viser hvilken backend der blev brugt. Det giver en fin eksamensbro mellem teori og praksis: x-skalering er ikke kun en ide, men noget der kan gøres observerbart.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Historisk havde projektet en custom load balancer i C#. Det kan I med fordel nævne som en mellemstation, men den vigtigste pointe i den nuværende version er build-vs-buy-beslutningen: selve princippet om x-skalering er beholdt, men mekanismen er flyttet over i Nginx. Det er faktisk en moden arkitekturbeslutning, fordi routing og failover er klassiske platformopgaver, mens jeres domæneværdi ligger i søgelogik, indeks og performanceforbedringer. Dermed bliver modul 5 og modul 8 meget flotte at koble sammen: man kan både tale om x-skalering og om hvorfor standardkomponenter er et bedre valg end at eje alt selv.</p>
+      <p>Jeres failover-test er det naturlige eksamensbevis for modul 5. Når `searchapi1` stoppes under belastning, men klienten stadig får svar gennem `searchapi2`, viser det at replikeringen er meningsfuld og ikke bare kosmetisk. Man kan samtidig være ærlig om begrænsningerne: load balanceren er ikke hele sandheden om højtilgængelighed, og en rigtig produktionsløsning ville arbejde mere systematisk med health checks, timeouts og eventuelt flere lag af redundans. Men som walking skeleton er den faglige pointe meget klar.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 5 handlede om at gøre en service replikerbar. I SearchProject betyder det to identiske SearchApi-instansers drift bag Nginx. Det virker netop fordi API'et er gjort stateless, og fordi vi kan demonstrere failover i praksis."</div>
+      <div class="risk"><strong>Kritisk spørgsmål:</strong> hvad hvis API'et havde lokal session-state? Svar: så ville x-skalering blive mere kompleks, og vi ville sandsynligvis skulle flytte state ud eller indføre sticky sessions, hvilket typisk er et svagere design.</div>
+    </section>
 
-    <h3>Hvorfor er løsningen stadig stærk?</h3>
-    <p>Fordi valgene er klare, konsekvenserne er kendte, og evolutionsretningen er dokumenteret og realistisk.</p>
-  </section>
+    <section class="module" id="m6">
+      <div class="kicker">Modul 6</div>
+      <h2>Y/Z-skalering af data</h2>
+      <p class="source">Kildespor: <code>docs/modul-06-agenda.md</code>, <code>docs/ai_modul-6-z-scale.md</code>, <code>docs/ai_emne-splitting-databases.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Hvor modul 3-5 primært handlede om services og kode, bringer modul 6 fokus over på data. Det er en vigtig overgang, for mange systemer kan x-skaleres på API-laget i et stykke tid, men rammer senere databasen som ny flaskehals. Her introduceres forskellen mellem y- og z-skalering af data. Y-opdeling af data betyder at segmentere databasen funktionelt eller tematisk, for eksempel kundedata i et sted og produktdata et andet sted. Z-opdeling betyder at splitte data efter en partitionsnøgle, for eksempel kunde-id, region eller hash, således at hver node ejer sit udsnit af data.</p>
+      <p>Z-scale-noten understreger nogle nøglekrav: man skal have en deterministisk partition key, der skal være exclusiv ownership af data, og man skal helst have locality, så de fleste requests kun rammer et shard. Det er meget nyttigt i eksamenssammenhæng, fordi det gør det tydeligt, at z-skalering ikke bare er "flere databaser". Der skal være en mening i opdelingen, og request-routing skal kunne foretages pålideligt. Hvis man ikke har den slags domæviden eller adgangsmønstre, er z-skalering dyrt og risikabelt.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Dokumentet om splitting databases viser også database-cuben. X-axis splitting svarer til read replicas og giver bedre læseskala og tilgængelighed, men løser ikke datavækst eller skriveflaskehalse. Y-axis splitting reducerer kompleksitet ved at gruppere data efter tema, men koster meget i udvikling og drift. Z-axis splitting skalerer store datamængder godt og giver bedre fejlisolering, men kræver routing, rebalancering og disciplin omkring cross-shard forespørgsler. Den store læring er derfor, at data-skalering er en modenhedsrejse, ikke et one-click arkitekturmønster.</p>
+      <p>I SearchProject er modul 6 mest synligt som afgrænsning og roadmap. I har ikke fuldt implementeret database-sharding, og det er fint. Den voksne arkitekturforklaring er, at I endnu ikke har dokumenteret et access pattern, der retfærdiggør en rigtig z-splitting. Til gengæld kan I skitsere realistiske næste skridt: først read replicas for at forbedre læsebelastning, derefter eventuel partitionering efter dokumentdomæene, tidsrum eller organisatorisk ejerforhold, hvis datamængden og brugsmønstret kræver det. Det viser, at I forstår forskellen mellem at kende et princip og at bruge det ansvarligt.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 6 lærte os, at dataskalering er dyrere og mere domæneafhængig end serviceskalering. Derfor nøjedes vi ikke med at sige 'vi kan shard'e senere', men beskrev i stedet hvornår read replicas, y-opdeling eller z-opdeling faktisk giver mening for vores søgedata."</div>
+      <div class="exam"><strong>God modenhedsmarkør:</strong> sig tydeligt at I ikke ville introducere sharding uden en troværdig partition key og uden at have målinger, der viser behovet.</div>
+    </section>
 
-  <section id="repetition">
-    <div class="kicker">Ekstra dybde</div>
-    <h2>Repetitionsbank: 12 modul-svar du kan træne højt</h2>
+    <section class="module" id="m7">
+      <div class="kicker">Modul 7</div>
+      <h2>Operations, UML/C4 og intro til Kubernetes</h2>
+      <p class="source">Kildespor: <code>docs/ai_modul-7-intro-til-operations.md</code>, <code>docs/modul-07-agenda.md</code>, <code>docs/ai_emne-intro-til-operations.md</code>, <code>docs/ai_emne-intro-til-kubernetes.md</code>, <code>docs/ai_emne-miljbeskrivelser.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 7 er vigtigt, fordi det flytter faget fra "arkitektur som kode" til "arkitektur som drift". Operations beskrives som administration og vedligeholdelse af IT-systemer med fokus på stabilitet, tilgængelighed og ydeevne. Det er en enkel definition, men den har stor konsekvens: hvis et system er flot struktureret i kode men umuligt at deploye, overvage eller fejlsøge, er arkitekturen ikke fuldt vellykket. Modulet kobler derfor arkitektur til incidents, problems og changes, og dermed til hverdagen efter release.</p>
+      <p>Agendaen for modul 7 tilføjer to spor, som er meget relevante for SearchProject. Det ene er dokumentation med UML og C4. Her handler det om at skabe et fælles sprog mellem udvikling, drift og forretning. Context-diagrammet viser systemets placering i verden, container-diagrammet viser runtime-enhederne, og deployment-diagrammet viser driftsmiljøet og infrastrukturen. Det andet spor er Kubernetes-introduktionen, hvor man ser hvorfor containerorkestrering er mere end bare "docker, men mere". Kubernetes tilbyder load balancing, self-healing, namespaces, services og deployments og er derfor et naturligt produktionssprog for moderne distribuerede systemer.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Det er også i dette modul, at miljøbeskrivelser begynder at blive interessante. Dokumentet om deploymentmiljøer skelner mellem build, test, staging og production. Den skelnen er nyttig i jeres eksamensfortælling, fordi den viser at Docker Compose i jeres projekt kan forklares som et stabilt demonstrations- og integrationsmiljø, mens Kubernetes udgør den mere modne produktionsretning. I behøver ikke at påstå, at I allerede driver produktion i Kubernetes. Det er nok at kunne forklare hvorfor det ville være det naturlige næste skridt, og hvad det ville kræve.</p>
+      <p>SearchProject passer meget fint til modul 7. I har et C4-containerdiagram og et Kubernetes-diagram, og I har et Compose-setup som faktisk kører. Dermed har I både det begrebslige og det praktiske ben med. Det gode svar er derfor ikke "vi vil gerne på Kubernetes", men "vi forstår hvorfor orkestrering giver værdi, hvilke runtime-begreber der er centrale, og hvilke dele af vores nuværende setup der allerede peger i den retning".</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 7 gjorde det tydeligt, at arkitektur ikke stopper ved kode. Vi skal kunne forklare hvordan systemet udrulles, overvages og dokumenteres. Derfor bruger vi både C4/UML til kommunikation og Compose/Kubernetes som to forskellige modenhedsniveauer for drift."</div>
+      <div class="exam"><strong>Brugbart skel:</strong> Compose er implementeret runtime nu. Kubernetes er produktionsretning. Når I siger det klart, virker I mere troværdige end hvis I lader som om begge dele er lige modne.</div>
+    </section>
 
-    <h3>Modul 1-svar (arkitekturprincipper)</h3>
-    <p>“I modul 1 lærte vi, at arkitektur er valg med konsekvenser. I SearchProject betyder det, at vi ikke blander UI, søgelogik, data, caching og routing i én service. Når ansvar er adskilt, bliver ændringer billigere, test mere målrettede, og drift mere gennemskuelig.”</p>
+    <section class="module" id="m8">
+      <div class="kicker">Modul 8</div>
+      <h2>Deploymentprincipper: build-vs-buy, rollback og monitoring</h2>
+      <p class="source">Kildespor: <code>docs/ai_modul-8-deployment-principper.md</code>, <code>docs/modul-08-agenda.md</code>, <code>docs/ai_emne-build-vs-buy.md</code>, <code>docs/ai_emne-barrier-conditions-rollback.md</code>, <code>docs/ai_emne-monitoring-af-applikationer.md</code>, <code>docs/ai_opgave-m8-01-build-vs-buy.md</code>, <code>docs/ai_opgave-m8-02-barrier-conditions-and-rollback.md</code>, <code>docs/ai_opgave-m8-03-monitoring.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 8 er et meget tungt operationsmodul, fordi det samler flere principper, der handler om releases og driftsstabilitet. Det første store tema er build-vs-buy. Materialet fra Abbott og Fisher giver en enkel tjekliste: skaber komponenten strategisk differentiering, er vi de bedste ejere af den, hvor hurtigt vil konkurrenterne indhente os, og kan vi bygge den omkostningseffektivt? Pointen er, at udviklingsteams ofte er biased mod at bygge selv, selv når markedet allerede tilbyder gennemprøvede løsninger. Det er direkte anvendeligt på jeres valg af Nginx, Redis, Prometheus, Grafana og Loki. Ingen af de komponenter er kernen i jeres konkurrencemæssige værdi; de er platformskapabiliteter, som er klogere at genbruge end at genopfinde.</p>
+      <p>Det andet store tema er barrier conditions og rollback. Barrier conditions beskrives som kontrolpunkter i livscyklussen, der bruges til at måle succes eller fiasko. Eksemplerne er arkitekturgennemgang, kode-review, performancetest og automatiske tests før release. De fungerer lige godt i agile og mere traditionelle processer, så længe de bruges som kvalitetssikring og ikke som tungt bureaukrati. I SearchProject kan I oversætte dette til en meget konkret releasefortælling: build skal være grønt, containere skal starte, health endpoints skal svare, metrics skal kunne scrapes, og performance- eller failover-scripts skal give mening. Det er ikke en fuld enterprise-pipeline, men det er en realistisk miniudgave af principtænkningen.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Rollback-delen er vigtig, fordi gode barrierer aldrig fjerner al risiko. Derfor skal man kunne komme tilbage til en stabil tilstand. Materialet forklarer blandt andet problemet med database-skemainkompatibilitet og ideen om et rollback-vindue, hvor man indsamler nok data til at vurdere om releasen faktisk er sund. Det bliver koblet til design to be disabled, og det er en rigtig god nuancering: nogle gange er det bedre at slukke en problematisk funktion end at rulle hele releasen tilbage. For jeres projekt er det mest relevante eksempel cache-laget. Hvis cache skaber problemer, er det bedre at kunne deaktivere eller omgå det end at vælte hele systemet. Jeres `SearchCache__Enabled` er derfor faktisk et fint lille eksempel på princippet.</p>
+      <p>Det tredje tema er monitoring. Dokumentationen understreger at monitorering skal designes ind fra starten. Man skal vide hvilke hændelser man vil opdage, hvor problemet er, og hvad problemet er. Samtidig skal man undgå at overvage alt bare fordi man kan. Det er vigtigere at have få, værdifulde målinger end store mængder støj. Det passer godt til jeres nuværende situation, hvor I blandt andet fokuserer på request-metrics, cache hit/miss, runtime-metrics og logs. Igen er det fint at sige, at jeres monitorering er fokuseret og undervisningsrelevant, ikke et fuldt SRE-setup.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 8 handlede om at gøre releases og drift ansvarlige. I SearchProject ses det i build-vs-buy-valget af standardkomponenter, i vores releasebarrierer som build, health og test-scripts, og i at vi kan slukke cache-funktionen uden at knække hele systemet."</div>
+      <div class="risk"><strong>Vigtig ærlighed:</strong> I har ikke en komplet rollback-pipeline eller feature flag-platform. Men I kan stadig forklare principperne, og I kan pege på mindre, konkrete steder hvor tankegangen findes i systemet.</div>
+    </section>
 
-    <h3>Modul 2-svar (case)</h3>
-    <p>“Caseforståelsen viser, at indeksering og søgning er to forskellige flows. Indexer håndterer forberedelse af data, mens SearchApi håndterer online forespørgsler. Vi valgte derfor komponenter efter arbejdsopgave i stedet for at presse alt ind i samme runtime.”</p>
+    <section class="module" id="m9">
+      <div class="kicker">Modul 9</div>
+      <h2>Performance, metrics, OpenTelemetry og Prometheus</h2>
+      <p class="source">Kildespor: <code>docs/ai_modul-9-performance-metrics.md</code>, <code>docs/modul-09-agenda.md</code>, <code>docs/ai_emne-performance.md</code>, <code>docs/ai_emne-opentelemetry-prometheus.md</code>, <code>docs/ai_opgavest-m9-01-performance-test.md</code>, <code>docs/ai_opgavest-m9-02-monitorering-med-prometheus.md</code>, <code>docs/ai_opgavest-m9-03-instrumentering-af-search-engine.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 9 sætter ord på noget, som mange teams ellers kun taler om intuitivt: performance. Dokumentationen definerer performance som hvor hurtigt og effektivt et system håndterer forespørgsler og data, men understreger at det ikke kun handler om hastighed. Det handler også om stabilitet, tilgængelighed og ressourceudnyttelse. En vigtig faglig pointe er derfor, at performance ikke er et kosmetisk lag oven på arkitekturen; det er et kvalitetsattribut, som bør være indbygget i designet og måles systematisk.</p>
+      <p>Materialet gennemgår flere kategorier af metrics: API-anmodningsmetrics som responstid, percentiler, error rate og statuskoder; database-metrics som querytid og cache-hit ratio; systemmetrics som CPU, memory og disk I/O; applikationsmetrics som samtidighed og cacheudnyttelse; og brugeroplevelsesmetrics som gennemsnitlig svartid og time to first byte. Det er særligt nyttigt i jeres case, fordi det forklarer hvorfor I ikke nøjedes med kun at måle gennemsnitstid. Når I taler om p95 og p99, viser I en mere moden performanceforståelse: det er haleadfærden og ikke kun middelværdien, der afslører problemer i brugeroplevelsen.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Performance test-delen i materialet er meget handlingsorienteret. Først etableres succeskriterier, derefter et passende testmiljø, så designes testene, de udføres, analyseres, rapporteres og gentages. Det matcher jeres cache-performance-test overraskende godt. I har et scenarie, et miljø, en måleform og et resultat, som kan sammenlignes. Dermed kan I tale om mere end "vi prøvede at spamme API'et". I kan sige, at I lavede et kontrolleret eksperiment med cold-cache og hot-cache for at isolere effekten af det nye arkitekturvalg.</p>
+      <p>OpenTelemetry- og Prometheus-sporet er lige så vigtigt. OpenTelemetry beskrives som et standardiseret observability framework til metrics, logs og traces, mens Prometheus er den backend der opsamler, lagrer og gør metrics analyserbare. Det betyder, at instrumentering og opsamling er to forskellige ting. I SearchProject ses det i SearchApi's metrics-setup, Prometheus scrape-konfigurationen og dashboards i Grafana. Det er en ret flot kobling mellem teori og praksis, fordi I kan pege på konkrete filer og samtidig forklare de roller, som de forskellige værktøjer spiller i det større observability-billede.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 9 lærte os at performance skal måles i flere lag. Derfor valgte vi både performance-scripts, percentiler som p95 og p99, og OpenTelemetry/Prometheus-instrumentering, så vi kunne dokumentere effekt frem for bare at have en fornemmelse."</div>
+      <div class="exam"><strong>Stærkt svar på 'hvorfor metrics?':</strong> fordi ellers kan man ikke skelne mellem en reel optimering, tilfældig variation og en flyttet flaskehals.</div>
+    </section>
 
-    <h3>Modul 3-svar (X/Y/Z)</h3>
-    <p>“X/Y/Z er vores fælles sprog: X er to API-instanser bag Nginx, Y er serviceopdelingen, og Z er database-roadmap. Den faglige pointe er, at vi implementerer den skala vi har behov for nu, men vi kan forklare næste trin uden at gætte.”</p>
+    <section class="module" id="m10">
+      <div class="kicker">Modul 10</div>
+      <h2>Caching og Redis</h2>
+      <p class="source">Kildespor: <code>docs/ai_modul-10-caching.md</code>, <code>docs/modul-10-agenda.md</code>, <code>docs/ai_emne-cache.md</code>, <code>docs/ai_emne-caching-med-redis.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 10 handler om caching som et selvstændigt arkitekturprincip. Cachen beskrives som midlertidig lagring af data, der sandsynligvis bliver genbrugt. Det lyder enkelt, men modulet viser hurtigt at caching er fyldt med designvalg. Først skilles cache fra buffer: en buffer glatter dataflow mellem komponenter med forskellig hastighed, mens en cache gemmer data med det formål at reducere svartid og aflaste den primære datakilde ved gentagen adgang. Det er relevant i SearchProject, fordi Redis ikke bruges som tilfældig mellemstation, men som et bevidst lag til genbrug af ofte efterspurgte søgeresultater.</p>
+      <p>Materialet gennemgår centrale begreber som cache hit, cache miss og hit ratio. Det er gode eksamensord, fordi de gør caching målbar. Hvis I kun siger "vi har en cache", er det halvtomt. Hvis I siger "vi kan vise hit/miss, TTL og reduceret p95", bliver det straks et arkitekturgreb med dokumenteret effekt. Derudover gennemgås forskellige læse- og skrivestrategier: write-through, write-back, read-through og cache-aside. SearchProject bruger cache-aside, og det er helt rationelt i denne case, fordi applikationen selv er bedst til at vurdere hvornår et søgeresultat er værd at lægge i cachen, og hvordan nøglen skal bygges op.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Modulet taler også om eviction policies som LRU, MRU og FIFO samt forskellige cachetyper som objektcache, reverse proxy cache og CDN cache. Det er nyttigt, fordi det viser at "cache" ikke er et enkelt mønster. I jeres løsning er det en distribueret query/object-lignende cache, ikke en session-cache og ikke en reverse proxy cache. Når I vælger Redis, vælger I samtidig en teknologi der passer godt til distribuerede, cloud-native miljøer: key-value-baseret, hurtig, velegnet på tværs af flere serviceinstanser og let at kombinere med metrics.</p>
+      <p>Redis-materialet underbygger dette yderligere ved at vise hvordan Redis bruges i Kubernetes, hvordan secrets kan gemme credentials, og hvordan cache-hits og cache-misses kan instrumenteres. Den del er ekstra vigtig for SearchProject, fordi jeres implementering faktisk samler begge spor: I bruger Redis gennem `IDistributedCache`, og I har samtidig metrics og logging omkring cache-status. Dermed er modulets teori ikke bare "vi kunne have brugt Redis"; den findes faktisk i jeres kode og jeres Compose-runtime. Det er en af de stærkeste faglige forbedringer i projektet.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 10 gav os sproget til at tale om caching som mere end hastighed. Vi valgte cache-aside med Redis, fordi vi selv ville styre key-design, TTL og fallback, og fordi cachen skulle deles på tværs af flere API-instansers requests."</div>
+      <div class="risk"><strong>Trade-off der skal siges højt:</strong> cache giver fart, men ikke gratis korrekthed. Derfor er stale data, invalidation og TTL en del af forklaringen, ikke et emne man skal undgå.</div>
+    </section>
 
-    <h3>Modul 4-svar (Y-skalering i praksis)</h3>
-    <p>“Y-skalering betyder for os, at klienter og backend er kontraktadskilt. Det reducerer risikoen for at UI-ændringer bryder domænelogikken. Vi får en struktur, som både er lettere at teste og lettere at forklare i eksamenssituationen.”</p>
+    <section class="module" id="m11">
+      <div class="kicker">Modul 11</div>
+      <h2>Databaser i Kubernetes og volumes</h2>
+      <p class="source">Kildespor: <code>docs/ai_modul-11-databaser.md</code>, <code>docs/modul-11-agenda.md</code>, <code>docs/ai_emne-volumes.md</code>, <code>docs/ai_emne-databaser-i-kubernetes.md</code>, <code>docs/ai_opgavest-m11-01-k8s-volumes.md</code>, <code>docs/ai_opgavest-m11-02-postgres-helm-guide-1.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 11 markerer et skift fra servicearkitektur til stateful drift. Så længe man arbejder med stateless API'er, er Kubernetes ofte let at forklare: nye pods kan startes, gamle kan dø, og noget andet tager over. Databaser er anderledes. Modulet om volumes gennemgår derfor forskellen mellem kortvarige volumes som `emptyDir` og persistente volumes gennem `PersistentVolume` og `PersistentVolumeClaim`. Den helt afgørende pointe er, at stateful applikationer ikke må miste data ved genstart, flytning eller pod-fejl. Storage bliver dermed en arkitekturbeslutning og ikke bare et implementation detail.</p>
+      <p>Dokumentationen om databaser i Kubernetes lister de klassiske udfordringer: kompleksitet, performance, persistens, sikkerhed, netværk, skalering og driftsoverhead. Det er faktisk en gave i eksamenssammenhæng, fordi den gør det helt legitimt at sige, at databaser i K8s er sværere end stateless services. Der er stor forskel på at deploye en ny web-API og på at drive en database med korrekt backup, restore, storage classes, replikering og adgangskontrol. Hvis I siger det klart, virker det som modenhed og ikke som manglende ambition.</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Helm-guiden til PostgreSQL viser det praktiske spor: namespace, custom values, persistence enabled, brugeroprettelse, databaseoprettelse og serviceeksponering. Selvom jeres eksamensprojekt primært kører Postgres i Docker Compose, er det meget nyttigt at kunne beskrive hvordan den samme database i en Kubernetes-kontekst ville kræve flere lag af konfiguration og kontrol. Det er også et godt sted at forklare hvorfor managed services ofte er attraktive: fordi de fjerner en del af den operationelle byrde, som ellers lander direkte på teamet.</p>
+      <p>I SearchProject er koblingen derfor dobbeltsidet. Den nuværende løsning bruger Postgres som persistent indeksdatabase og er bevidst enkel nok til demo og målinger. Men modul 11 gør det muligt at tale kvalificeret om hvorfor en fremtidig K8s-udgave ikke bare er "samme ting i YAML". Den kræver stillingtagen til volumes, storage-klasser, performanceegenskaber, sikkerhed og vedligeholdelsesprocedurer. Det er en vigtig forskel, og netop derfor er modul 11 nyttigt i jeres roadmapdel.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 11 lærte os at stateful drift har sine egne regler. I vores nuværende setup er Postgres med i Compose som en stabil og enkel persistence-løsning, men hvis vi flytter databasen til Kubernetes, bliver volumes, backup, restore og storagevalg centrale arkitekturbeslutninger."</div>
+      <div class="exam"><strong>Præcisering:</strong> database i Kubernetes er ikke automatisk en forbedring. Det er en anden driftsmodel med andre gevinster og andre risici.</div>
+    </section>
 
-    <h3>Modul 5-svar (X-skalering)</h3>
-    <p>“Vi beholdt princippet fra modul 5 – flere instanser – men flyttede mekanismen til infrastrukturen. Det betyder, at C#-koden ikke behøver at implementere platformfunktioner, som allerede er løst robust i Nginx og senere i Kubernetes.”</p>
+    <section class="module" id="m12">
+      <div class="kicker">Modul 12</div>
+      <h2>StatefulSets, replicas og database cube</h2>
+      <p class="source">Kildespor: <code>docs/ai_modul-12-databaser-2.md</code>, <code>docs/modul-12-agenda.md</code>, <code>docs/ai_emne-statefullset.md</code>, <code>docs/ai_emne-splitting-databases.md</code>, <code>docs/ai_opgavest-m12-01-postgres-replicas-i-k8s.md</code></p>
+      <h3>Faglig kerne</h3>
+      <p>Modul 12 samler trådene fra modul 6 og 11 og gør databasearkitektur mere konkret. StatefulSet-dokumentet forklarer hvorfor stateless og stateful workloads ikke skal behandles ens. Et StatefulSet giver stabil pod-identitet, egen persistent storage per replika og en ordnet sekvens ved opstart og nedskalering. Det er afgørende for distribuerede systemer som databaser, Redis-klynger eller messaging-systemer, hvor noderne skal kunne genkende hinanden og bevare relationen til deres data. Det er også derfor man ikke bare bruger almindelige Deployments til alt.</p>
+      <p>Modulet knytter dette til PostgreSQL replicas og database-cuben. Opgaven om Postgres replicas i K8s beskriver en model med en primary node til læse/skrive-operationer og flere read replicas til læseoperationer. Det er i praksis x-skalering på databaseniveau: man kloner hele datasættet for at forbedre læseskala og tilgængelighed. Det er et rigtig godt mellemtrin, fordi det er mere realistisk og mindre voldsomt end fuld z-sharding. Samtidig åbner det for et vigtigt arkitekturspørgsmål: hvordan fordeler man læsninger og skrivninger mellem primary og replicas, og hvordan håndterer man eventual consistency?</p>
+      <h3>Kobling til SearchProject</h3>
+      <p>Splitting-databases-materialet giver her den større teoretiske ramme. X-axis database splitting er read replicas. Y-axis database splitting er funktionel eller tematisk opdeling. Z-axis er shard-baseret opdeling efter partition key. Når man sætter det op som en modenhedsvej, giver det meget mening for SearchProject: først en stabil enkelt database, derefter eventuelle read replicas hvis læsebelastningen vokser, og først derefter overvejelser om tematisk split eller shard-routing. Det er en meget stærkere fortælling end bare at sige "Kubernetes kan skalere databaser".</p>
+      <p>For jeres projekt betyder modul 12, at I kan afslutte med et kompetent roadmap. I kan sige, at SearchProject allerede demonstrerer x-skalering på API-laget og distribueret cache på tværs af replikaer. På databaseniveau er den nuværende løsning stadig en enkelt Postgres-instans, men den naturlige vækstvej er read replicas før sharding. Dermed viser I både arkitekturfaglig forståelse og disciplin i forhold til ikke at implementere dyr kompleksitet før behovet er bevist.</p>
+      <h3>Det I kan sige til eksamen</h3>
+      <div class="say"><strong>Det du kan sige til eksamen:</strong> "Modul 12 gav os den stateful del af modenheden. Vi forstår hvorfor databaser i Kubernetes ofte skal køres som StatefulSets, hvorfor read replicas er et mere naturligt første skridt end sharding, og hvordan database-cuben giver et sprog for vores fremtidige roadmap."</div>
+      <div class="risk"><strong>God afsluttende ærlighed:</strong> fuld database-skalering er ikke demonstreret nu. Det er med vilje. Vi viser i stedet at vi kan prioritere rigtigt: først en stabil baseline, så læseskala, og først derefter tungere dataopdeling hvis målingerne kræver det.</div>
+    </section>
 
-    <h3>Modul 6-svar (Z-scale)</h3>
-    <p>“Vi har bevidst ikke lavet fuld sharding i walking skeleton, men vi har en konkret rækkefølge: read replicas, så partitionering, så eventuelt sharding. Det viser, at vi forstår både gevinsten ved z-skalering og kompleksitetsomkostningen.”</p>
-
-    <h3>Modul 7-svar (operations)</h3>
-    <p>“Compose og Kubernetes er ikke konkurrenter i vores projekt, men to modenhedsniveauer. Compose bruges til driftbar demo, mens Kubernetes bruges til produktionsretning med policy, autoskalering og mere robust servicehåndtering.”</p>
-
-    <h3>Modul 8-svar (deploymentprincipper)</h3>
-    <p>“Build-vs-buy er centralt: vi bygger søgelogikken selv og bruger standardplatform til routing, cache, metrics og dashboards. Barrier conditions og rollback gør releaseprocessen styrbar og reducerer risiko ved ændringer.”</p>
-
-    <h3>Modul 9-svar (performance/metrics)</h3>
-    <p>“Vi arbejder med målbar performance: cold-cache vs hot-cache, samt metrics i dashboards. Pointen er ikke bare at systemet føles hurtigt, men at vi kan dokumentere hvordan arkitekturvalgene påvirker latenstid og robusthed.”</p>
-
-    <h3>Modul 10-svar (caching)</h3>
-    <p>“Redis cache-aside er valgt fordi søgescenariet har gentagne queries. Vi er samtidig bevidste om stale data-risiko. Derfor taler vi om TTL, key-design og fallback til DB som en del af korrekthedsstrategien.”</p>
-
-    <h3>Modul 11-svar (databaser/volumes)</h3>
-    <p>“Stateful data er den tunge del af cloud-native drift. I vores model er Postgres stateful og kræver persistence-strategi, backup/restore og kapacitetsstyring. Det er her driftsdisciplin virkelig viser sin værdi.”</p>
-
-    <h3>Modul 12-svar (statefulsets/replicas)</h3>
-    <p>“Modul 12 hjælper os med at forklare næste data-modenhed: replicas, splitting og evt. sharding. Vi viser, at dataskalering ikke er en tilfældig patch, men en planlagt arkitekturrejse.”</p>
-
-    <div class="exam"><strong>Sådan bruger du sektionen:</strong> Træn hvert modul-svar højt på 30-45 sekunder. Når du kan alle 12 uden noter, fremstår din faglige dybde markant stærkere.</div>
-  </section>
-
-  <section id="pitch">
-    <div class="kicker">Praktisk anvendelse</div>
-    <h2>Forslag til 7-8 minutters præsentation</h2>
-    <ol>
-      <li><strong>0:00-1:00</strong> – problem, eksamenskrav, rød tråd.</li>
-      <li><strong>1:00-3:30</strong> – løsning i drift (C4 + vigtigste valg + trade-offs).</li>
-      <li><strong>3:30-5:30</strong> – K8s-produktionsretning (hvorfor + ulemper + z-plan).</li>
-      <li><strong>5:30-7:30</strong> – kodefokus (SearchApi struktur, cache-flow, testbevis).</li>
-    </ol>
-    <div class="exam"><strong>Afslutning du kan bruge ordret:</strong> “Vi har bygget et bevidst afgrænset system med høj arkitekturfaglig kvalitet: klare valg, tydelige konsekvenser, målelig effekt og en realistisk produktionsvej.”</div>
-  </section>
-</main>
+    <section id="afslutning">
+      <div class="kicker">Afslutning</div>
+      <h2>Hvordan bogen skal bruges de sidste dage før eksamen</h2>
+      <p>Hvis du læser hele bogen igennem, vil du opdage at den samme røde tråd går igen: principper skal knyttes til konkrete valg, valg skal have en pris, og prisen skal kunne forsvares i lyset af casen. SearchProject bliver stærkest, når I ikke prøver at imponere med flest teknologier, men med tydelige beslutninger og gode forklaringer.</p>
+      <p>Den bedste øvemetode er at læse et modul, lukke computeren og derefter forklare modulets pointe højt med egne ord. Hvis du ikke kan koble modulet til SearchProject uden at kigge, så er det den kobling du skal træne. Den mundtlige eksamen belønner ikke kun hukommelse, men at du kan forbinde teori, kode, drift og afgrænsning i en sammenhængende fortælling.</p>
+      <div class="exam"><strong>Tre ting du altid bør kunne sige:</strong> hvad problemet var, hvorfor I valgte netop den arkitekturretning, og hvilket konkret bevis I har for at valget virker eller i det mindste er velbegrundet.</div>
+    </section>
+  </main>
 </body>
 </html>
