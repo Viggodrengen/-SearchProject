@@ -271,7 +271,7 @@
         <tr><td>API-skalering</td><td>Load holdes højt; SearchApi skaleres fra 1 til flere pods</td><td>Én pod får høj pressure; flere pods deler samme load</td><td>API request-pressure og CPU-pressure pr. pod</td></tr>
       </tbody>
     </table>
-    <div class="callout" style="margin-top:12px"><strong>Sådan kan dashboardet tolkes:</strong> KPI-rækken viser aktuel kapacitet. Pressure-panelerne viser effekten: Postgres CPU falder ved cache-hit, og API-pressure fordeles ved scale-up. Nederst kan pod-status og restarts bruges som driftskontrol.</div>
+    <div class="callout" style="margin-top:12px"><strong>Sådan kan dashboardet tolkes:</strong> KPI-rækken viser aktuel kapacitet. Pressure-panelerne viser effekten: Postgres CPU falder ved cache-hit, og API-pressure fordeles ved scale-up. Nederst kan pod-status, restarts og Loki-logs bruges som driftskontrol.</div>
     <div class="notes"><strong>Talenote:</strong> Formålet med slide 8 er at skifte fra “vi har bygget noget” til “vi kan observere det under drift”. Pointen er ikke at hoppe mellem terminal og dashboard, men at dashboardet viser en levende belastning, mens arkitekturen ændres bagved. Fortæl tre scenarier: cache giver lavere aktuel søgetid og mindre Postgres-compute; Redis-fejl giver fallback; API-skalering fordeler pressure fra én API-pod til flere. Det er arkitekturprincipperne omsat til målbar adfærd.</div>
   </section>
 

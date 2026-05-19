@@ -31,11 +31,20 @@ minikube start -p "$PROFILE" --driver=docker --cpus=4 --memory="${MINIKUBE_MEMOR
 kubectl config use-context "$PROFILE" >/dev/null
 
 echo
-echo "[2/9] Installing/upgrading kube-prometheus-stack (Prometheus + Grafana)"
+echo "[2/9] Installing/upgrading observability stack (Prometheus + Grafana + Loki)"
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts >/dev/null
+helm repo add grafana https://grafana.github.io/helm-charts >/dev/null
 if [ "$SKIP_HELM_UPDATE" != "true" ]; then
   helm repo update >/dev/null
 fi
+helm upgrade --install loki grafana/loki-stack \
+  --namespace monitoring \
+  --create-namespace \
+  --set grafana.enabled=false \
+  --set promtail.enabled=true \
+  --set loki.persistence.enabled=false \
+  --wait \
+  --timeout 10m
 helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   --namespace monitoring \
   --create-namespace \
@@ -113,6 +122,7 @@ echo "Open web app:    $WEB_URL"
 echo "Open Grafana:    $GRAFANA_URL  (admin/admin)"
 echo "Dashboard:       SearchProject Walking Skeleton - Demo Dashboard"
 echo "Prometheus:      $PROM_URL"
+echo "Loki datasource: Grafana -> Explore -> Loki"
 echo
 echo "Demo command:"
 echo "  BASE_URL=$API_URL scripts/k8s-demo-story.sh"

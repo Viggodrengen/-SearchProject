@@ -130,6 +130,8 @@ Hold især øje med disse paneler i Grafana:
 - `Search traffic: status codes`
 - `Minikube pod-status lige nu`
 - `Pod restarts siden startup`
+- `SearchApi logs fra Loki`
+- `Kubernetes component logs fra Loki`
 
 Story-scriptet indeholder også en Redis-fejlfase. Her skaleres Redis kortvarigt ned til 0 replikaer. Pointen er at vise, at Redis er et performance-lag og ikke source of truth: SearchApi falder tilbage til Postgres, så søgning kan fortsætte, men uden cache-gevinsten.
 
@@ -153,11 +155,13 @@ Se Prometheus ServiceMonitor:
 kubectl get servicemonitor -n searchproject
 ```
 
-Se logs fra API’et:
+Se logs fra API’et direkte i terminalen:
 
 ```bash
 kubectl logs -n searchproject deployment/search-api
 ```
+
+Samme type container logs vises også i Grafana via Loki-panelerne nederst i dashboardet.
 
 Stop port-forwards, hvis de hænger:
 
