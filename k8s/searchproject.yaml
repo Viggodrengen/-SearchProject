@@ -181,7 +181,7 @@ spec:
             - name: SEARCH_POSTGRES_CONNECTION
               value: Host=postgres;Port=5432;Username=search;Password=search;Database=searchdb
             - name: REDIS_CONNECTION_STRING
-              value: redis:6379
+              value: redis:6379,connectTimeout=500,syncTimeout=500,abortConnect=false
             - name: SearchCache__Enabled
               value: "true"
             - name: SearchCache__TtlSeconds

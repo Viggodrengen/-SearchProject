@@ -112,11 +112,11 @@ Den mest eksamensegnede demo er story-scriptet. Når `startup.sh` er kørt, er d
 BASE_URL=http://localhost:15075 scripts/k8s-demo-story.sh
 ```
 
-Det kører tre scenarier i en rækkefølge, der passer til Grafana-fortællingen:
+Det starter kontinuerlig søgetrafik og ændrer derefter arkitekturen bagved, så Grafana kan læses som et system i drift:
 
-1. Cache-performance: cold-cache efterfulgt af hot-cache viser søgetid og database pressure med/uden Redis-hit.
-2. Redis-fallback: Redis skaleres kortvarigt til 0 replikaer og op igen, så fallback til Postgres kan observeres.
-3. API-skalering: SearchApi køres med få og mange replikaer under load, så trafikfordeling på pods kan observeres.
+1. Cache-performance: samme bruger-load kører, mens cache ryddes og derefter får lov at blive varm igen.
+2. Redis-fallback: Redis skaleres kortvarigt til 0 replikaer, mens søgninger fortsætter.
+3. API-skalering: load holdes højt, mens SearchApi skaleres fra få til mange replikaer, så trafikfordeling på pods kan observeres.
 
 Hold især øje med disse paneler i Grafana:
 
