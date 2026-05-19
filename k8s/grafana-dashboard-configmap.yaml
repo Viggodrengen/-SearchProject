@@ -22,7 +22,7 @@ data:
           "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
           "options": {
             "mode": "markdown",
-            "content": "**Tre beviser:** 1) **Redis-performance:** hit skal give lavere søgetid og mindre Postgres-pressure end miss/fallback. 2) **Redis-fallback:** Redis kan falde til 0, mens health for søgninger fortsat er grøn. 3) **API-skalering:** ved høj load skal request-pressure flytte sig fra én presset API-pod til flere API-pods."
+            "content": "**Tre beviser:** 1) **Redis-performance:** hit skal give lavere aktuel søgetid og mindre Postgres compute-pressure end miss/fallback. 2) **Redis-fallback:** Redis kan falde til 0, mens health for søgninger fortsat er grøn. 3) **API-skalering:** ved høj load skal request-pressure flytte sig fra én presset API-pod til flere API-pods."
           }
         },
         {
@@ -63,12 +63,12 @@ data:
         },
         {
           "id": 105,
-          "title": "Postgres requests / sek",
+          "title": "Postgres CPU pressure",
           "type": "stat",
           "gridPos": { "h": 4, "w": 4, "x": 16, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [ { "refId": "A", "expr": "sum(rate(search_database_requests_total{job=\"search-api\"}[30s]))", "legendFormat": "db req/s" } ]
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "targets": [ { "refId": "A", "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"searchproject\",pod=~\"postgres.*\",container=\"postgres\"}[30s]))", "legendFormat": "postgres cpu" } ]
         },
         {
           "id": 106,
@@ -100,12 +100,12 @@ data:
         },
         {
           "id": 2,
-          "title": "Søgetid: cache hit vs database/fallback",
+          "title": "Aktuel søgetid: seneste request pr. cache-status",
           "type": "timeseries",
           "gridPos": { "h": 7, "w": 12, "x": 0, "y": 14 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
-          "targets": [ { "refId": "A", "expr": "sum by (cache_status) (rate(search_duration_milliseconds_sum{job=\"search-api\"}[30s])) / sum by (cache_status) (rate(search_duration_milliseconds_count{job=\"search-api\"}[30s]))", "legendFormat": "{{cache_status}} avg" } ]
+          "targets": [ { "refId": "A", "expr": "max by (cache_status) (search_duration_latest_milliseconds{job=\"search-api\"})", "legendFormat": "{{cache_status}} latest" } ]
         },
         {
           "id": 4,
@@ -118,12 +118,12 @@ data:
         },
         {
           "id": 5,
-          "title": "Database pressure: søgninger der rammer Postgres",
+          "title": "Postgres compute pressure: CPU brug",
           "type": "timeseries",
           "gridPos": { "h": 7, "w": 12, "x": 0, "y": 21 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [ { "refId": "A", "expr": "sum by (reason) (rate(search_database_requests_total{job=\"search-api\"}[30s]))", "legendFormat": "{{reason}}" } ]
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "targets": [ { "refId": "A", "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"searchproject\",pod=~\"postgres.*\",container=\"postgres\"}[30s]))", "legendFormat": "postgres cpu seconds/s" } ]
         },
         {
           "id": 3,

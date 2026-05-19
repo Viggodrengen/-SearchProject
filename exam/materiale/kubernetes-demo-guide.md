@@ -114,16 +114,16 @@ BASE_URL=http://localhost:15075 scripts/k8s-demo-story.sh
 
 Det starter kontinuerlig søgetrafik og ændrer derefter arkitekturen bagved, så Grafana kan læses som et system i drift:
 
-1. Cache-performance: samme bruger-load kører, mens cache ryddes og derefter får lov at blive varm igen.
-2. Redis-fallback: Redis skaleres kortvarigt til 0 replikaer, mens søgninger fortsætter.
+1. Cache-performance: samme bruger-load kører, mens cache ryddes og derefter får lov at blive varm igen. Her sammenlignes aktuel søgetid og Postgres CPU-pressure.
+2. Redis-fallback: Redis skaleres kortvarigt til 0 replikaer, mens søgninger fortsætter. Her skal health stadig være grøn, mens Postgres CPU kan stige.
 3. API-skalering: load holdes højt, mens SearchApi skaleres fra få til mange replikaer, så trafikfordeling på pods kan observeres.
 
 Hold især øje med disse paneler i Grafana:
 
 - `Health: succesfulde søgninger`
-- `Søgetid: cache hit vs database/fallback`
-- `Cachebeslutning: Redis aflaster eller Postgres bruges`
-- `Database pressure: søgninger der rammer Postgres`
+- `Aktuel søgetid: seneste request pr. cache-status`
+- `Cachebeslutning: hit aflaster, miss/fallback rammer database`
+- `Postgres compute pressure: CPU brug`
 - `Redis-kapacitet: ønsket vs faktisk`
 - `API pressure lige nu: request rate pr. pod`
 - `API pressure over tid: én pod vs flere pods`
