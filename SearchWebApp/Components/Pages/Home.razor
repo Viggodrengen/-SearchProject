@@ -31,9 +31,19 @@
     </div>
 </div>
 
-<button class="btn btn-primary" @onclick="PerformSearchAsync" disabled="@IsSearching">
-    @(IsSearching ? "Søger..." : "Søg")
-</button>
+<div class="d-flex gap-2 align-items-center">
+    <button class="btn btn-primary" @onclick="PerformSearchAsync" disabled="@IsSearching">
+        @(IsSearching ? "Søger..." : "Søg")
+    </button>
+    <button class="btn btn-outline-warning" @onclick="ClearCacheAsync" disabled="@(IsSearching || IsClearingCache)">
+        @(IsClearingCache ? "Rydder cache..." : "Ryd cache")
+    </button>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(CacheMessage))
+{
+    <div class="alert alert-info mt-3">@CacheMessage</div>
+}
 
 @if (!string.IsNullOrWhiteSpace(ErrorMessage))
 {
@@ -91,16 +101,41 @@
     private bool CaseSensitive { get; set; }
     private int MaxAmount { get; set; } = 10;
     private bool IsSearching { get; set; }
+    private bool IsClearingCache { get; set; }
     private string? ErrorMessage { get; set; }
+    private string? CacheMessage { get; set; }
     private Shared.Model.SearchResult? SearchResult { get; set; }
     private string? Backend { get; set; }
     private string? Strategy { get; set; }
     private string? SearchApiInstance { get; set; }
     private string? CacheStatus { get; set; }
 
+    private async Task ClearCacheAsync()
+    {
+        ErrorMessage = null;
+        CacheMessage = null;
+        IsClearingCache = true;
+
+        try
+        {
+            var response = await ApiClient.ClearCacheAsync();
+            CacheMessage = $"Cache ryddet. Næste søgning bør blive cache miss; gentag samme søgning for cache hit. Generation: {response.Generation}";
+            CacheStatus = null;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Kunne ikke rydde cache: {ex.Message}";
+        }
+        finally
+        {
+            IsClearingCache = false;
+        }
+    }
+
     private async Task PerformSearchAsync()
     {
         ErrorMessage = null;
+        CacheMessage = null;
         SearchResult = null;
         Backend = null;
         Strategy = null;

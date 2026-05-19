@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: searchproject-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  searchproject-dashboard.json: |
+    {
+      "uid": "searchproject-walking-skeleton",
+      "title": "SearchProject Walking Skeleton - Demo Dashboard",
+      "schemaVersion": 39,
+      "version": 3,
+      "refresh": "5s",
+      "time": { "from": "now-15m", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "title": "1) API traffic - status codes",
+          "type": "timeseries",
+          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "sum by (http_response_status_code) (rate(http_server_request_duration_seconds_count{job=\"search-api\"}[1m]))", "legendFormat": "HTTP {{http_response_status_code}}" }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "2) API latency - p95",
+          "type": "timeseries",
+          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_request_duration_seconds_bucket{job=\"search-api\"}[1m])))", "legendFormat": "p95" }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "3) Cache decisions - hit/miss/fallback",
+          "type": "timeseries",
+          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 7 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "sum by (cache_status) (rate(search_cache_requests_total{job=\"search-api\"}[1m]))", "legendFormat": "{{cache_status}}" }
+          ]
+        },
+        {
+          "id": 8,
+          "title": "4) Search duration - hit vs miss",
+          "type": "timeseries",
+          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 7 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "sum by (cache_status) (rate(search_duration_milliseconds_sum{job=\"search-api\"}[1m])) / sum by (cache_status) (rate(search_duration_milliseconds_count{job=\"search-api\"}[1m]))", "legendFormat": "{{cache_status}} avg" }
+          ]
+        },
+        {
+          "id": 9,
+          "title": "5) SearchApi replicas - desired vs available",
+          "type": "timeseries",
+          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 14 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "kube_deployment_spec_replicas{namespace=\"searchproject\",deployment=\"search-api\"}", "legendFormat": "desired" },
+            { "refId": "B", "expr": "kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"search-api\"}", "legendFormat": "available" }
+          ]
+        },
+        {
+          "id": 10,
+          "title": "6) Redis availability during failure test",
+          "type": "timeseries",
+          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 14 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"redis\"}", "legendFormat": "redis available" },
+            { "refId": "B", "expr": "kube_deployment_spec_replicas{namespace=\"searchproject\",deployment=\"redis\"}", "legendFormat": "redis desired" }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "Runtime pressure - API pods",
+          "type": "timeseries",
+          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 21 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": {}, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"searchproject\",pod=~\"search-api.*\",container=\"search-api\"}[1m]))", "legendFormat": "cpu seconds/s" },
+            { "refId": "B", "expr": "sum(dotnet_gc_last_collection_heap_size_bytes{job=\"search-api\"})", "legendFormat": ".NET GC heap bytes" }
+          ]
+        },
+        {
+          "id": 6,
+          "title": "Cache hit ratio",
+          "type": "stat",
+          "gridPos": { "h": 7, "w": 4, "x": 12, "y": 21 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "percentunit" }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "sum(rate(search_cache_requests_total{job=\"search-api\",cache_status=\"hit\"}[5m])) / sum(rate(search_cache_requests_total{job=\"search-api\",cache_status=~\"hit|miss\"}[5m]))", "legendFormat": "hit ratio" }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "Current API pods scraped",
+          "type": "stat",
+          "gridPos": { "h": 7, "w": 4, "x": 16, "y": 21 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            { "refId": "A", "expr": "count(up{job=\"search-api\"} == 1)", "legendFormat": "scraped pods" }
+          ]
+        },
+        {
+          "id": 7,
+          "title": "Redis up now",
+          "type": "stat",
+          "gridPos": { "h": 7, "w": 4, "x": 20, "y": 21 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            { "refId": "A", "expr": "kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"redis\"}", "legendFormat": "redis available" }
+          ]
+        }
+      ]
+    }

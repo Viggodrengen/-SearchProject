@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -14,6 +15,8 @@ public class SearchService
 
     private readonly IDistributedCache _cache;
     private readonly SearchCacheOptions _cacheOptions;
+    private const string CacheGenerationKey = "search:cache-generation";
+
     private readonly ILogger<SearchService> _logger;
 
     public SearchService(
@@ -28,12 +31,15 @@ public class SearchService
 
     public async Task<SearchServiceResponse> SearchAsync(SearchRequest request, CancellationToken cancellationToken = default)
     {
+        var searchStopwatch = Stopwatch.StartNew();
         var terms = (request.Query ?? string.Empty).Split(" ", StringSplitOptions.RemoveEmptyEntries);
         var maxAmount = Math.Clamp(request.MaxAmount, 1, 100);
 
         if (terms.Length == 0)
         {
             SearchMetrics.RecordCacheStatus("bypass", request.Database);
+            searchStopwatch.Stop();
+            SearchMetrics.RecordSearchDuration(searchStopwatch.Elapsed.TotalMilliseconds, "bypass", request.Database);
             return new SearchServiceResponse(new SearchResult
             {
                 Query = Array.Empty<string>(),
@@ -42,7 +48,8 @@ public class SearchService
             }, "bypass");
         }
 
-        var cacheKey = BuildCacheKey(request, terms, maxAmount);
+        var cacheGeneration = await GetCacheGenerationAsync(cancellationToken);
+        var cacheKey = BuildCacheKey(request, terms, maxAmount, cacheGeneration);
         if (_cacheOptions.Enabled)
         {
             var cached = await TryGetCachedResultAsync(cacheKey, cancellationToken);
@@ -50,6 +57,9 @@ public class SearchService
             {
                 _logger.LogInformation("Search cache hit for key {CacheKey}", cacheKey);
                 SearchMetrics.RecordCacheStatus("hit", request.Database);
+                searchStopwatch.Stop();
+                cached.TimeUsed = searchStopwatch.Elapsed;
+                SearchMetrics.RecordSearchDuration(searchStopwatch.Elapsed.TotalMilliseconds, "hit", request.Database);
                 return new SearchServiceResponse(cached, "hit");
             }
 
@@ -74,7 +84,48 @@ public class SearchService
             SearchMetrics.RecordCacheStatus("disabled", request.Database);
         }
 
-        return new SearchServiceResponse(result, _cacheOptions.Enabled ? "miss" : "disabled");
+        var finalCacheStatus = _cacheOptions.Enabled ? "miss" : "disabled";
+        searchStopwatch.Stop();
+        SearchMetrics.RecordSearchDuration(searchStopwatch.Elapsed.TotalMilliseconds, finalCacheStatus, request.Database);
+
+        return new SearchServiceResponse(result, finalCacheStatus);
+    }
+
+    public async Task<string> ClearCacheAsync(CancellationToken cancellationToken = default)
+    {
+        var generation = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+        try
+        {
+            await _cache.SetStringAsync(
+                CacheGenerationKey,
+                generation,
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
+                },
+                cancellationToken);
+
+            _logger.LogInformation("Search cache generation changed to {Generation}", generation);
+            return generation;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not clear search cache by changing generation.");
+            throw;
+        }
+    }
+
+    private async Task<string> GetCacheGenerationAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _cache.GetStringAsync(CacheGenerationKey, cancellationToken) ?? "1";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not read cache generation. Falling back to default generation.");
+            return "1";
+        }
     }
 
     private async Task<SearchResult?> TryGetCachedResultAsync(string cacheKey, CancellationToken cancellationToken)
@@ -113,7 +164,7 @@ public class SearchService
         }
     }
 
-    private static string BuildCacheKey(SearchRequest request, string[] terms, int maxAmount)
+    private static string BuildCacheKey(SearchRequest request, string[] terms, int maxAmount, string cacheGeneration)
     {
         var comparer = request.CaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
         var normalizedTerms = new List<string>();
@@ -130,6 +181,7 @@ public class SearchService
 
         var rawKey = string.Join('|',
             "v1",
+            cacheGeneration,
             (request.Database ?? "sqlite").Trim().ToLowerInvariant(),
             request.CaseSensitive ? "case-sensitive" : "case-insensitive",
             maxAmount.ToString(),

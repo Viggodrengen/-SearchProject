@@ -13,6 +13,15 @@ public class SearchApiClient : ISearchApiClient
         _httpClient = httpClient;
     }
 
+    public async Task<ClearCacheResponse> ClearCacheAsync(CancellationToken cancellationToken = default)
+    {
+        using var response = await _httpClient.PostAsync("/api/cache/clear", content: null, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<ClearCacheResponse>(cancellationToken: cancellationToken)
+            ?? new ClearCacheResponse { Status = "cleared" };
+    }
+
     public async Task<SearchApiResponse> SearchAsync(SearchRequest request, CancellationToken cancellationToken = default)
     {
         using var response = await _httpClient.PostAsJsonAsync("/api/search", request, cancellationToken);
@@ -41,6 +50,13 @@ public class SearchApiClient : ISearchApiClient
             CacheStatus = cacheStatus
         };
     }
+}
+
+public class ClearCacheResponse
+{
+    public string? Status { get; set; }
+
+    public string? Generation { get; set; }
 }
 
 public class SearchApiResponse

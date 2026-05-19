@@ -67,6 +67,15 @@ app.Use(async (context, next) =>
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok", instanceId }))
     .WithName("Health");
 
+app.MapPost("/api/cache/clear", async (
+    SearchService searchService,
+    CancellationToken cancellationToken) =>
+{
+    var generation = await searchService.ClearCacheAsync(cancellationToken);
+    return Results.Ok(new { status = "cleared", generation });
+})
+.WithName("ClearSearchCache");
+
 app.MapPost("/api/search", async (
     SearchRequest request,
     SearchService searchService,

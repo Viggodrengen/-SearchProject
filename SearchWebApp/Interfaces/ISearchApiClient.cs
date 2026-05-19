@@ -6,4 +6,6 @@ namespace SearchWebApp.Interfaces;
 public interface ISearchApiClient
 {
     Task<SearchApiResponse> SearchAsync(SearchRequest request, CancellationToken cancellationToken = default);
+
+    Task<ClearCacheResponse> ClearCacheAsync(CancellationToken cancellationToken = default);
 }
