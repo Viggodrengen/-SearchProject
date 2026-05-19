@@ -128,6 +128,8 @@ Hold især øje med disse paneler i Grafana:
 - `API compute lige nu: CPU pressure pr. pod`
 - `Cache-status lige nu: hit / miss / fallback`
 - `Search traffic: status codes`
+- `Minikube pod-status lige nu`
+- `Pod restarts siden startup`
 
 Story-scriptet indeholder også en Redis-fejlfase. Her skaleres Redis kortvarigt ned til 0 replikaer. Pointen er at vise, at Redis er et performance-lag og ikke source of truth: SearchApi falder tilbage til Postgres, så søgning kan fortsætte, men uden cache-gevinsten.
 

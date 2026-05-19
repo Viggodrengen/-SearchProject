@@ -5,14 +5,14 @@ BASE_URL="${BASE_URL:-http://localhost:15075}"
 NAMESPACE="${NAMESPACE:-searchproject}"
 API_REPLICAS_NORMAL="${API_REPLICAS_NORMAL:-2}"
 API_REPLICAS_FAILOVER="${API_REPLICAS_FAILOVER:-1}"
-API_REPLICAS_SCALE="${API_REPLICAS_SCALE:-10}"
+API_REPLICAS_SCALE="${API_REPLICAS_SCALE:-6}"
 QUERY="${QUERY:-socal energy}"
 DATABASE="${DATABASE:-postgres}"
 MAX_AMOUNT="${MAX_AMOUNT:-10}"
 CASE_SENSITIVE="${CASE_SENSITIVE:-false}"
-REQUEST_SLEEP="${REQUEST_SLEEP:-0.01}"
+REQUEST_SLEEP="${REQUEST_SLEEP:-0.015}"
 BASE_WORKERS="${BASE_WORKERS:-12}"
-HIGH_WORKERS="${HIGH_WORKERS:-90}"
+HIGH_WORKERS="${HIGH_WORKERS:-50}"
 BASELINE_SECONDS="${BASELINE_SECONDS:-35}"
 COLD_CACHE_SECONDS="${COLD_CACHE_SECONDS:-35}"
 REDIS_DOWN_SECONDS="${REDIS_DOWN_SECONDS:-10}"
@@ -62,7 +62,7 @@ start_load() {
   for i in $(seq 1 "$workers"); do
     (
       while [ ! -f "$stop_file" ]; do
-        curl -fs --max-time 12 -o /dev/null -X POST "$BASE_URL/api/search" \
+        curl -fs --connect-timeout 3 --max-time 30 -o /dev/null -X POST "$BASE_URL/api/search" \
           -H "Content-Type: application/json" \
           -d "$payload" 2>/dev/null || true
         sleep "$REQUEST_SLEEP"

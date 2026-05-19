@@ -32,6 +32,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 0, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 1 }, { "color": "green", "value": 2 } ] } }, "overrides": [] },
+          "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
           "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"search-api\"})", "legendFormat": "api pods" } ]
         },
         {
@@ -41,6 +42,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 4, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] } }, "overrides": [] },
+          "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
           "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"redis\"})", "legendFormat": "redis pods" } ]
         },
         {
@@ -50,6 +52,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 8, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] } }, "overrides": [] },
+          "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
           "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"postgres\"})", "legendFormat": "postgres pods" } ]
         },
         {
@@ -59,6 +62,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 12, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
           "targets": [ { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "search req/s" } ]
         },
         {
@@ -68,6 +72,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 16, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "percent", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 25 }, { "color": "red", "value": 60 } ] } }, "overrides": [] },
+          "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
           "targets": [ { "refId": "A", "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"searchproject\",pod=~\"postgres.*\"}[1m])) * 100", "legendFormat": "postgres cpu" } ]
         },
         {
@@ -77,6 +82,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 20, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1, "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 0.95 }, { "color": "green", "value": 0.99 } ] } }, "overrides": [] },
+          "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
           "targets": [ { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\",http_response_status_code=\"200\"}[30s])) / sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "success" } ]
         },
         {
@@ -145,6 +151,22 @@ data:
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [ { "refId": "A", "expr": "sum by (http_response_status_code) (rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "HTTP {{http_response_status_code}}" } ]
+        },
+        {
+          "id": 11,
+          "title": "Minikube pod-status lige nu",
+          "type": "table",
+          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 28 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [ { "refId": "A", "expr": "kube_pod_status_phase{namespace=\"searchproject\",phase=\"Running\"} == 1", "format": "table", "instant": true } ]
+        },
+        {
+          "id": 12,
+          "title": "Pod restarts siden startup",
+          "type": "table",
+          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 28 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [ { "refId": "A", "expr": "sum by (pod, container) (kube_pod_container_status_restarts_total{namespace=\"searchproject\",container=~\"search-api|redis|postgres|nginx|search-webapp\"})", "format": "table", "instant": true } ]
         }
       ]
     }
