@@ -45,6 +45,10 @@ helm upgrade --install loki grafana/loki-stack \
   --set loki.persistence.enabled=false \
   --wait \
   --timeout 10m
+# loki-stack creates its own Grafana datasource ConfigMap. We provision Loki via
+# kube-prometheus-stack values instead, so remove this label to avoid duplicate
+# datasource provisioning and Grafana CrashLoopBackOff.
+kubectl label configmap/loki-loki-stack -n monitoring grafana_datasource- >/dev/null 2>&1 || true
 helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   --namespace monitoring \
   --create-namespace \
