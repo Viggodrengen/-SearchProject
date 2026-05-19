@@ -121,13 +121,13 @@ Det starter kontinuerlig søgetrafik og ændrer derefter arkitekturen bagved, s�
 Hold især øje med disse paneler i Grafana:
 
 - `Health: succesfulde søgninger`
-- `Aktuel søgetid: seneste request pr. cache-status`
-- `Cachebeslutning: hit aflaster, miss/fallback rammer database`
-- `Postgres compute pressure: CPU brug`
-- `Redis-kapacitet: ønsket vs faktisk`
+- `Aktuel søgetid (hit=Redis, miss=Postgres, fallback=Redis→Postgres)`
+- `Søgetid over tid: hit vs miss/fallback`
+- `Postgres compute over tid: CPU pressure`
 - `API pressure lige nu: request rate pr. pod`
-- `API pressure over tid: én pod vs flere pods`
-- `SearchApi pods under scale-test`
+- `API compute lige nu: CPU pressure pr. pod`
+- `Cache-status lige nu: hit / miss / fallback`
+- `Search traffic: status codes`
 
 Story-scriptet indeholder også en Redis-fejlfase. Her skaleres Redis kortvarigt ned til 0 replikaer. Pointen er at vise, at Redis er et performance-lag og ikke source of truth: SearchApi falder tilbage til Postgres, så søgning kan fortsætte, men uden cache-gevinsten.
 

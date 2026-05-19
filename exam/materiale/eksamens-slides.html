@@ -266,9 +266,9 @@
     <table style="margin-top:14px">
       <thead><tr><th>Scenarie</th><th>Hvad ændres?</th><th>Hvad beviser det?</th><th>Primære paneler</th></tr></thead>
       <tbody>
-        <tr><td>Cache-performance</td><td>Samme bruger-load kører; cache ryddes og varmes igen</td><td>Redis reducerer aktuel søgetid og aflaster Postgres</td><td>Aktuel søgetid, cachebeslutning, Postgres CPU</td></tr>
+        <tr><td>Cache-performance</td><td>Samme bruger-load kører; cache ryddes og varmes igen</td><td>Redis reducerer aktuel søgetid og aflaster Postgres</td><td>Aktuel søgetid, cache-status, Postgres compute</td></tr>
         <tr><td>Redis-fallback</td><td>Redis skaleres kort til 0, mens søgninger fortsætter</td><td>Redis er performance-lag; Postgres er source of truth</td><td>Redis-kapacitet, health, Postgres CPU</td></tr>
-        <tr><td>API-skalering</td><td>Load holdes højt; SearchApi skaleres fra 1 til flere pods</td><td>Én pod får høj pressure; flere pods deler samme load</td><td>API pressure pr. pod, SearchApi pods</td></tr>
+        <tr><td>API-skalering</td><td>Load holdes højt; SearchApi skaleres fra 1 til flere pods</td><td>Én pod får høj pressure; flere pods deler samme load</td><td>API request-pressure og CPU-pressure pr. pod</td></tr>
       </tbody>
     </table>
     <div class="callout" style="margin-top:12px"><strong>Sådan kan dashboardet tolkes:</strong> KPI-rækken viser aktuel kapacitet. Pressure-panelerne viser effekten: Postgres CPU falder ved cache-hit, og API-pressure fordeles ved scale-up.</div>

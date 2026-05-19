@@ -12,7 +12,7 @@ MAX_AMOUNT="${MAX_AMOUNT:-10}"
 CASE_SENSITIVE="${CASE_SENSITIVE:-false}"
 REQUEST_SLEEP="${REQUEST_SLEEP:-0.01}"
 BASE_WORKERS="${BASE_WORKERS:-12}"
-HIGH_WORKERS="${HIGH_WORKERS:-120}"
+HIGH_WORKERS="${HIGH_WORKERS:-90}"
 BASELINE_SECONDS="${BASELINE_SECONDS:-35}"
 COLD_CACHE_SECONDS="${COLD_CACHE_SECONDS:-35}"
 REDIS_DOWN_SECONDS="${REDIS_DOWN_SECONDS:-10}"
@@ -62,9 +62,9 @@ start_load() {
   for i in $(seq 1 "$workers"); do
     (
       while [ ! -f "$stop_file" ]; do
-        curl -fsS --max-time 8 -o /dev/null -X POST "$BASE_URL/api/search" \
+        curl -fs --max-time 12 -o /dev/null -X POST "$BASE_URL/api/search" \
           -H "Content-Type: application/json" \
-          -d "$payload" || true
+          -d "$payload" 2>/dev/null || true
         sleep "$REQUEST_SLEEP"
       done
     ) &

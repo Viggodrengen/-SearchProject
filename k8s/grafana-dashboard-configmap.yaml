@@ -11,7 +11,7 @@ data:
       "uid": "searchproject-walking-skeleton",
       "title": "SearchProject Walking Skeleton - Demo Dashboard",
       "schemaVersion": 39,
-      "version": 8,
+      "version": 9,
       "refresh": "5s",
       "time": { "from": "now-10m", "to": "now" },
       "panels": [
@@ -22,7 +22,7 @@ data:
           "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
           "options": {
             "mode": "markdown",
-            "content": "**Tre beviser:** 1) **Redis-performance:** hit skal give lavere aktuel søgetid og mindre Postgres compute-pressure end miss/fallback. 2) **Redis-fallback:** Redis kan falde til 0, mens health for søgninger fortsat er grøn. 3) **API-skalering:** ved høj load skal request-pressure flytte sig fra én presset API-pod til flere API-pods."
+            "content": "**Læs dashboardet som tre driftsspørgsmål:** 1) Bliver søgningerne ved med at lykkes? 2) Bliver Postgres mindre presset, når Redis-cache virker? 3) Flytter API-pressure sig fra én pod til flere pods, når vi skalerer SearchApi op?"
           }
         },
         {
@@ -67,8 +67,8 @@ data:
           "type": "stat",
           "gridPos": { "h": 4, "w": 4, "x": 16, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-          "targets": [ { "refId": "A", "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"searchproject\",pod=~\"postgres.*\",container=\"postgres\"}[30s]))", "legendFormat": "postgres cpu" } ]
+          "fieldConfig": { "defaults": { "unit": "percent", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 25 }, { "color": "red", "value": 60 } ] } }, "overrides": [] },
+          "targets": [ { "refId": "A", "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"searchproject\",pod=~\"postgres.*\"}[1m])) * 100", "legendFormat": "postgres cpu" } ]
         },
         {
           "id": 106,
@@ -91,16 +91,27 @@ data:
         },
         {
           "id": 9,
-          "title": "API pressure over tid: én pod vs flere pods",
-          "type": "timeseries",
-          "gridPos": { "h": 7, "w": 16, "x": 8, "y": 7 },
+          "title": "API compute lige nu: CPU pressure pr. pod",
+          "type": "bargauge",
+          "gridPos": { "h": 7, "w": 8, "x": 8, "y": 7 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [ { "refId": "A", "expr": "sum by (pod) (rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "{{pod}}" } ]
+          "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 25 }, { "color": "red", "value": 60 } ] } }, "overrides": [] },
+          "options": { "displayMode": "gradient", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "horizontal", "showUnfilled": true },
+          "targets": [ { "refId": "A", "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"searchproject\",pod=~\"search-api.*\"}[1m])) * 100", "legendFormat": "{{pod}}" } ]
+        },
+        {
+          "id": 10,
+          "title": "Aktuel søgetid (hit=Redis, miss=Postgres, fallback=Redis→Postgres)",
+          "type": "bargauge",
+          "gridPos": { "h": 7, "w": 8, "x": 16, "y": 7 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "ms", "min": 0, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 500 }, { "color": "red", "value": 2000 } ] } }, "overrides": [] },
+          "options": { "displayMode": "gradient", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "horizontal", "showUnfilled": true },
+          "targets": [ { "refId": "A", "expr": "max by (cache_status) (search_duration_latest_milliseconds{job=\"search-api\"})", "legendFormat": "{{cache_status}}" } ]
         },
         {
           "id": 2,
-          "title": "Aktuel søgetid: seneste request pr. cache-status",
+          "title": "Søgetid over tid: hit vs miss/fallback",
           "type": "timeseries",
           "gridPos": { "h": 7, "w": 12, "x": 0, "y": 14 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -108,49 +119,32 @@ data:
           "targets": [ { "refId": "A", "expr": "max by (cache_status) (search_duration_latest_milliseconds{job=\"search-api\"})", "legendFormat": "{{cache_status}} latest" } ]
         },
         {
-          "id": 4,
-          "title": "Cachebeslutning: hit aflaster, miss/fallback rammer database",
+          "id": 5,
+          "title": "Postgres compute over tid: CPU pressure",
           "type": "timeseries",
           "gridPos": { "h": 7, "w": 12, "x": 12, "y": 14 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [ { "refId": "A", "expr": "sum by (cache_status) (rate(search_cache_requests_total{job=\"search-api\"}[30s]))", "legendFormat": "{{cache_status}}" } ]
+          "fieldConfig": { "defaults": { "unit": "percent" }, "overrides": [] },
+          "targets": [ { "refId": "A", "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"searchproject\",pod=~\"postgres.*\"}[1m])) * 100", "legendFormat": "postgres cpu" } ]
         },
         {
-          "id": 5,
-          "title": "Postgres compute pressure: CPU brug",
-          "type": "timeseries",
-          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 21 },
+          "id": 4,
+          "title": "Cache-status lige nu: hit / miss / fallback",
+          "type": "bargauge",
+          "gridPos": { "h": 7, "w": 8, "x": 0, "y": 21 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-          "targets": [ { "refId": "A", "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"searchproject\",pod=~\"postgres.*\",container=\"postgres\"}[30s]))", "legendFormat": "postgres cpu seconds/s" } ]
+          "fieldConfig": { "defaults": { "unit": "reqps", "min": 0 }, "overrides": [] },
+          "options": { "displayMode": "gradient", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "horizontal", "showUnfilled": true },
+          "targets": [ { "refId": "A", "expr": "sum by (cache_status) (rate(search_cache_requests_total{job=\"search-api\"}[30s]))", "legendFormat": "{{cache_status}}" } ]
         },
         {
           "id": 3,
           "title": "Search traffic: status codes",
           "type": "timeseries",
-          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 21 },
+          "gridPos": { "h": 7, "w": 16, "x": 8, "y": 21 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [ { "refId": "A", "expr": "sum by (http_response_status_code) (rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "HTTP {{http_response_status_code}}" } ]
-        },
-        {
-          "id": 6,
-          "title": "Redis availability under fallback-test",
-          "type": "timeseries",
-          "gridPos": { "h": 6, "w": 12, "x": 0, "y": 28 },
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-          "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"redis\"})", "legendFormat": "redis pods" } ]
-        },
-        {
-          "id": 7,
-          "title": "SearchApi pods under scale-test",
-          "type": "timeseries",
-          "gridPos": { "h": 6, "w": 12, "x": 12, "y": 28 },
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-          "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"search-api\"})", "legendFormat": "api pods" } ]
         }
       ]
     }
