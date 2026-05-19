@@ -18,6 +18,11 @@ public static class SearchMetrics
         unit: "ms",
         description: "End-to-end search duration measured inside SearchService, tagged by cache status and database.");
 
+    private static readonly Counter<long> DatabaseRequests = Meter.CreateCounter<long>(
+        "search.database.requests",
+        unit: "requests",
+        description: "Number of searches that reached the database, tagged by reason and database.");
+
     public static void RecordCacheStatus(string status, string? database)
     {
         CacheRequests.Add(
@@ -31,6 +36,14 @@ public static class SearchMetrics
         SearchDuration.Record(
             milliseconds,
             new KeyValuePair<string, object?>("cache.status", status),
+            new KeyValuePair<string, object?>("database", string.IsNullOrWhiteSpace(database) ? "unknown" : database));
+    }
+
+    public static void RecordDatabaseRequest(string reason, string? database)
+    {
+        DatabaseRequests.Add(
+            1,
+            new KeyValuePair<string, object?>("reason", reason),
             new KeyValuePair<string, object?>("database", string.IsNullOrWhiteSpace(database) ? "unknown" : database));
     }
 }

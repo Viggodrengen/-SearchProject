@@ -50,22 +50,32 @@ public class SearchService
 
         var cacheGeneration = await GetCacheGenerationAsync(cancellationToken);
         var cacheKey = BuildCacheKey(request, terms, maxAmount, cacheGeneration);
+        var cacheStatus = _cacheOptions.Enabled ? "miss" : "disabled";
         if (_cacheOptions.Enabled)
         {
-            var cached = await TryGetCachedResultAsync(cacheKey, cancellationToken);
-            if (cached is not null)
+            var cacheLookup = await TryGetCachedResultAsync(cacheKey, cancellationToken);
+            cacheStatus = cacheLookup.Status;
+            if (cacheLookup.Result is not null)
             {
                 _logger.LogInformation("Search cache hit for key {CacheKey}", cacheKey);
                 SearchMetrics.RecordCacheStatus("hit", request.Database);
                 searchStopwatch.Stop();
-                cached.TimeUsed = searchStopwatch.Elapsed;
+                cacheLookup.Result.TimeUsed = searchStopwatch.Elapsed;
                 SearchMetrics.RecordSearchDuration(searchStopwatch.Elapsed.TotalMilliseconds, "hit", request.Database);
-                return new SearchServiceResponse(cached, "hit");
+                return new SearchServiceResponse(cacheLookup.Result, "hit");
             }
 
-            _logger.LogInformation("Search cache miss for key {CacheKey}", cacheKey);
-            SearchMetrics.RecordCacheStatus("miss", request.Database);
+            _logger.LogInformation("Search cache {CacheStatus} for key {CacheKey}", cacheStatus, cacheKey);
+            SearchMetrics.RecordCacheStatus(cacheStatus, request.Database);
         }
+
+        var databaseReason = cacheStatus switch
+        {
+            "fallback" => "cache_unavailable",
+            "disabled" => "cache_disabled",
+            _ => "cache_miss"
+        };
+        SearchMetrics.RecordDatabaseRequest(databaseReason, request.Database);
 
         // Keep persistence behind the repository abstraction; the search algorithm stays database-agnostic.
         using var database = DatabaseFactory.Create(request.Database);
@@ -84,11 +94,10 @@ public class SearchService
             SearchMetrics.RecordCacheStatus("disabled", request.Database);
         }
 
-        var finalCacheStatus = _cacheOptions.Enabled ? "miss" : "disabled";
         searchStopwatch.Stop();
-        SearchMetrics.RecordSearchDuration(searchStopwatch.Elapsed.TotalMilliseconds, finalCacheStatus, request.Database);
+        SearchMetrics.RecordSearchDuration(searchStopwatch.Elapsed.TotalMilliseconds, cacheStatus, request.Database);
 
-        return new SearchServiceResponse(result, finalCacheStatus);
+        return new SearchServiceResponse(result, cacheStatus);
     }
 
     public async Task<string> ClearCacheAsync(CancellationToken cancellationToken = default)
@@ -128,19 +137,19 @@ public class SearchService
         }
     }
 
-    private async Task<SearchResult?> TryGetCachedResultAsync(string cacheKey, CancellationToken cancellationToken)
+    private async Task<(SearchResult? Result, string Status)> TryGetCachedResultAsync(string cacheKey, CancellationToken cancellationToken)
     {
         try
         {
             var json = await _cache.GetStringAsync(cacheKey, cancellationToken);
             return string.IsNullOrWhiteSpace(json)
-                ? null
-                : JsonSerializer.Deserialize<SearchResult>(json, SerializerOptions);
+                ? (null, "miss")
+                : (JsonSerializer.Deserialize<SearchResult>(json, SerializerOptions), "hit");
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Could not read search result from cache. Falling back to database.");
-            return null;
+            return (null, "fallback");
         }
     }
 

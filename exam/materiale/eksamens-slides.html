@@ -262,20 +262,19 @@
   <section class="slide">
     <div class="kicker">8 · Live demo-runbook</div>
     <h2>Præcis sådan kører vi demoen under eksamen</h2>
-    <div class="callout" style="margin-top:12px"><strong>Forudsætning:</strong> <code>startup.sh</code> er kørt først. Det starter kun miljøet og port-forwards — selve testfortællingen køres manuelt bagefter.</div>
+    <div class="callout" style="margin-top:12px"><strong>Forudsætning:</strong> <code>startup.sh</code> er kørt først. Demo-story kører automatisk bagefter og sender nok requests til, at Grafana-panelerne viser tydelige udsving.</div>
     <table style="margin-top:14px">
       <thead><tr><th>Fase</th><th>Hvad scriptet gør</th><th>Hvad vi forventer i dashboardet</th><th>Hvad vi siger højt</th></tr></thead>
       <tbody>
-        <tr><td>Cold-cache</td><td>Flusher Redis før requests</td><td>Miss-kurve stiger</td><td>“Nu tvinger vi opslag mod database”</td></tr>
-        <tr><td>Hot-cache</td><td>Gentager samme query</td><td>Hit-kurve stiger, søgetid falder</td><td>“Nu genbruges resultater fra cache”</td></tr>
-        <tr><td>Redis-down</td><td>Skalerer Redis kort ned</td><td>Hits forsvinder, latency stiger</td><td>“Søgning fortsætter via fallback til Postgres”</td></tr>
-        <tr><td>API scale-down</td><td>Normal replika-antal → 1 replika</td><td>Desired/available falder, 200 fortsætter</td><td>“Service-endpointet er stabilt”</td></tr>
-        <tr><td>API scale-up</td><td>1 replika → normal replika-antal</td><td>Desired/available går op igen</td><td>“Systemet vender tilbage til normal kapacitet”</td></tr>
-        <tr><td>Performance-skalering</td><td>Separat parallel load-test: få vs mange replikaer</td><td>Request rate, latency og pod-fordeling sammenlignes</td><td>“Flere replikaer er et arkitekturvalg, men testmiljøet afgør effekten”</td></tr>
+        <tr><td>Cold-cache</td><td>Flusher Redis før requests</td><td>Panel 4-5: miss + database pressure stiger</td><td>“Nu tvinger vi opslag mod database”</td></tr>
+        <tr><td>Hot-cache</td><td>Gentager samme query</td><td>Panel 4-5: hit stiger, database pressure falder</td><td>“Nu aflaster Redis databasen”</td></tr>
+        <tr><td>Redis-down</td><td>Skalerer Redis kort ned</td><td>Panel 1 + 7: Redis=0, men health er grøn</td><td>“Søgning fortsætter via fallback til Postgres”</td></tr>
+        <tr><td>API scale-down</td><td>Normal replika-antal → 1 replika</td><td>Panel 8: desired/available falder</td><td>“Service-endpointet er stabilt”</td></tr>
+        <tr><td>API scale-up + load</td><td>Skalerer op og sender parallel belastning</td><td>Panel 8-9: flere pods deler trafikken</td><td>“Flere API’er fordeler belastningen”</td></tr>
       </tbody>
     </table>
-    <div class="callout" style="margin-top:12px"><strong>Dashboard-logik:</strong> Øverste paneler viser trafik/latency, midten viser cache/Redis/API-replikaer, nederst viser ratios og aktuelle health-signaler.</div>
-    <div class="notes"><strong>Talenote:</strong> Formålet med slide 8 er at gøre demoen til en styret koreografi uden at drukne i kommandoer. Brug tabellen som speak-track: handling, observation, tolkning. Meta-pointen er kontrol: I viser ikke tilfældige grafer, I fremkalder forventet adfærd fase for fase og forklarer hvorfor den opstår. Kommandoerne gemmes til sidste slide, så dette slide kan handle om fortællingen.</div>
+    <div class="callout" style="margin-top:12px"><strong>Dashboard-logik:</strong> Terminalen viser fasen; Grafana viser beviset. Panel 1 er health under load, panel 5 er database-aflastning, panel 9 er load-balancing mellem API-pods.</div>
+    <div class="notes"><strong>Talenote:</strong> Formålet med slide 8 er at gøre demoen til en styret koreografi uden at drukne i kommandoer. Brug tabellen som speak-track: handling, observation, tolkning. Demo-scriptet kører automatisk, men terminalen annoncerer hver fase, så I kan følge dashboardet ved siden af. Meta-pointen er kontrol: I viser ikke tilfældige grafer, I fremkalder forventet adfærd fase for fase og forklarer hvorfor den opstår.</div>
   </section>
 
   <section class="slide">
@@ -287,7 +286,7 @@
       <div class="card"><span class="tag g">Næste skridt</span><ul><li>Redis HA via Helm/StatefulSet</li><li>Database replika-/backup-strategi</li><li>Resource limits + HPA</li><li>Mere realistisk loadprofil</li></ul></div>
     </div>
     <div class="command" style="margin-top:14px"># Forudsætning: ./startup.sh er kørt, Grafana er åbent
-BASE_URL=http://localhost:15075 ITERATIONS=100 REDIS_DOWN_REQUESTS=3 scripts/k8s-demo-story.sh</div>
+BASE_URL=http://localhost:15075 scripts/k8s-demo-story.sh</div>
     <div class="notes"><strong>Talenote:</strong> Formålet med afslutningen er at lukke cirklen tilbage til leverancekravene fra slide 1. Sig tydeligt at startup-scriptet er forberedelsen, og at denne ene kommando kører hele demo-fortællingen: cache, Redis-fejl, API-scale og performance-skalering. Meta-effekten I går efter er tillid: I viser en løsning der kan forklares, køres igen og diskuteres fagligt på både styrker og begrænsninger.</div>
   </section>
 

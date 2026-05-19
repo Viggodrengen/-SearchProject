@@ -109,25 +109,26 @@ Failover-testen gør:
 Den mest eksamensegnede demo er story-scriptet. Når `startup.sh` er kørt, er det denne ene kommando der bruges under eksamen:
 
 ```bash
-BASE_URL=http://localhost:15075 ITERATIONS=100 REDIS_DOWN_REQUESTS=3 scripts/k8s-demo-story.sh
+BASE_URL=http://localhost:15075 scripts/k8s-demo-story.sh
 ```
 
-Det kører alle demo-faserne i en rækkefølge, der passer til Grafana-fortællingen:
+Det kører alle demo-faserne i en rækkefølge, der passer til Grafana-fortællingen. Scriptet kører automatisk, men skriver faseoverskrifter i terminalen, så man kan følge med i Grafana ved siden af:
 
-1. Cold-cache: Redis tømmes, så dashboardet viser cache misses.
-2. Hot-cache: samme query gentages, så dashboardet viser cache hits.
-3. Redis-down: Redis skaleres kortvarigt til 0 replikaer, så fallback til Postgres kan observeres.
+1. Cold-cache: Redis tømmes, så dashboardet viser cache misses og database pressure.
+2. Hot-cache: samme query gentages, så dashboardet viser cache hits og mindre database pressure.
+3. Redis-down: Redis skaleres kortvarigt til 0 replikaer, så fallback til Postgres og fortsatte HTTP 200 kan observeres.
 4. API scale-down: SearchApi skaleres ned, mens requests fortsætter mod samme endpoint.
 5. API scale-up: SearchApi skaleres tilbage til normal replika-antal.
 6. Performance-skalering: scriptet sammenligner få vs. mange API-replikaer under parallel load.
 
 Hold især øje med disse paneler i Grafana:
 
-- `Cache decisions - hit/miss/fallback`
-- `Search duration - hit vs miss`
+- `Health check - successful searches`
+- `Cache decisions - hit / miss / fallback`
+- `Database pressure - requests der når Postgres`
+- `Redis availability - falder under Redis-fejl`
 - `SearchApi replicas - desired vs available`
-- `Redis availability during failure test`
-- `API traffic - status codes`
+- `Load per API pod - trafik fordeles ved scale-up`
 
 Story-scriptet indeholder også en Redis-fejlfase. Her skaleres Redis kortvarigt ned til 0 replikaer. Pointen er at vise, at Redis er et performance-lag og ikke source of truth: SearchApi falder tilbage til Postgres, så søgning kan fortsætte, men uden cache-gevinsten.
 
