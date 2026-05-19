@@ -268,11 +268,11 @@
       <tbody>
         <tr><td>Cache-performance</td><td>Samme bruger-load kører; cache ryddes og varmes igen</td><td>Redis reducerer søgetid og aflaster Postgres</td><td>Cachebeslutning, database pressure, søgetid</td></tr>
         <tr><td>Redis-fallback</td><td>Redis skaleres kort til 0, mens søgninger fortsætter</td><td>Redis er performance-lag; Postgres er source of truth</td><td>Redis-kapacitet, health, database pressure</td></tr>
-        <tr><td>API-skalering</td><td>Load holdes højt; SearchApi skaleres fra 1 til flere pods</td><td>Stateless API kan x-skaleres, og trafik fordeles på pods</td><td>SearchApi-kapacitet, load-balancing pr. pod</td></tr>
+        <tr><td>API-skalering</td><td>Load holdes højt; SearchApi skaleres fra 1 til flere pods</td><td>Én pod får høj pressure; flere pods deler samme load</td><td>API pressure pr. pod, SearchApi pods</td></tr>
       </tbody>
     </table>
-    <div class="callout" style="margin-top:12px"><strong>Sådan kan dashboardet tolkes:</strong> Dashboardet viser systemet i drift. Terminalen er kun kontrolpanelet, der ændrer betingelserne bagved.</div>
-    <div class="notes"><strong>Talenote:</strong> Formålet med slide 8 er at skifte fra “vi har bygget noget” til “vi kan observere det under drift”. Pointen er ikke at hoppe mellem terminal og dashboard, men at dashboardet viser en levende belastning, mens arkitekturen ændres bagved. Fortæl tre scenarier: cache giver performance og aflaster database; Redis-fejl giver fallback; API-skalering fordeler load. Det er arkitekturprincipperne omsat til målbar adfærd.</div>
+    <div class="callout" style="margin-top:12px"><strong>Sådan kan dashboardet tolkes:</strong> KPI-rækken viser aktuel kapacitet. Pressure-panelerne viser effekten: database-pressure falder ved cache-hit, og API-pressure fordeles ved scale-up.</div>
+    <div class="notes"><strong>Talenote:</strong> Formålet med slide 8 er at skifte fra “vi har bygget noget” til “vi kan observere det under drift”. Pointen er ikke at hoppe mellem terminal og dashboard, men at dashboardet viser en levende belastning, mens arkitekturen ændres bagved. Fortæl tre scenarier: cache giver performance og aflaster database; Redis-fejl giver fallback; API-skalering fordeler pressure fra én API-pod til flere. Det er arkitekturprincipperne omsat til målbar adfærd.</div>
   </section>
 
   <section class="slide">

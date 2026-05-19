@@ -11,9 +11,9 @@ data:
       "uid": "searchproject-walking-skeleton",
       "title": "SearchProject Walking Skeleton - Demo Dashboard",
       "schemaVersion": 39,
-      "version": 7,
+      "version": 8,
       "refresh": "5s",
-      "time": { "from": "now-15m", "to": "now" },
+      "time": { "from": "now-10m", "to": "now" },
       "panels": [
         {
           "id": 100,
@@ -22,7 +22,7 @@ data:
           "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
           "options": {
             "mode": "markdown",
-            "content": "**Læs dashboardet i tre lag:** Øverst er rå KPI-tal for aktuel kapacitet og belastning. Midten viser cache/database-adfærd: hit aflaster Postgres; miss/fallback rammer Postgres. Nederst viser Kubernetes-adfærd: Redis/API-kapacitet og om traffic fordeles på flere API-pods under load."
+            "content": "**Tre beviser:** 1) **Redis-performance:** hit skal give lavere søgetid og mindre Postgres-pressure end miss/fallback. 2) **Redis-fallback:** Redis kan falde til 0, mens health for søgninger fortsat er grøn. 3) **API-skalering:** ved høj load skal request-pressure flytte sig fra én presset API-pod til flere API-pods."
           }
         },
         {
@@ -32,9 +32,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 0, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 1 }, { "color": "green", "value": 2 } ] } }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"search-api\"})", "legendFormat": "api pods" }
-          ]
+          "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"search-api\"})", "legendFormat": "api pods" } ]
         },
         {
           "id": 102,
@@ -43,9 +41,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 4, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] } }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"redis\"})", "legendFormat": "redis pods" }
-          ]
+          "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"redis\"})", "legendFormat": "redis pods" } ]
         },
         {
           "id": 103,
@@ -54,9 +50,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 8, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] } }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"postgres\"})", "legendFormat": "postgres pods" }
-          ]
+          "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"postgres\"})", "legendFormat": "postgres pods" } ]
         },
         {
           "id": 104,
@@ -65,9 +59,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 12, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[1m]))", "legendFormat": "search req/s" }
-          ]
+          "targets": [ { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "search req/s" } ]
         },
         {
           "id": 105,
@@ -76,9 +68,7 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 16, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "sum(rate(search_database_requests_total{job=\"search-api\"}[1m]))", "legendFormat": "db req/s" }
-          ]
+          "targets": [ { "refId": "A", "expr": "sum(rate(search_database_requests_total{job=\"search-api\"}[30s]))", "legendFormat": "db req/s" } ]
         },
         {
           "id": 106,
@@ -87,88 +77,80 @@ data:
           "gridPos": { "h": 4, "w": 4, "x": 20, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1, "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 0.95 }, { "color": "green", "value": 0.99 } ] } }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\",http_response_status_code=\"200\"}[1m])) / sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[1m]))", "legendFormat": "success" }
-          ]
+          "targets": [ { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\",http_response_status_code=\"200\"}[30s])) / sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "success" } ]
+        },
+        {
+          "id": 8,
+          "title": "API pressure lige nu: request rate pr. pod",
+          "type": "bargauge",
+          "gridPos": { "h": 7, "w": 8, "x": 0, "y": 7 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "reqps", "min": 0, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 25 }, { "color": "red", "value": 60 } ] } }, "overrides": [] },
+          "options": { "displayMode": "gradient", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "horizontal", "showUnfilled": true },
+          "targets": [ { "refId": "A", "expr": "sum by (pod) (rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "{{pod}}" } ]
+        },
+        {
+          "id": 9,
+          "title": "API pressure over tid: én pod vs flere pods",
+          "type": "timeseries",
+          "gridPos": { "h": 7, "w": 16, "x": 8, "y": 7 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "targets": [ { "refId": "A", "expr": "sum by (pod) (rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "{{pod}}" } ]
         },
         {
           "id": 2,
           "title": "Søgetid: cache hit vs database/fallback",
           "type": "timeseries",
-          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 7 },
+          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 14 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "sum by (cache_status) (rate(search_duration_milliseconds_sum{job=\"search-api\"}[1m])) / sum by (cache_status) (rate(search_duration_milliseconds_count{job=\"search-api\"}[1m]))", "legendFormat": "{{cache_status}} avg" }
-          ]
-        },
-        {
-          "id": 3,
-          "title": "Search traffic: status codes",
-          "type": "timeseries",
-          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 7 },
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "sum by (http_response_status_code) (rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[1m]))", "legendFormat": "HTTP {{http_response_status_code}}" }
-          ]
+          "targets": [ { "refId": "A", "expr": "sum by (cache_status) (rate(search_duration_milliseconds_sum{job=\"search-api\"}[30s])) / sum by (cache_status) (rate(search_duration_milliseconds_count{job=\"search-api\"}[30s]))", "legendFormat": "{{cache_status}} avg" } ]
         },
         {
           "id": 4,
-          "title": "Cachebeslutning: Redis aflaster eller Postgres bruges",
+          "title": "Cachebeslutning: hit aflaster, miss/fallback rammer database",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 14 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "sum by (cache_status) (rate(search_cache_requests_total{job=\"search-api\"}[1m]))", "legendFormat": "{{cache_status}}" }
-          ]
+          "targets": [ { "refId": "A", "expr": "sum by (cache_status) (rate(search_cache_requests_total{job=\"search-api\"}[30s]))", "legendFormat": "{{cache_status}}" } ]
         },
         {
           "id": 5,
           "title": "Database pressure: søgninger der rammer Postgres",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 21 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "sum by (reason) (rate(search_database_requests_total{job=\"search-api\"}[1m]))", "legendFormat": "{{reason}}" }
-          ]
+          "targets": [ { "refId": "A", "expr": "sum by (reason) (rate(search_database_requests_total{job=\"search-api\"}[30s]))", "legendFormat": "{{reason}}" } ]
+        },
+        {
+          "id": 3,
+          "title": "Search traffic: status codes",
+          "type": "timeseries",
+          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 21 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "targets": [ { "refId": "A", "expr": "sum by (http_response_status_code) (rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[30s]))", "legendFormat": "HTTP {{http_response_status_code}}" } ]
         },
         {
           "id": 6,
-          "title": "Redis-kapacitet: ønsket vs faktisk",
+          "title": "Redis availability under fallback-test",
           "type": "timeseries",
-          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 22 },
+          "gridPos": { "h": 6, "w": 12, "x": 0, "y": 28 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "max(kube_deployment_spec_replicas{namespace=\"searchproject\",deployment=\"redis\"})", "legendFormat": "ønsket" },
-            { "refId": "B", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"redis\"})", "legendFormat": "faktisk" }
-          ]
+          "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"redis\"})", "legendFormat": "redis pods" } ]
         },
         {
           "id": 7,
-          "title": "SearchApi-kapacitet: ønsket vs faktisk",
+          "title": "SearchApi pods under scale-test",
           "type": "timeseries",
-          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 22 },
+          "gridPos": { "h": 6, "w": 12, "x": 12, "y": 28 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "max(kube_deployment_spec_replicas{namespace=\"searchproject\",deployment=\"search-api\"})", "legendFormat": "ønsket" },
-            { "refId": "B", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"search-api\"})", "legendFormat": "faktisk" }
-          ]
-        },
-        {
-          "id": 8,
-          "title": "Load-balancing: request rate pr. API-pod",
-          "type": "timeseries",
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 29 },
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-          "targets": [
-            { "refId": "A", "expr": "sum by (pod) (rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[1m]))", "legendFormat": "{{pod}}" }
-          ]
+          "targets": [ { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"search-api\"})", "legendFormat": "api pods" } ]
         }
       ]
     }

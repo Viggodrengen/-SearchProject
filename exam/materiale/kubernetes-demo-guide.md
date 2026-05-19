@@ -125,8 +125,9 @@ Hold især øje med disse paneler i Grafana:
 - `Cachebeslutning: Redis aflaster eller Postgres bruges`
 - `Database pressure: søgninger der rammer Postgres`
 - `Redis-kapacitet: ønsket vs faktisk`
-- `SearchApi-kapacitet: ønsket vs faktisk`
-- `Load-balancing: request rate pr. API-pod`
+- `API pressure lige nu: request rate pr. pod`
+- `API pressure over tid: én pod vs flere pods`
+- `SearchApi pods under scale-test`
 
 Story-scriptet indeholder også en Redis-fejlfase. Her skaleres Redis kortvarigt ned til 0 replikaer. Pointen er at vise, at Redis er et performance-lag og ikke source of truth: SearchApi falder tilbage til Postgres, så søgning kan fortsætte, men uden cache-gevinsten.
 
