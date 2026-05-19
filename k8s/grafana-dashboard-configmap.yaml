@@ -11,7 +11,7 @@ data:
       "uid": "searchproject-walking-skeleton",
       "title": "SearchProject Walking Skeleton - Demo Dashboard",
       "schemaVersion": 39,
-      "version": 6,
+      "version": 7,
       "refresh": "5s",
       "time": { "from": "now-15m", "to": "now" },
       "panels": [
@@ -22,25 +22,80 @@ data:
           "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
           "options": {
             "mode": "markdown",
-            "content": "**Læs nedefra og op gennem arkitekturen:** 1) **Redis/cache:** miss og fallback betyder at Postgres bruges; hit betyder at Redis aflaster databasen. 2) **Database pressure:** skal være høj ved cold-cache/Redis-ned og lavere ved hot-cache. 3) **API-skalering:** når SearchApi skaleres op, skal trafikken fordeles på flere pod-linjer. 4) **Health:** succesraten viser om rigtige søgninger stadig svarer 200 under ændringerne."
+            "content": "**Læs dashboardet i tre lag:** Øverst er rå KPI-tal for aktuel kapacitet og belastning. Midten viser cache/database-adfærd: hit aflaster Postgres; miss/fallback rammer Postgres. Nederst viser Kubernetes-adfærd: Redis/API-kapacitet og om traffic fordeles på flere API-pods under load."
           }
         },
         {
-          "id": 1,
-          "title": "Health: succesfulde søgninger",
+          "id": 101,
+          "title": "API pods kørende",
           "type": "stat",
-          "gridPos": { "h": 7, "w": 6, "x": 0, "y": 3 },
+          "gridPos": { "h": 4, "w": 4, "x": 0, "y": 3 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 1 }, { "color": "green", "value": 2 } ] } }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"search-api\"})", "legendFormat": "api pods" }
+          ]
+        },
+        {
+          "id": 102,
+          "title": "Redis pods kørende",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 4, "x": 4, "y": 3 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] } }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"redis\"})", "legendFormat": "redis pods" }
+          ]
+        },
+        {
+          "id": 103,
+          "title": "Postgres pods kørende",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 4, "x": 8, "y": 3 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] } }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "max(kube_deployment_status_replicas_available{namespace=\"searchproject\",deployment=\"postgres\"})", "legendFormat": "postgres pods" }
+          ]
+        },
+        {
+          "id": 104,
+          "title": "Søgninger / sek",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 4, "x": 12, "y": 3 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[1m]))", "legendFormat": "search req/s" }
+          ]
+        },
+        {
+          "id": 105,
+          "title": "Postgres requests / sek",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 4, "x": 16, "y": 3 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "targets": [
+            { "refId": "A", "expr": "sum(rate(search_database_requests_total{job=\"search-api\"}[1m]))", "legendFormat": "db req/s" }
+          ]
+        },
+        {
+          "id": 106,
+          "title": "Health: succesrate",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 4, "x": 20, "y": 3 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1, "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 0.95 }, { "color": "green", "value": 0.99 } ] } }, "overrides": [] },
           "targets": [
-            { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\",http_response_status_code=\"200\"}[1m])) / sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[1m]))", "legendFormat": "success ratio" }
+            { "refId": "A", "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\",http_response_status_code=\"200\"}[1m])) / sum(rate(http_server_request_duration_seconds_count{job=\"search-api\",http_route=\"/api/search\"}[1m]))", "legendFormat": "success" }
           ]
         },
         {
           "id": 2,
           "title": "Søgetid: cache hit vs database/fallback",
           "type": "timeseries",
-          "gridPos": { "h": 7, "w": 9, "x": 6, "y": 3 },
+          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 7 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
           "targets": [
@@ -51,7 +106,7 @@ data:
           "id": 3,
           "title": "Search traffic: status codes",
           "type": "timeseries",
-          "gridPos": { "h": 7, "w": 9, "x": 15, "y": 3 },
+          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 7 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [
@@ -62,7 +117,7 @@ data:
           "id": 4,
           "title": "Cachebeslutning: Redis aflaster eller Postgres bruges",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 10 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [
@@ -73,7 +128,7 @@ data:
           "id": 5,
           "title": "Database pressure: søgninger der rammer Postgres",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [
@@ -84,7 +139,7 @@ data:
           "id": 6,
           "title": "Redis-kapacitet: ønsket vs faktisk",
           "type": "timeseries",
-          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 18 },
+          "gridPos": { "h": 7, "w": 12, "x": 0, "y": 22 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
           "targets": [
@@ -96,7 +151,7 @@ data:
           "id": 7,
           "title": "SearchApi-kapacitet: ønsket vs faktisk",
           "type": "timeseries",
-          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 18 },
+          "gridPos": { "h": 7, "w": 12, "x": 12, "y": 22 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
           "targets": [
@@ -108,7 +163,7 @@ data:
           "id": 8,
           "title": "Load-balancing: request rate pr. API-pod",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 25 },
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 29 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [
