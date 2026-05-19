@@ -112,23 +112,21 @@ Den mest eksamensegnede demo er story-scriptet. Når `startup.sh` er kørt, er d
 BASE_URL=http://localhost:15075 scripts/k8s-demo-story.sh
 ```
 
-Det kører alle demo-faserne i en rækkefølge, der passer til Grafana-fortællingen. Scriptet kører automatisk, men skriver faseoverskrifter i terminalen, så man kan følge med i Grafana ved siden af:
+Det kører tre scenarier i en rækkefølge, der passer til Grafana-fortællingen:
 
-1. Cold-cache: Redis tømmes, så dashboardet viser cache misses og database pressure.
-2. Hot-cache: samme query gentages, så dashboardet viser cache hits og mindre database pressure.
-3. Redis-down: Redis skaleres kortvarigt til 0 replikaer, så fallback til Postgres og fortsatte HTTP 200 kan observeres.
-4. API scale-down: SearchApi skaleres ned, mens requests fortsætter mod samme endpoint.
-5. API scale-up: SearchApi skaleres tilbage til normal replika-antal.
-6. Performance-skalering: scriptet sammenligner få vs. mange API-replikaer under parallel load.
+1. Cache-performance: cold-cache efterfulgt af hot-cache viser søgetid og database pressure med/uden Redis-hit.
+2. Redis-fallback: Redis skaleres kortvarigt til 0 replikaer og op igen, så fallback til Postgres kan observeres.
+3. API-skalering: SearchApi køres med få og mange replikaer under load, så trafikfordeling på pods kan observeres.
 
 Hold især øje med disse paneler i Grafana:
 
-- `Health check - successful searches`
-- `Cache decisions - hit / miss / fallback`
-- `Database pressure - requests der når Postgres`
-- `Redis availability - falder under Redis-fejl`
-- `SearchApi replicas - desired vs available`
-- `Load per API pod - trafik fordeles ved scale-up`
+- `Health: succesfulde søgninger`
+- `Søgetid: cache hit vs database/fallback`
+- `Cachebeslutning: Redis aflaster eller Postgres bruges`
+- `Database pressure: søgninger der rammer Postgres`
+- `Redis-kapacitet: ønsket vs faktisk`
+- `SearchApi-kapacitet: ønsket vs faktisk`
+- `Load-balancing: request rate pr. API-pod`
 
 Story-scriptet indeholder også en Redis-fejlfase. Her skaleres Redis kortvarigt ned til 0 replikaer. Pointen er at vise, at Redis er et performance-lag og ikke source of truth: SearchApi falder tilbage til Postgres, så søgning kan fortsætte, men uden cache-gevinsten.
 

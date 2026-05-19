@@ -260,21 +260,19 @@
   </section>
 
   <section class="slide">
-    <div class="kicker">8 · Live demo-runbook</div>
-    <h2>Præcis sådan kører vi demoen under eksamen</h2>
-    <div class="callout" style="margin-top:12px"><strong>Forudsætning:</strong> <code>startup.sh</code> er kørt først. Demo-story kører automatisk bagefter og sender nok requests til, at Grafana-panelerne viser tydelige udsving.</div>
+    <div class="kicker">8 · Live validering</div>
+    <h2>Tre scenarier viser arkitekturens egenskaber</h2>
+    <div class="callout" style="margin-top:12px"><strong>Forudsætning:</strong> <code>startup.sh</code> er kørt først. Herefter kører én valideringskommando scenarierne i rækkefølge, mens Grafana viser effekten.</div>
     <table style="margin-top:14px">
-      <thead><tr><th>Fase</th><th>Hvad scriptet gør</th><th>Hvad vi forventer i dashboardet</th><th>Hvad vi siger højt</th></tr></thead>
+      <thead><tr><th>Scenarie</th><th>Hvad ændres?</th><th>Hvad beviser det?</th><th>Primære paneler</th></tr></thead>
       <tbody>
-        <tr><td>Cold-cache</td><td>Flusher Redis før requests</td><td>Panel 4-5: miss + database pressure stiger</td><td>“Nu tvinger vi opslag mod database”</td></tr>
-        <tr><td>Hot-cache</td><td>Gentager samme query</td><td>Panel 4-5: hit stiger, database pressure falder</td><td>“Nu aflaster Redis databasen”</td></tr>
-        <tr><td>Redis-down</td><td>Skalerer Redis kort ned</td><td>Panel 1 + 7: Redis=0, men health er grøn</td><td>“Søgning fortsætter via fallback til Postgres”</td></tr>
-        <tr><td>API scale-down</td><td>Normal replika-antal → 1 replika</td><td>Panel 8: desired/available falder</td><td>“Service-endpointet er stabilt”</td></tr>
-        <tr><td>API scale-up + load</td><td>Skalerer op og sender parallel belastning</td><td>Panel 8-9: flere pods deler trafikken</td><td>“Flere API’er fordeler belastningen”</td></tr>
+        <tr><td>Cache-performance</td><td>Cold-cache efterfulgt af hot-cache</td><td>Redis reducerer søgetid og aflaster Postgres</td><td>Cachebeslutning, database pressure, søgetid</td></tr>
+        <tr><td>Redis-fallback</td><td>Redis skaleres kort til 0 og op igen</td><td>Redis er performance-lag; Postgres er source of truth</td><td>Redis-kapacitet, health, database pressure</td></tr>
+        <tr><td>API-skalering</td><td>SearchApi køres med få og mange replikaer under load</td><td>Stateless API kan x-skaleres, og trafik fordeles på pods</td><td>SearchApi-kapacitet, load-balancing pr. pod</td></tr>
       </tbody>
     </table>
-    <div class="callout" style="margin-top:12px"><strong>Dashboard-logik:</strong> Terminalen viser fasen; Grafana viser beviset. Panel 1 er health under load, panel 5 er database-aflastning, panel 9 er load-balancing mellem API-pods.</div>
-    <div class="notes"><strong>Talenote:</strong> Formålet med slide 8 er at gøre demoen til en styret koreografi uden at drukne i kommandoer. Brug tabellen som speak-track: handling, observation, tolkning. Demo-scriptet kører automatisk, men terminalen annoncerer hver fase, så I kan følge dashboardet ved siden af. Meta-pointen er kontrol: I viser ikke tilfældige grafer, I fremkalder forventet adfærd fase for fase og forklarer hvorfor den opstår.</div>
+    <div class="callout" style="margin-top:12px"><strong>Sådan kan dashboardet tolkes:</strong> Først se om søgninger stadig lykkes. Derefter se om Redis ændrer database pressure. Til sidst se om flere API-pods faktisk modtager trafik under load.</div>
+    <div class="notes"><strong>Talenote:</strong> Formålet med slide 8 er at skifte fra “vi har bygget noget” til “vi kan observere det”. Undgå at sælge enkelte graf-spikes for hårdt. Fortæl i stedet tre scenarier: cache giver performance og aflaster database; Redis-fejl giver fallback; API-skalering fordeler load. Det er arkitekturprincipperne omsat til målbar adfærd.</div>
   </section>
 
   <section class="slide">

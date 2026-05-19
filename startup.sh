@@ -54,6 +54,9 @@ echo "[4/9] Deploying SearchProject Kubernetes manifests"
 kubectl apply -f k8s/searchproject.yaml
 kubectl apply -f k8s/searchproject-servicemonitor.yaml
 kubectl apply -f k8s/grafana-dashboard-configmap.yaml
+kubectl rollout restart deployment/search-api -n "$NAMESPACE" >/dev/null
+kubectl rollout restart deployment/search-webapp -n "$NAMESPACE" >/dev/null
+kubectl rollout restart deployment/kube-prometheus-stack-grafana -n monitoring >/dev/null
 
 echo
 echo "[5/9] Waiting for rollout"
@@ -62,6 +65,7 @@ kubectl rollout status deployment/redis -n "$NAMESPACE" --timeout=180s
 kubectl rollout status deployment/search-api -n "$NAMESPACE" --timeout=240s
 kubectl rollout status deployment/nginx -n "$NAMESPACE" --timeout=180s
 kubectl rollout status deployment/search-webapp -n "$NAMESPACE" --timeout=180s
+kubectl rollout status deployment/kube-prometheus-stack-grafana -n monitoring --timeout=180s
 
 echo
 echo "[6/9] Starting local port-forwards"
