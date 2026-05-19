@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SearchProject - Projektordbog til eksamen</title>
+  <style>
+    :root{
+      --bg:#102131;
+      --paper:#fbf7ef;
+      --ink:#17232d;
+      --muted:#60707a;
+      --teal:#127a6e;
+      --teal-soft:#e8f7f2;
+      --blue:#3f7dc5;
+      --blue-soft:#eaf2ff;
+      --gold:#d6a54a;
+      --gold-soft:#fff4df;
+      --line:rgba(23,35,45,.14);
+      --shadow:0 24px 60px rgba(10,20,30,.22);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;
+      line-height:1.6;
+      background:
+        radial-gradient(circle at 10% 8%,rgba(108,198,255,.16),transparent 30%),
+        radial-gradient(circle at 88% 86%,rgba(88,178,149,.14),transparent 28%),
+        linear-gradient(145deg,#102131,#193841 56%,#102131);
+    }
+    header{
+      max-width:1220px;
+      margin:auto;
+      padding:58px min(7vw,72px) 26px;
+      color:#fbf7ef;
+    }
+    .kicker{
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-weight:800;
+      font-size:.8rem;
+      color:#ccefe6;
+    }
+    h1{
+      margin:.18rem 0 .55rem;
+      font-family:Georgia,serif;
+      font-size:clamp(2.4rem,6vw,5rem);
+      line-height:.98;
+      letter-spacing:-.03em;
+    }
+    header p{
+      max-width:940px;
+      margin:.45rem 0;
+      color:rgba(251,247,239,.88);
+      font-size:1.06rem;
+    }
+    nav{
+      position:sticky;
+      top:0;
+      z-index:20;
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      padding:12px min(6vw,64px);
+      background:rgba(16,33,49,.9);
+      backdrop-filter:blur(12px);
+      border-block:1px solid rgba(255,255,255,.16);
+    }
+    nav a{
+      color:#fbf7ef;
+      text-decoration:none;
+      white-space:nowrap;
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.88rem;
+    }
+    main{
+      max-width:1180px;
+      margin:0 auto 90px;
+      padding:0 min(5vw,40px);
+    }
+    section{
+      background:var(--paper);
+      border:1px solid rgba(255,255,255,.6);
+      border-radius:var(--radius);
+      padding:28px;
+      margin:22px 0;
+      box-shadow:var(--shadow);
+    }
+    h2{
+      margin:.08rem 0 .7rem;
+      font-family:Georgia,serif;
+      font-size:2rem;
+      line-height:1.06;
+      letter-spacing:-.02em;
+    }
+    h3{
+      margin:.08rem 0 .35rem;
+      color:#105f56;
+      font-size:1.06rem;
+    }
+    p{margin:.3rem 0 .72rem}
+    .lead{font-size:1.08rem}
+    .grid{
+      display:grid;
+      gap:14px;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    }
+    .term{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:14px 15px;
+    }
+    .term h3{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin:0 0 .5rem;
+      color:#133547;
+      font-size:1.12rem;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:28px;
+      height:28px;
+      border-radius:999px;
+      background:var(--teal-soft);
+      color:var(--teal);
+      font-size:.8rem;
+      font-weight:800;
+      padding:0 8px;
+    }
+    .label{
+      margin:.7rem 0 .2rem;
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .say{
+      margin:.85rem 0 0;
+      background:var(--gold-soft);
+      border-left:6px solid var(--gold);
+      border-radius:10px;
+      padding:10px 12px;
+    }
+    .quick{
+      display:grid;
+      gap:12px;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      margin-top:14px;
+    }
+    .quick .item{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    .flow{
+      display:grid;
+      gap:12px;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      margin-top:12px;
+    }
+    .flow .step{
+      background:var(--blue-soft);
+      border:1px solid rgba(63,125,197,.18);
+      border-radius:14px;
+      padding:12px;
+    }
+    code{
+      background:#efe7d8;
+      border-radius:6px;
+      padding:.1rem .34rem;
+    }
+    @media (max-width:780px){
+      section{padding:18px}
+      h2{font-size:1.78rem}
+    }
+    @media print{
+      body{background:#fff}
+      nav{display:none}
+      section{
+        box-shadow:none;
+        border:1px solid #ddd;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="kicker">Eksamenshjælp · vigtigste begreber</div>
+    <h1>SearchProject projektordbog</h1>
+    <p>Denne ordbog er lavet som et hurtigt opslagsværk til eksamen. Den tager kun de begreber med, som er vigtige i jeres fremlæggelse, og forklarer både hvad de er, hvordan I bruger dem i projektet, og hvordan de kan siges på en enkel måde til lærerne.</p>
+    <p>Pointen er ikke at kunne snakke mest teknisk. Pointen er at kunne forklare roligt, hvorfor hvert element findes i arkitekturen, og hvilken værdi det giver.</p>
+  </header>
+
+  <nav>
+    <a href="#brug">Brug</a>
+    <a href="#arkitektur">Arkitektur</a>
+    <a href="#data">Data og cache</a>
+    <a href="#drift">Drift og måling</a>
+    <a href="#performance">Performance</a>
+    <a href="#svar">Gode svar</a>
+  </nav>
+
+  <main>
+    <section id="brug">
+      <div class="kicker">Sådan bruger I den</div>
+      <h2>Hurtigt overblik</h2>
+      <p class="lead">Hvis I kun har fem minutter, så læs først de gule bokse med “Sig det sådan”. De er skrevet som korte eksamenssvar. Hvis I har lidt mere tid, så brug kortene som repetition af de vigtigste arkitekturbegreber i projektet.</p>
+      <div class="flow">
+        <div class="step"><strong>1. Forstå systemet</strong><br>Bruger sender søgning gennem webapp eller CLI til Nginx og videre til SearchApi.</div>
+        <div class="step"><strong>2. Se hvor fart kommer fra</strong><br>Redis bruges til at cache gentagne søgeresultater, så API'et ikke skal beregne det samme igen.</div>
+        <div class="step"><strong>3. Se hvor data kommer fra</strong><br>Indexer bygger søgedata i Postgres, og SearchApi læser dem ved forespørgsler.</div>
+        <div class="step"><strong>4. Se hvor drift kommer fra</strong><br>Prometheus, Grafana og Loki gør det muligt at følge hastighed, fejl og cache-adfærd.</div>
+      </div>
+    </section>
+
+    <section id="arkitektur">
+      <div class="kicker">Arkitektur og skalering</div>
+      <h2>Begreber om systemets opbygning</h2>
+      <div class="grid">
+        <article class="term">
+          <h3><span class="badge">A1</span>Nginx</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Nginx er en reverse proxy, som står foran jeres API-instanser og modtager trafikken først.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>I Docker Compose sender webappen og CLI'en requests til Nginx, og Nginx fordeler dem videre til <code>searchapi1</code> og <code>searchapi2</code>.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Nginx er indgangen til vores backend. Det gør det nemt at fordele trafik mellem flere API-instanser uden at bygge load balancing ind i selve applikationskoden.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">A2</span>Stateless service</h3>
+          <div class="label">Hvad er det?</div>
+          <p>En stateless service gemmer ikke vigtig bruger- eller sessionsdata lokalt i sin egen proces mellem requests.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>SearchApi holder ikke søgetilstand selv. Varig data ligger i Postgres, og midlertidige søgeresultater ligger i Redis.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Vores API er stateless, og det er vigtigt, fordi det gør det lettere at starte flere ens instanser og fordele trafik mellem dem.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">A3</span>X-skalering</h3>
+          <div class="label">Hvad er det?</div>
+          <p>X-skalering betyder, at man kører flere kopier af den samme service i stedet for kun at gøre én maskine større.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>I projektet kører der to SearchApi-instanser bag Nginx. Det er den tydeligste skaleringsmekanisme, I har implementeret.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Vi skalerer udad ved at have flere API-replikaer, så vi både kan håndtere mere trafik og tåle, at én instans går ned.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">A4</span>Y-skalering</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Y-skalering betyder funktionel opdeling, altså at systemet deles op i forskellige services med hver deres ansvar.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>Jeres løsning er delt op i SearchWebApp, SearchApi, Indexer, Redis, Postgres, Nginx og observability-komponenter.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Vi har delt ansvaret op mellem flere komponenter, så UI, søgelogik, dataopbygning, cache og driftsoverblik ikke ligger blandet sammen ét sted.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">A5</span>Failover</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Failover betyder, at systemet kan fortsætte med at svare, selv om en del af det fejler.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>Når én SearchApi-instans stopper, kan Nginx stadig sende trafik til den anden. Det er derfor, to replikaer giver mere end bare performance.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Failover i vores projekt betyder, at brugeren stadig kan få svar, selv hvis én API-instans går ned under drift.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">A6</span>Docker Compose</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Docker Compose er værktøjet, der starter hele jeres lokale driftsmiljø med flere containere på én gang.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>Compose starter Postgres, Redis, Indexer, SearchApi x2, Nginx, SearchWebApp, Prometheus, Grafana og Loki.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Compose er vores implementerede driftsetup nu. Det giver os et samlet miljø, der minder om rigtig drift, uden at vi behøver Kubernetes for at demonstrere arkitekturen.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">A7</span>Kubernetes</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Kubernetes er en platform til at køre og styre containere i større, mere produktionsnære miljøer.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>I jeres projekt er Kubernetes ikke det nuværende runtime-setup, men den er vist som den naturlige næste driftsretning i diagrammerne.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Vi påstår ikke, at Kubernetes er implementeret nu. Vi bruger det som en produktionsretning, fordi arkitekturen allerede er delt op i services, som passer godt til den model.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="data">
+      <div class="kicker">Data, søgning og cache</div>
+      <h2>Begreber om hvor data ligger, og hvorfor søgning går hurtigere</h2>
+      <div class="grid">
+        <article class="term">
+          <h3><span class="badge">D1</span>Postgres</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Postgres er den persistente database i projektet. Den holder den varige data, som systemet bygger søgning på.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>Indexer skriver søgedata til Postgres, og SearchApi læser derfra, når et resultat ikke kan hentes fra cache.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Postgres er vores kilde til sandhed. Redis er kun et hurtigt mellemlag oven på den.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">D2</span>Indexer</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Indexer er den proces, der bygger eller genopbygger søgedata, så API'et ikke selv skal gøre det under hver forespørgsel.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>I Compose kører Indexer som en separat container før SearchApi starter. Efter indeksering rydder den også Redis-cachen, så gamle søgeresultater ikke bliver hængende.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Indexer forbereder dataene til søgning. Den adskiller dataopbygning fra selve request-flowet og gør arkitekturen mere ren.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">D3</span>Omvendt indeks</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Et omvendt indeks er en datastruktur, hvor man går fra ord til dokumenter i stedet for fra dokument til ord.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>Hele idéen med jeres søgesystem er, at ord kan slås op effektivt, så relevante dokumenter findes hurtigere end ved lineær gennemlæsning hver gang.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Det omvendte indeks er det, der gør søgningen mulig på en effektiv måde. I stedet for at læse alle dokumenter igennem hver gang, slår vi ord op i en struktur, der allerede er forberedt.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">D4</span>Redis</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Redis er en meget hurtig in-memory key-value store, som ofte bruges som cache.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>SearchApi gemmer søgeresultater i Redis, så gentagne søgninger kan returneres direkte. Begge API-replikaer deler den samme Redis-instans, så cachen virker på tværs af instanserne.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Vi bruger Redis som delt søgecache. Den gør især en forskel ved gentagne søgninger, fordi API'et så kan springe det tunge opslag over og returnere resultatet hurtigere.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">D5</span>Cache-aside</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Cache-aside betyder, at applikationen selv prøver at læse fra cache først, og hvis der ikke ligger noget, henter den data fra databasen og lægger resultatet i cachen bagefter.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>SearchApi bygger en cache-nøgle, prøver Redis først, og ved miss søger den i Postgres og gemmer bagefter resultatet i Redis med en TTL.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Vi bruger cache-aside, fordi det er en enkel og moden strategi. Det betyder, at cache kun bruges, når den hjælper, og databasen stadig er den rigtige backup og sandhedskilde.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">D6</span>Cache key</h3>
+          <div class="label">Hvad er det?</div>
+          <p>En cache key er den nøgle, et resultat gemmes under i cachen. Nøglen skal entydigt repræsentere forespørgslen.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>I SearchApi bygges nøglen ud fra databasevalg, case sensitivity, max amount og de normaliserede søgetermer. Derefter hashes den til en kompakt nøgle som <code>search:...</code>.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Cache-nøglen er vores måde at sikre, at to forskellige søgninger ikke får blandet deres resultater sammen.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">D7</span>Cache hit og cache miss</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Et cache hit betyder, at resultatet findes i cachen. Et cache miss betyder, at det ikke gør, og at systemet derfor må hente eller beregne det på anden vis.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>SearchApi logger hit og miss, returnerer cache-status i respons-headeren <code>X-Search-Cache</code>, og registrerer dem som metrics.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Cache hit er gevinsten, fordi vi kan svare hurtigt. Cache miss er stadig okay, for så falder systemet bare tilbage til databasen og fylder cachen bagefter.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">D8</span>TTL</h3>
+          <div class="label">Hvad er det?</div>
+          <p>TTL står for time to live. Det er den tid, et cachet resultat må leve, før det udløber automatisk.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>SearchApi sætter TTL på cachede søgeresultater, så de ikke bliver liggende for evigt. I Compose er TTL konfigureret via <code>SearchCache__TtlSeconds</code>.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>TTL er vores simple balance mellem frisk data og god performance. Vi accepterer kortvarig midlertidighed for at få hurtigere svar.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="drift">
+      <div class="kicker">Drift, logs og målinger</div>
+      <h2>Begreber om synlighed i systemet</h2>
+      <div class="grid">
+        <article class="term">
+          <h3><span class="badge">O1</span>Observability</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Observability handler om, at man kan forstå, hvad der sker i systemet under drift, uden at skulle gætte.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>I jeres projekt dækker observability både logs, metrics og dashboards. Det giver jer bevis for performance og hjælper med fejlfinding.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Observability gør systemet målbart. Vi kan se både hvor hurtigt det svarer, og hvad der sker, når noget går galt.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">O2</span>OpenTelemetry</h3>
+          <div class="label">Hvad er det?</div>
+          <p>OpenTelemetry er et standardiseret bibliotek til at indsamle telemetri som metrics og tracing fra applikationer.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>I SearchApi er OpenTelemetry koblet på ASP.NET Core, HTTP-kald, runtime-målinger og jeres egne søgemetrics.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>OpenTelemetry er den standardmekanisme, der gør det muligt at eksponere målinger fra API'et på en moden måde i stedet for at opfinde vores egen løsning.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">O3</span>Prometheus</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Prometheus er et metrics-system, som scraper målinger fra services over HTTP.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>SearchApi eksponerer et metrics-endpoint, og Prometheus henter målinger som request-adfærd og cache-status derfra.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Prometheus samler tallene ind. Det er herfra vi kan begynde at tale om latency, cache-adfærd og belastning ud fra data i stedet for mavefornemmelse.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">O4</span>Grafana</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Grafana er dashboard-laget. Den viser data fra Prometheus og Loki på en måde, man faktisk kan aflæse under drift.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>I jeres setup kan Grafana bruges til at vise latency, cache-mønstre og logs samlet.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Grafana er ikke der, hvor data bliver skabt. Det er der, hvor drift bliver synlig og nem at forklare.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">O5</span>Loki</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Loki er et loglager, som gør det muligt at samle og søge i logs fra flere containere og services.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>Jeres services kan sende logs til Loki, og Grafana kan derefter vise dem. Det er især nyttigt, når man vil se konkrete fejl, cache-events eller request-forløb.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Loki hjælper os med at se, hvad der faktisk skete. Metrics siger, at noget er langsomt; logs siger ofte hvorfor.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="performance">
+      <div class="kicker">Performance og evaluering</div>
+      <h2>Begreber om hastighed og måling</h2>
+      <div class="grid">
+        <article class="term">
+          <h3><span class="badge">P1</span>Latency</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Latency er svartiden for en request, altså hvor lang tid brugeren venter på et svar.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>I projektet er det en vigtig måling, fordi Redis netop skal reducere svartiden ved gentagne søgninger.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Latency er den mest direkte brugeroplevelsesmåling. Den fortæller, hvor hurtigt systemet føles.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">P2</span>Throughput</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Throughput er hvor mange requests systemet kan håndtere i en given periode.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>Det er relevant, når I sammenligner cold cache og hot cache, eller når I forklarer værdien af flere API-replikaer.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Throughput fortæller ikke hvor hurtigt én bruger får svar, men hvor meget samlet arbejde systemet kan klare.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">P3</span>P95 og P99</h3>
+          <div class="label">Hvad er det?</div>
+          <p>P95 og P99 er percentiler. P95 er den svartid, som 95 procent af requests er hurtigere end, og P99 gør det samme for 99 procent.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>De er gode til eksamen, fordi de viser mere end bare gennemsnittet. De fortæller noget om de langsomme requests og den reelle brugeroplevelse.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Vi bruger percentiler, fordi gennemsnit kan skjule problemer. P95 og P99 viser, hvordan systemet opfører sig, når det bliver presset.</div>
+        </article>
+
+        <article class="term">
+          <h3><span class="badge">P4</span>Cold cache og hot cache</h3>
+          <div class="label">Hvad er det?</div>
+          <p>Cold cache betyder, at der endnu ikke ligger noget relevant i cachen. Hot cache betyder, at tidligere søgninger allerede har fyldt cachen med nyttige resultater.</p>
+          <div class="label">Hvordan bruger vi det?</div>
+          <p>Når I måler performance, er forskellen mellem cold og hot cache central, fordi den viser den konkrete effekt af Redis.</p>
+          <div class="say"><strong>Sig det sådan:</strong><br>Cold cache viser basisydelsen. Hot cache viser gevinsten, når systemet kan genbruge tidligere arbejde.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="svar">
+      <div class="kicker">Korte eksamenssvar</div>
+      <h2>Gode formuleringer at have klar</h2>
+      <div class="quick">
+        <div class="item">
+          <strong>Hvorfor Redis?</strong><br>
+          Redis giver os en delt cache for gentagne søgninger, så begge API-instanser kan svare hurtigere uden at beregne det samme igen.
+        </div>
+        <div class="item">
+          <strong>Hvorfor to API-instanser?</strong><br>
+          Det viser x-skalering og giver failover, så systemet stadig kan svare, hvis én instans går ned.
+        </div>
+        <div class="item">
+          <strong>Hvorfor Indexer som separat komponent?</strong><br>
+          Fordi dataopbygning og søgning er to forskellige ansvar, og det gør systemet mere rent og driftsvenligt.
+        </div>
+        <div class="item">
+          <strong>Hvorfor Prometheus og Grafana?</strong><br>
+          Fordi vi vil kunne bevise performance og ikke kun påstå den.
+        </div>
+        <div class="item">
+          <strong>Er Kubernetes implementeret?</strong><br>
+          Nej, men arkitekturen er designet, så den kan flyttes derhen senere. Lige nu er Docker Compose det implementerede setup.
+        </div>
+        <div class="item">
+          <strong>Hvad er jeres vigtigste arkitekturvalg?</strong><br>
+          Stateless API, x-skalering bag Nginx, Redis som cache, separat indexer og observability med metrics og logs.
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

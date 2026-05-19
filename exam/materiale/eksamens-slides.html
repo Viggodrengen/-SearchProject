@@ -41,6 +41,8 @@
     .img-wrap{border:1px solid var(--line);border-radius:18px;padding:8px;background:rgba(255,253,247,.92);box-shadow:var(--soft)}
     .img-wrap img{width:100%;height:auto;max-height:420px;object-fit:contain;border-radius:14px;display:block}
     .img-wrap img.diagram{max-height:62vh}
+    .img-wrap img.snippet-shot{max-height:250px;background:#24281f}
+    .snippet-caption{margin-top:8px;color:#40535d;font-size:.84rem;line-height:1.4}
     .big{font-size:1.9rem;font-weight:900;line-height:1;color:var(--blue)}
     .command{font-family:"SFMono-Regular",Consolas,monospace;background:#101923;color:#eff6f4;border-radius:16px;padding:14px 16px;line-height:1.55;overflow:auto;box-shadow:var(--soft)}
     .codebox{font-family:"SFMono-Regular",Consolas,monospace;background:#101923;color:#eff6f4;border-radius:16px;padding:12px 14px;line-height:1.45;font-size:.78rem;min-height:112px;box-shadow:var(--soft)}
@@ -111,7 +113,17 @@
         <tr><td>Build vs. buy</td><td>Fokus på arkitektur frem for platformkode</td><td>Helm, kube-prometheus-stack, Redis/Nginx</td><td>Reproducerbar startup + driftsscripts</td></tr>
       </tbody>
     </table>
-    <div class="notes"><strong>Talenote:</strong> Formålet med slide 2 er at vise faglig metode: principperne styrer beslutningerne. Brug rytmen “problem → valg → bevis” i hver række. Denne slide fungerer også som jeres forsvar, hvis I bliver udfordret: I kan altid gå tilbage og placere et spørgsmål under et princip i stedet for at svare løst.</div>
+    <div class="grid-2" style="margin-top:12px">
+      <div class="img-wrap">
+        <img class="snippet-shot" src="slide2-observability-snippet.png" alt="OpenTelemetry og Prometheus snippet">
+        <div class="snippet-caption"><strong>Vi kigger i</strong> <code>SearchApi/Program.cs</code>: her sættes OpenTelemetry op, egne metrics registreres, og API'et eksponerer <code>/metrics</code> til Prometheus.</div>
+      </div>
+      <div class="img-wrap">
+        <img class="snippet-shot" src="slide2-compose-redis-snippet.png" alt="Docker Compose med Redis og SearchApi-instanser">
+        <div class="snippet-caption"><strong>Vi kigger i</strong> <code>docker-compose.yml</code>: her kan man se Redis-containeren og at begge SearchApi-instanser peger på samme Redis og har cache slået til.</div>
+      </div>
+    </div>
+    <div class="notes"><strong>Talenote:</strong> Formålet med slide 2 er at vise faglig metode: principperne styrer beslutningerne. Brug rytmen “problem → valg → bevis” i hver række. Denne slide fungerer også som jeres forsvar, hvis I bliver udfordret: I kan altid gå tilbage og placere et spørgsmål under et princip i stedet for at svare løst. Når I viser venstre screenshot, så sig at monitored design findes direkte i API-koden: vi måler standardtrafik, vi måler vores egne cache-events, og vi gør dem tilgængelige for Prometheus. Når I viser højre screenshot, så sig at Redis heller ikke kun er tegnet i arkitekturen: i Compose kan man se, at begge API-instanser faktisk er koblet på samme Redis og har cache slået til. Pointen er, at principperne kan spores helt ned i den konkrete opsætning.</div>
   </section>
 
   <section class="slide">
@@ -180,11 +192,17 @@
       <div class="card"><span class="tag y">Næste modenhed</span><ul><li>Redis master/replica eller managed Redis</li><li>Postgres read replicas / managed database</li><li>Build vs. buy: betale cloud-provider for HA og drift</li></ul></div>
     </div>
     <div class="grid-2" style="margin-top:12px">
-      <div class="codebox"><span class="muted">// Screenshot placeholder: cache hit path</span><br>cached = await cache.Get(key)<br>if (cached != null)<br>&nbsp;&nbsp;return cached <span class="muted">// ingen Postgres query</span></div>
-      <div class="codebox"><span class="muted">// Screenshot placeholder: Redis fejl / miss</span><br>try cache.Get(key)<br>catch RedisError<br>&nbsp;&nbsp;fallbackToDatabase()<br>cache.Set(key, result)</div>
+      <div class="img-wrap">
+        <img class="snippet-shot" src="slide5-cache-hit-snippet.png" alt="Cache hit snippet">
+        <div class="snippet-caption"><strong>Vi kigger i</strong> <code>SearchApi/Services/SearchService.cs</code>: hit-vejen, hvor resultatet allerede findes i Redis og returneres direkte uden nyt opslag i Postgres.</div>
+      </div>
+      <div class="img-wrap">
+        <img class="snippet-shot" src="slide5-cache-miss-snippet.png" alt="Cache miss snippet">
+        <div class="snippet-caption"><strong>Vi kigger i</strong> <code>SearchApi/Services/SearchService.cs</code>: miss-vejen, hvor vi laver den normale søgning og gemmer resultatet bagefter, så næste request bliver billigere.</div>
+      </div>
     </div>
     <div class="callout" style="margin-top:12px"><strong>Vigtig skelnen:</strong> Postgres er stadig source of truth. Redis er et performance- og aflastningslag, der gør os mindre afhængige af databasen i de scenarier, hvor data allerede er cached.</div>
-    <div class="notes"><strong>Talenote:</strong> Formålet med slide 5 er at forklare Redis uden at overpåstå. Sig at det ikke er fuld z-akse-skalering, fordi vi ikke partitionerer eller replikerer databasen rigtigt. Men det giver en z-akse-lignende aflastning: noget læsearbejde flyttes væk fra den stateful database og over i et separat cachelag. Brug fallback-fortællingen: hvis Redis fejler, kan Postgres stadig svare; hvis Postgres er presset, kan hot-cache stadig svare. Slut med modenhed: næste rigtige skridt er managed Redis/managed database eller master-replica/read-replica setup, hvilket også er et build-vs-buy valg.</div>
+    <div class="notes"><strong>Talenote:</strong> Formålet med slide 5 er at forklare Redis uden at overpåstå. Sig at det ikke er fuld z-akse-skalering, fordi vi ikke partitionerer eller replikerer databasen rigtigt. Men det giver en z-akse-lignende aflastning: noget læsearbejde flyttes væk fra den stateful database og over i et separat cachelag. Når I viser venstre snippet, så sig: “Her ser vi cache hit-vejen. Hvis resultatet allerede ligger i Redis, registrerer vi et hit og returnerer direkte uden nyt databaseopslag.” Når I viser højre snippet, så sig: “Her ser vi miss-vejen. Når resultatet ikke ligger i cache, laver vi den normale søgning og gemmer resultatet bagefter, så næste identiske request bliver billigere.” Pointen er ikke at læse koden linje for linje, men at bruge den som bevis for cache-aside-flowet. Slut med fallback-fortællingen: hvis Redis fejler, kan Postgres stadig svare; hvis Postgres er presset, kan hot-cache stadig svare. Næste rigtige skridt er managed Redis/managed database eller master-replica/read-replica setup, hvilket også er et build-vs-buy valg.</div>
   </section>
 
   <section class="slide">
