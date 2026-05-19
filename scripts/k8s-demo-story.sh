@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_URL="${BASE_URL:-http://localhost:15075}"
 NAMESPACE="${NAMESPACE:-searchproject}"
 ITERATIONS="${ITERATIONS:-300}"
-REDIS_DOWN_REQUESTS="${REDIS_DOWN_REQUESTS:-25}"
+REDIS_DOWN_REQUESTS="${REDIS_DOWN_REQUESTS:-5}"
 API_REPLICAS_NORMAL="${API_REPLICAS_NORMAL:-2}"
 API_REPLICAS_FAILOVER="${API_REPLICAS_FAILOVER:-1}"
 RUN_SCALE_PERFORMANCE="${RUN_SCALE_PERFORMANCE:-true}"
@@ -17,6 +17,8 @@ DATABASE="${DATABASE:-postgres}"
 MAX_AMOUNT="${MAX_AMOUNT:-10}"
 CASE_SENSITIVE="${CASE_SENSITIVE:-false}"
 SLEEP_BETWEEN_PHASES="${SLEEP_BETWEEN_PHASES:-18}"
+REDIS_SETTLE_SECONDS="${REDIS_SETTLE_SECONDS:-3}"
+REDIS_OBSERVATION_SECONDS="${REDIS_OBSERVATION_SECONDS:-5}"
 REQUEST_SLEEP="${REQUEST_SLEEP:-0.005}"
 DEMO_PAUSE="${DEMO_PAUSE:-false}"
 
@@ -93,11 +95,13 @@ pause_for_observation "Hot-cache viser at Redis aflaster Postgres ved gentagne s
 say "3) Redis-fallback: cachelaget fjernes kort"
 echo "Formål: vise fejladfærd. Forvent: Redis availability går til 0, søgninger svarer stadig 200, database pressure stiger igen."
 kubectl scale deployment/redis -n "$NAMESPACE" --replicas=0 >/dev/null
-sleep 8
+sleep "$REDIS_SETTLE_SECONDS"
 request_loop "redis-down" "$REDIS_DOWN_REQUESTS"
 kubectl scale deployment/redis -n "$NAMESPACE" --replicas=1 >/dev/null
-kubectl rollout status deployment/redis -n "$NAMESPACE" --timeout=120s >/dev/null
-pause_for_observation "Redis-fallback viser at Redis ikke er source of truth; Postgres kan tage over."
+kubectl rollout status deployment/redis -n "$NAMESPACE" --timeout=60s >/dev/null
+echo
+echo "Observation: Redis-fallback viser at Redis ikke er source of truth; Postgres kan tage over."
+sleep "$REDIS_OBSERVATION_SECONDS"
 
 say "4) API-skalering: først én API-replika under load"
 echo "Formål: vise baseline for API-load med få replikaer. Forvent: trafik samles på én pod."
