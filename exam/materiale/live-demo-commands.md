@@ -6,13 +6,44 @@ Pointen med denne version er, at Kubernetes-ændringerne vises direkte med `kube
 
 ## 1. Start kontinuerlige tilfældige søgninger
 
-Dette script simulerer brugere, der løbende søger på tilfældige termer fra databasen.
+Kopiér denne blok direkte ind i terminalen. Den simulerer brugere, der løbende søger på tilfældige termer fra databasen.
 
 ```bash
-BASE_URL=http://localhost:15075 scripts/demo-search-loop-start.sh
+BASE_URL=http://localhost:15075
+WORKERS=32
+REQUEST_SLEEP=0.01
+TERMS=(socal energy market search pipeline azure redis postgres kubernetes grafana prometheus loki cache latency throughput failover scaling replica database index query document cluster service pod observability metrics logs performance availability customer order invoice product region finance sales support security compliance email report contract analysis forecast north south east west global)
+
+for worker in $(seq 1 "$WORKERS"); do
+  (
+    while true; do
+      a=${TERMS[$RANDOM % ${#TERMS[@]}]}
+      b=${TERMS[$RANDOM % ${#TERMS[@]}]}
+      c=${TERMS[$RANDOM % ${#TERMS[@]}]}
+      case $((RANDOM % 3)) in
+        0) query="$a" ;;
+        1) query="$a $b" ;;
+        *) query="$a $b $c" ;;
+      esac
+      payload=$(printf '{"query":"%s","maxAmount":10,"caseSensitive":false,"database":"postgres"}' "$query")
+      curl -fs --connect-timeout 3 --max-time 30 -o /dev/null \
+        -X POST "$BASE_URL/api/search" \
+        -H 'Content-Type: application/json' \
+        -d "$payload" 2>/dev/null || true
+      sleep "$REQUEST_SLEEP"
+    done
+  ) &
+done
 ```
 
 Fortæl: “Nu kører der konstant søgetrafik mod systemet. Nogle queries bliver cache hits, andre bliver misses.”
+
+Stop loopet med `Ctrl+C` eller luk terminalen. Alternativt kan du stoppe baggrundsjobs i terminalen med:
+
+```bash
+jobs
+kill %1 %2 %3 %4 %5 %6 %7 %8 2>/dev/null || true
+```
 
 Tjek evt. pods:
 
