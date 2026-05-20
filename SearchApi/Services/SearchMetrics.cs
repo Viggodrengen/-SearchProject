@@ -26,6 +26,8 @@ public static class SearchMetrics
 
     private static readonly ConcurrentDictionary<string, LatestSearchDurationMeasurement> LatestSearchDurations = new();
 
+    // Dashboardet skal vise den aktuelle oplevelse, ikke kun et gennemsnit over tid.
+    // Derfor gemmer vi seneste søgetid pr. cache-status som en gauge.
     private static readonly ObservableGauge<double> LatestSearchDuration = Meter.CreateObservableGauge(
         "search.duration.latest",
         ObserveLatestSearchDurations,
@@ -53,6 +55,7 @@ public static class SearchMetrics
 
     public static void RecordDatabaseRequest(string reason, string? database)
     {
+        // Bruges til at skelne mellem "normal" cache miss og fallback når Redis er utilgængelig.
         DatabaseRequests.Add(
             1,
             new KeyValuePair<string, object?>("reason", reason),

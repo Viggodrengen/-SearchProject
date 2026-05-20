@@ -193,6 +193,8 @@ spec:
                   fieldPath: metadata.name
             - name: SEARCH_POSTGRES_CONNECTION
               value: Host=postgres;Port=5432;Username=search;Password=search;Database=searchdb
+            # Lav Redis-timeout gør fallback-demoen tydeligere:
+            # Redis-fejl skal hurtigt blive til Postgres-fallback, ikke lange hængende requests.
             - name: REDIS_CONNECTION_STRING
               value: redis:6379,connectTimeout=500,syncTimeout=500,abortConnect=false
             - name: SearchCache__Enabled

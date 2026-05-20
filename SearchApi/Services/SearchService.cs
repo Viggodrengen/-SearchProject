@@ -48,6 +48,8 @@ public class SearchService
             }, "bypass");
         }
 
+        // Cache-generation bruges til at "rydde" cache uden at køre FLUSHDB på Redis.
+        // Når generationen ændres, peger nye søgninger bare på nye cache keys.
         var cacheGeneration = await GetCacheGenerationAsync(cancellationToken);
         var cacheKey = BuildCacheKey(request, terms, maxAmount, cacheGeneration);
         var cacheStatus = _cacheOptions.Enabled ? "miss" : "disabled";
@@ -57,6 +59,7 @@ public class SearchService
             cacheStatus = cacheLookup.Status;
             if (cacheLookup.Result is not null)
             {
+                // Cache hit: vi kan svare direkte fra Redis og undgår derfor databasearbejde.
                 _logger.LogInformation("Search cache hit for key {CacheKey}", cacheKey);
                 SearchMetrics.RecordCacheStatus("hit", request.Database);
                 searchStopwatch.Stop();
@@ -69,6 +72,8 @@ public class SearchService
             SearchMetrics.RecordCacheStatus(cacheStatus, request.Database);
         }
 
+        // Herfra rammer vi databasen. Det sker enten ved almindeligt miss,
+        // disabled cache eller fallback, hvis Redis ikke svarer.
         var databaseReason = cacheStatus switch
         {
             "fallback" => "cache_unavailable",
@@ -86,6 +91,7 @@ public class SearchService
 
         if (_cacheOptions.Enabled)
         {
+            // Cache-aside: første request betaler databaseprisen, næste request kan tage Redis-vejen.
             await TrySetCachedResultAsync(cacheKey, result, cancellationToken);
         }
 
@@ -148,6 +154,8 @@ public class SearchService
         }
         catch (Exception ex)
         {
+            // Redis er et performance-lag, ikke source of truth.
+            // Hvis cache-laget fejler, fortsætter vi via databasen i stedet for at fejle søgningen.
             _logger.LogWarning(ex, "Could not read search result from cache. Falling back to database.");
             return (null, "fallback");
         }

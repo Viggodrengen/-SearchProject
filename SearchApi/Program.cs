@@ -31,6 +31,8 @@ var redisConnectionString = builder.Configuration["Redis:ConnectionString"]
     ?? Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
 if (!string.IsNullOrWhiteSpace(redisConnectionString))
 {
+    // I Kubernetes peger alle API-pods på samme Redis.
+    // Det er derfor cache hits virker på tværs af replikaer og ikke kun i én pod.
     builder.Services.AddStackExchangeRedisCache(options =>
     {
         options.Configuration = redisConnectionString;
@@ -67,6 +69,7 @@ app.Use(async (context, next) =>
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok", instanceId }))
     .WithName("Health");
 
+// Bruges i demoen til at tvinge cold-cache uden at give WebApp/API direkte Redis-admin adgang.
 app.MapPost("/api/cache/clear", async (
     SearchService searchService,
     CancellationToken cancellationToken) =>
@@ -96,6 +99,7 @@ app.MapPost("/api/search", async (
     }
 
     var response = await searchService.SearchAsync(request, cancellationToken);
+    // Gør cache-beslutningen synlig i demo/tests: hit, miss, fallback osv.
     httpContext.Response.Headers["X-Search-Cache"] = response.CacheStatus;
 
     return Results.Ok(response.Result);
