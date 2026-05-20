@@ -67,6 +67,7 @@ echo "[4/9] Deploying SearchProject Kubernetes manifests"
 kubectl apply -f k8s/searchproject.yaml
 kubectl apply -f k8s/searchproject-servicemonitor.yaml
 kubectl apply -f k8s/grafana-dashboard-configmap.yaml
+kubectl rollout restart deployment/postgres -n "$NAMESPACE" >/dev/null
 kubectl rollout restart deployment/search-api -n "$NAMESPACE" >/dev/null
 kubectl rollout restart deployment/search-webapp -n "$NAMESPACE" >/dev/null
 kubectl rollout restart deployment/kube-prometheus-stack-grafana -n monitoring >/dev/null
@@ -131,5 +132,7 @@ echo
 echo "Demo command:"
 echo "  BASE_URL=$API_URL scripts/k8s-demo-story.sh"
 echo "Useful commands:"
+echo "  scripts/demo-search-loop-start.sh"
+echo "  scripts/demo-search-loop-stop.sh"
 echo "  kubectl get pods -n $NAMESPACE"
 echo "  kubectl logs -n $NAMESPACE deployment/search-api"
